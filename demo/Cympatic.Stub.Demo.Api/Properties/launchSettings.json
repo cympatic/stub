@@ -1,0 +1,14 @@
+{
+  "profiles": {
+    "Cympatic.Stub.Demo.Api": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "launchUrl": "swagger",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "dotnetRunMessages": "true",
+      "applicationUrl": "http://localhost:32200"
+    }
+  }
+}
