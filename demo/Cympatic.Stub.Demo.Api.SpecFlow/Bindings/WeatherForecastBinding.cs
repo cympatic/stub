@@ -43,6 +43,15 @@ namespace Cympatic.Stub.Demo.Api.SpecFlow.Bindings
             _verifyRequestApiService.SetIdentifierValue(clientStub, identifierValue);
         }
 
+        [AfterScenario(Order = 20)]
+        public async Task AfterScenario()
+        {
+            var (clientStub, identifierValue) = GetStubInformation();
+
+            await _setupResponseApiService.RemoveAsync(clientStub);
+            await _verifyRequestApiService.RemoveAsync(clientStub);
+        }
+
         [Given(@"I have generate a random number of weahter forecasts")]
         public void GivenIHaveGenerateARandomNumberOfWeahterForecasts()
         {

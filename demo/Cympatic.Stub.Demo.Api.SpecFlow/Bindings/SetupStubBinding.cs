@@ -36,16 +36,5 @@ namespace Cympatic.Stub.Demo.Api.SpecFlow.Bindings
             _scenarioContext.Set(clientStub);
             _scenarioContext.Set(identifierValue, clientStub.IdentifierHeaderName);
         }
-
-        [AfterScenario(Order = 10)]
-        public async Task AfterScenario()
-        {
-            if (!_scenarioContext.TryGetValue<IClientStub>(out var clientStub))
-            {
-                throw new InvalidOperationException($"{nameof(IClientStub)} not found in ScenarioContext");
-            }
-
-            await _setupClientApiService.RemoveAsync(clientStub);
-        }
     }
 }
