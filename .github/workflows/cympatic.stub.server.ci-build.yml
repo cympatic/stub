@@ -24,10 +24,10 @@ jobs:
         dotnet-version: 5.0.x
 
     - name: Restore dependencies
-      run: dotnet restore source/Server/Cympatic.Stub.sln
+      run: dotnet restore source/Server/Cympatic.Stub.Server.sln
     
     - name: Build
-      run: dotnet build source/Server/Cympatic.Stub.sln --no-restore
+      run: dotnet build source/Server/Cympatic.Stub.Server.sln --no-restore
     
     - name: Test
-      run: dotnet test source/Server/Cympatic.Stub.sln --no-build --verbosity normal /p:CollectCoverage=true /p:CoverletOutputFormat="json%2ccobertura%2copencover" /p:CoverletOutput="${{ github.workspace }}/TestResults/" /p:MergeWith="${{ github.workspace }}/TestResults/coverage.json"  /p:Include="[*]*" /p:ExcludeByAttribute="Obsolete%2cGeneratedCodeAttribute%2cCompilerGeneratedAttribute%2cExcludeFromCodeCoverageAttribute%2cTestClassAttribute%2cTextFixtureAttribute%2cFactAttribute" /p:ExcludeByFile="**/*.designer.cs%2c**/Migrations/*.cs" /p:Exclude="[*.*Test*]*%2c[coverlet.*]*%2c[nunit3?.*]*%2c[autofixture.*]*%2c[automapper.*]*%2c[fluentassertions.*]*%2c[techtalk.*]*%2c[CPPUnitTestFramework.*]*" /maxcpucount:1
+      run: dotnet test source/Server/Cympatic.Stub.Server.sln --no-build --verbosity normal /p:CollectCoverage=true /p:CoverletOutputFormat="json%2ccobertura%2copencover" /p:CoverletOutput="${{ github.workspace }}/TestResults/" /p:MergeWith="${{ github.workspace }}/TestResults/coverage.json"  /p:Include="[*]*" /p:ExcludeByAttribute="Obsolete%2cGeneratedCodeAttribute%2cCompilerGeneratedAttribute%2cExcludeFromCodeCoverageAttribute%2cTestClassAttribute%2cTextFixtureAttribute%2cFactAttribute" /p:ExcludeByFile="**/*.designer.cs%2c**/Migrations/*.cs" /p:Exclude="[*.*Test*]*%2c[coverlet.*]*%2c[nunit3?.*]*%2c[autofixture.*]*%2c[automapper.*]*%2c[fluentassertions.*]*%2c[techtalk.*]*%2c[CPPUnitTestFramework.*]*" /maxcpucount:1
