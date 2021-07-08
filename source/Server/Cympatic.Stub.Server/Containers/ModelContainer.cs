@@ -3,15 +3,15 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace Cympatic.Stub.Server.Containers
 {
-    public abstract class ModelContainer<TModel> : IDisposable
+    public abstract class ModelContainer<TModel> : IAsyncDisposable, IDisposable
         where TModel : StubModel
     {
         private readonly TimeSpan _timerInterval;
 
-        private bool disposedValue = false;
         private Timer _timer;
         private TimeSpan _ttl;
 
@@ -33,6 +33,16 @@ namespace Cympatic.Stub.Server.Containers
             Dispose(true);
             GC.SuppressFinalize(this);
         }
+        public async ValueTask DisposeAsync()
+
+        {
+            await DisposeAsyncCore();
+
+            Dispose(false);
+#pragma warning disable CA1816 // Dispose methods should call SuppressFinalize
+            GC.SuppressFinalize(this);
+#pragma warning restore CA1816 // Dispose methods should call SuppressFinalize
+        }
 
         public virtual void SetTimeToLive(TimeSpan timeToLive)
         {
@@ -42,21 +52,21 @@ namespace Cympatic.Stub.Server.Containers
 
         protected virtual void Dispose(bool disposing)
         {
-            if (!disposedValue)
+            if (disposing)
             {
-                if (disposing)
-                {
-                    using (var manualResetEventSlim = new ManualResetEventSlim())
-                    {
-                        _timer.Dispose(manualResetEventSlim.WaitHandle);
-                        manualResetEventSlim.Wait();
-                    }
-                    _timer.Dispose();
-                    _timer = null;
-                }
-
-                disposedValue = true;
+                _timer?.Dispose();
             }
+            _timer = null;
+        }
+
+        protected virtual async ValueTask DisposeAsyncCore()
+        {
+            if (_timer is not null)
+            {
+                await _timer.DisposeAsync();
+            }
+
+            _timer = null;
         }
 
         private void CleanUpTimer(object state)
@@ -72,6 +82,5 @@ namespace Cympatic.Stub.Server.Containers
                     });
             }
         }
-
     }
 }
