@@ -33,7 +33,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\source\Extensions\Configuration\Cympatic.Extensions.Configuration\Cympatic.Extensions.Configuration.csproj" />
-    <ProjectReference Include="..\..\..\source\Server\Connectivity\Cympatic.Stub.Connectivity\Cympatic.Stub.Connectivity.csproj" />
+    <ProjectReference Include="..\..\..\source\Extensions\SpecFlow\Cympatic.Extensions.SpecFlow\Cympatic.Extensions.SpecFlow.csproj" />
   </ItemGroup>
 
 </Project>

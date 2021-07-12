@@ -1,6 +1,7 @@
-﻿using Cympatic.Stub.Connectivity.Models;
+﻿using Cympatic.Extensions.SpecFlow;
 using Cympatic.Stub.Connectivity;
 using Cympatic.Stub.Connectivity.Interfaces;
+using Cympatic.Stub.Connectivity.Models;
 using Cympatic.Stub.Demo.Api.SpecFlow.Generators;
 using Cympatic.Stub.Demo.Api.SpecFlow.Models;
 using Cympatic.Stub.Demo.Api.SpecFlow.Services;
@@ -37,7 +38,7 @@ namespace Cympatic.Stub.Demo.Api.SpecFlow.Bindings
         [BeforeScenario(Order = 20)]
         public void BeforeScenarion()
         {
-            var (clientStub, identifierValue) = GetStubInformation();
+            var (clientStub, identifierValue) = _scenarioContext.GetStubInformation();
 
             _setupResponseApiService.SetIdentifierValue(clientStub, identifierValue);
             _verifyRequestApiService.SetIdentifierValue(clientStub, identifierValue);
@@ -46,7 +47,7 @@ namespace Cympatic.Stub.Demo.Api.SpecFlow.Bindings
         [AfterScenario(Order = 20)]
         public async Task AfterScenario()
         {
-            var (clientStub, identifierValue) = GetStubInformation();
+            var (clientStub, _) = _scenarioContext.GetStubInformation();
 
             await _setupResponseApiService.RemoveAsync(clientStub);
             await _verifyRequestApiService.RemoveAsync(clientStub);
@@ -85,7 +86,7 @@ namespace Cympatic.Stub.Demo.Api.SpecFlow.Bindings
         [When(@"I request for weather forecasts")]
         public async Task WhenIRequestWeatherForecasts()
         {
-            var (_, identifierValue) = GetStubInformation();
+            var (_, identifierValue) = _scenarioContext.GetStubInformation();
 
             // identifierValue is add to the Request.Headers, but is done in the calling method of the DemoApiService
             var actual = await _demoApiService.GetForecasts(identifierValue);
@@ -104,7 +105,7 @@ namespace Cympatic.Stub.Demo.Api.SpecFlow.Bindings
         [Then(@"the stub server is called once")]
         public async Task ThenTheStubServerIsCalledOnce()
         {
-            var (clientStub, _) = GetStubInformation();
+            var (clientStub, _) = _scenarioContext.GetStubInformation();
 
             var searchModel = new RequestSearchModel
             {
@@ -117,21 +118,6 @@ namespace Cympatic.Stub.Demo.Api.SpecFlow.Bindings
             };
             var requests = await _verifyRequestApiService.SearchAsync(clientStub, searchModel);
             requests.Should().HaveCount(1);
-        }
-
-        private (IClientStub clientStub, string identifierValue) GetStubInformation()
-        {
-            if (!_scenarioContext.TryGetValue<IClientStub>(out var clientStub))
-            {
-                throw new InvalidOperationException($"nameof(IClientStub) not found in ScenarioContext");
-            }
-
-            if (!_scenarioContext.TryGetValue<string>(clientStub.IdentifierHeaderName, out var identifierValue))
-            {
-                throw new InvalidOperationException($"nameof(IClientStub) not found in ScenarioContext");
-            }
-
-            return (clientStub, identifierValue);
         }
     }
 }

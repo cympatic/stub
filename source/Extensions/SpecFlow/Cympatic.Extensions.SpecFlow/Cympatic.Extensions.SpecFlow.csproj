@@ -9,6 +9,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\Server\Connectivity\Cympatic.Stub.Connectivity\Cympatic.Stub.Connectivity.csproj" />
     <ProjectReference Include="..\..\Http\Cympatic.Extensions.Http\Cympatic.Extensions.Http.csproj" />
   </ItemGroup>
 
