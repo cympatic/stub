@@ -16,18 +16,18 @@ namespace Cympatic.Stub.Connectivity
         public SetupResponseApiService(HttpClient httpClient) : base(httpClient)
         { }
 
-        public void SetIdentifierValue(string identifierValue)
+        public void SetIdentifierValue(string identifierValue) 
         {
-            SetIdentifierValue(DefaultClientStub, identifierValue);
+            SetClientStubIdentifierValue(ClientStub, identifierValue);
         }
 
-        public void SetIdentifierValue(IClientStub clientStub, string identifierValue)
+        public void SetClientStubIdentifierValue(IClientStub clientStub, string identifierValue)
         {
-            EnsureClientStubValid(clientStub);
+            SetClientStub(clientStub);
 
             var headers = new Dictionary<string, IEnumerable<string>>
             {
-                { clientStub.IdentifierHeaderName, new StringValues(identifierValue) } 
+                { ClientStub.IdentifierHeaderName, new StringValues(identifierValue) } 
             };
             InternalHttpClient.DefaultRequestHeaders.AddRange(headers);
         }
@@ -37,21 +37,11 @@ namespace Cympatic.Stub.Connectivity
             return AddOrUpdateAsync(new List<ResponseModel> { model });
         }
 
-        public Task AddOrUpdateAsync(IEnumerable<ResponseModel> models)
+        public async Task AddOrUpdateAsync(IEnumerable<ResponseModel> models)
         {
-            return AddOrUpdateAsync(DefaultClientStub, models);
-        }
+            EnsureClientStubValid(ClientStub);
 
-        public Task AddOrUpdateAsync(IClientStub clientStub, ResponseModel model)
-        {
-            return AddOrUpdateAsync(clientStub, new List<ResponseModel> { model });
-        }
-
-        public async Task AddOrUpdateAsync(IClientStub clientStub, IEnumerable<ResponseModel> models)
-        {
-            EnsureClientStubValid(clientStub);
-
-            EnsureHeadersValid(clientStub);
+            EnsureHeadersValid(ClientStub);
 
             if (models == null)
             {
@@ -59,25 +49,20 @@ namespace Cympatic.Stub.Connectivity
             }
 
             var uri = InternalHttpClient.BaseAddress
-                .Append("setupresponse", clientStub.Name, "addorupdate");
+                .Append("setupresponse", ClientStub.Name, "addorupdate");
 
             using var response = await InternalHttpClient.PostAsync(uri, new StringContent(JsonSerializer.Serialize(models), Encoding.Default, "application/json"));
             response.EnsureSuccessStatusCode();
         }
 
-        public Task<IEnumerable<ResponseModel>> GetAsync()
+        public async Task<IEnumerable<ResponseModel>> GetAsync()
         {
-            return GetAsync(DefaultClientStub);
-        }
+            EnsureClientStubValid(ClientStub);
 
-        public async Task<IEnumerable<ResponseModel>> GetAsync(IClientStub clientStub)
-        {
-            EnsureClientStubValid(clientStub);
-
-            EnsureHeadersValid(clientStub);
+            EnsureHeadersValid(ClientStub);
 
             var uri = InternalHttpClient.BaseAddress
-                .Append("setupresponse", clientStub.Name, "getall");
+                .Append("setupresponse", ClientStub.Name, "getall");
 
             using var response = await InternalHttpClient.GetAsync(uri);
             response.EnsureSuccessStatusCode();
@@ -88,19 +73,14 @@ namespace Cympatic.Stub.Connectivity
             return models;
         }
 
-        public Task RemoveAsync()
+        public async Task RemoveAsync()
         {
-            return RemoveAsync(DefaultClientStub);
-        }
+            EnsureClientStubValid(ClientStub);
 
-        public async Task RemoveAsync(IClientStub clientStub)
-        {
-            EnsureClientStubValid(clientStub);
-
-            EnsureHeadersValid(clientStub);
+            EnsureHeadersValid(ClientStub);
 
             var uri = InternalHttpClient.BaseAddress
-                .Append("setupresponse", clientStub.Name, "remove");
+                .Append("setupresponse", ClientStub.Name, "remove");
 
             using var response = await InternalHttpClient.DeleteAsync(uri);
             response.EnsureSuccessStatusCode();

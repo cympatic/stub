@@ -18,13 +18,29 @@ namespace Cympatic.Extensions.SpecFlow
             _setupResponseApiService = setupResponseApiService;
             var (clientStub, identifierValue) = scenarioContext.GetStubInformation();
 
-            _setupResponseApiService.SetIdentifierValue(clientStub, identifierValue);
+            _setupResponseApiService.SetClientStubIdentifierValue(clientStub, identifierValue);
         }
 
-        public async Task AddRange(IEnumerable<StubItem> subItems)
+        public async Task AddPreparedDataToStubServer()
         {
-            var (clientStub, _) = _scenarioContext.GetStubInformation();
-            var groupedList = subItems
+            var types = typeof(StubSpecFlowItem).GetAllClassesOf();
+
+            foreach (var type in types)
+            {
+                if (_scenarioContext.TryGetValue(type.FullName, out var registeredItems) &&
+                    registeredItems is IEnumerable<StubSpecFlowItem> items)
+                {
+                    var itemList = items.ToList();
+
+                    await AddRangeToStubServer(itemList);
+                    await AddItemToStubServer(itemList);
+                }
+            }
+        }
+
+        public async Task AddRangeToStubServer(IEnumerable<StubSpecFlowItem> stubSpecFlowtems)
+        {
+            var groupedList = stubSpecFlowtems
                 .Where(item => item.ResponseToUrl is not null)
                 .Select(item => new
                 {
@@ -36,9 +52,9 @@ namespace Cympatic.Extensions.SpecFlow
             foreach (var groupedItem in groupedList)
             {
                 var payload = new List<object>();
-                payload.AddRange(groupedItem.Select(obj => obj.Item.Items));
+                payload.AddRange(groupedItem.Select(obj => obj.Item));
 
-                await _setupResponseApiService.AddOrUpdateAsync(clientStub,
+                await _setupResponseApiService.AddOrUpdateAsync(
                     new ResponseModel
                     {
                         Path = groupedItem.Key.Path,
@@ -49,30 +65,17 @@ namespace Cympatic.Extensions.SpecFlow
             }
         }
 
-        public async Task AddItem(IEnumerable<StubItem> subItems)
+        public async Task AddItemToStubServer(IEnumerable<StubSpecFlowItem> stubSpecFlowtems)
         {
-            var (clientStub, _) = _scenarioContext.GetStubInformation();
-            var groupedList = subItems
-                .Where(item => item.ResponseToUrl is not null)
-                .Select(item => new
-                {
-                    Uri = item.ResponseToUrl,
-                    Item = item
-                })
-                .GroupBy(item => item.Uri);
-
-            foreach (var groupedItem in groupedList)
+            foreach (var item in stubSpecFlowtems.Where(item => item.ResponseToUrlScalar is not null))
             {
-                var payload = new List<object>();
-                payload.AddRange(groupedItem.Select(obj => obj.Item.Items.FirstOrDefault()));
-
-                await _setupResponseApiService.AddOrUpdateAsync(clientStub,
+                await _setupResponseApiService.AddOrUpdateAsync(
                     new ResponseModel
                     {
-                        Path = groupedItem.Key.Path,
-                        Query = groupedItem.Key.QueryParams,
-                        Result = payload,
-                        ReturnStatusCode = groupedItem.Key.ReturnHttpStatusCode
+                        Path = item.ResponseToUrlScalar.Path,
+                        Query = item.ResponseToUrlScalar.QueryParams,
+                        Result = item,
+                        ReturnStatusCode = item.ResponseToUrlScalar.ReturnHttpStatusCode
                     });
             }
         }

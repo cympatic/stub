@@ -40,17 +40,15 @@ namespace Cympatic.Stub.Demo.Api.SpecFlow.Bindings
         {
             var (clientStub, identifierValue) = _scenarioContext.GetStubInformation();
 
-            _setupResponseApiService.SetIdentifierValue(clientStub, identifierValue);
-            _verifyRequestApiService.SetIdentifierValue(clientStub, identifierValue);
+            _setupResponseApiService.SetClientStubIdentifierValue(clientStub, identifierValue);
+            _verifyRequestApiService.SetClientStubIdentifierValue(clientStub, identifierValue);
         }
 
         [AfterScenario(Order = 20)]
         public async Task AfterScenario()
         {
-            var (clientStub, _) = _scenarioContext.GetStubInformation();
-
-            await _setupResponseApiService.RemoveAsync(clientStub);
-            await _verifyRequestApiService.RemoveAsync(clientStub);
+            await _setupResponseApiService.RemoveAsync();
+            await _verifyRequestApiService.RemoveAsync();
         }
 
         [Given(@"I have generate a random number of weahter forecasts")]
@@ -76,11 +74,7 @@ namespace Cympatic.Stub.Demo.Api.SpecFlow.Bindings
                 Result = expected
             };
 
-            if (!_scenarioContext.TryGetValue<IClientStub>(out var clientStub))
-            {
-                throw new InvalidOperationException($"nameof(IClientStub) not found in ScenarioContext");
-            }
-            await _setupResponseApiService.AddOrUpdateAsync(clientStub, responseModel);
+            await _setupResponseApiService.AddOrUpdateAsync(responseModel);
         }
 
         [When(@"I request for weather forecasts")]
@@ -105,8 +99,6 @@ namespace Cympatic.Stub.Demo.Api.SpecFlow.Bindings
         [Then(@"the stub server is called once")]
         public async Task ThenTheStubServerIsCalledOnce()
         {
-            var (clientStub, _) = _scenarioContext.GetStubInformation();
-
             var searchModel = new RequestSearchModel
             {
                 Path = "demo/for/testing",
@@ -116,7 +108,7 @@ namespace Cympatic.Stub.Demo.Api.SpecFlow.Bindings
                 },
                 HttpMethods = new List<string> { HttpMethod.Get.Method }
             };
-            var requests = await _verifyRequestApiService.SearchAsync(clientStub, searchModel);
+            var requests = await _verifyRequestApiService.SearchAsync(searchModel);
             requests.Should().HaveCount(1);
         }
     }

@@ -10,13 +10,25 @@ namespace Cympatic.Stub.Connectivity
     {
         protected HttpClient InternalHttpClient { get; }
 
-        protected IClientStub DefaultClientStub { get; }
+        protected IClientStub ClientStub { get; private set; }
 
         protected StubApiService(HttpClient httpClient)
         {
             InternalHttpClient = httpClient;
 
-            DefaultClientStub = new DefaultClientStub();
+            ClientStub = new DefaultClientStub();
+        }
+
+        protected virtual void SetClientStub(IClientStub clientStub)
+        {
+            EnsureClientStubValid(clientStub);
+
+            ClientStub = clientStub;
+        }
+
+        protected virtual void ClearClientStub()
+        {
+            ClientStub = null;
         }
 
         protected static void EnsureClientStubValid(IClientStub clientStub)
