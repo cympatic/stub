@@ -16,10 +16,18 @@ namespace Cympatic.Stub.Demo.Api.SpecFlow.Services
             _httpClient = httpClient;
         }
 
-        public async Task<IEnumerable<WeatherForecast>> GetForecasts(string stubIdentifierValue)
+        public void SetIdentifierValue(string identifierValue)
         {
-            _httpClient.DefaultRequestHeaders.Add("DemoIdentifier", stubIdentifierValue);
+            // NOTE:
+            // For demo purpose only the identifierValue is added to the Request.Headers
+            // In real life use a headername should be chosen that can be manipulated,
+            // can contain an unique value, and is passed into all calls with the chain
 
+            _httpClient.DefaultRequestHeaders.Add("DemoIdentifier", identifierValue);
+        }
+
+        public async Task<IEnumerable<WeatherForecast>> GetForecasts()
+        {
             var uri = new Uri("weatherforecast", UriKind.Relative);
 
             using var response = await _httpClient.GetAsync(uri);

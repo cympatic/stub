@@ -1,4 +1,4 @@
-﻿Feature: WeatherForecast
+﻿Feature: WeatherForecast - Simple
 	In order to validate that the Demo.WebApi service gets weahter forecasts are coming from a stub server
 	As a developer
 	I want to receive the random weather forecasts I added to the stub server

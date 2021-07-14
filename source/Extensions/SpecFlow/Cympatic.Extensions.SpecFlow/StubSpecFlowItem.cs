@@ -1,6 +1,8 @@
-﻿namespace Cympatic.Extensions.SpecFlow
+﻿using Cympatic.Extensions.SpecFlow.Interfaces;
+
+namespace Cympatic.Extensions.SpecFlow
 {
-    public class StubSpecFlowItem : SpecFlowItem
+    public abstract class StubSpecFlowItem : SpecFlowItem, IStubSpecFlowItem
     {
         public StubUrl ResponseToUrl { get; protected set; }
 

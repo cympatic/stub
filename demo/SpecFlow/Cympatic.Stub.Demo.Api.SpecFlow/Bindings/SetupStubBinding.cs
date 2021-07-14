@@ -1,5 +1,4 @@
 ﻿using Cympatic.Stub.Connectivity;
-using Cympatic.Stub.Connectivity.Interfaces;
 using Cympatic.Stub.Connectivity.Settings;
 using Microsoft.Extensions.Options;
 using System;

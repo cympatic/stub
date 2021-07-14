@@ -4,7 +4,7 @@ using System.Text.Json.Serialization;
 
 namespace Cympatic.Extensions.SpecFlow
 {
-    public class SpecFlowItem : ISpecFlowItem
+    public abstract class SpecFlowItem : ISpecFlowItem
     {
         [Ignore]
         [JsonIgnore]

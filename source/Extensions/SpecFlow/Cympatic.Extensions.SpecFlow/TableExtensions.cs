@@ -10,12 +10,12 @@ namespace Cympatic.Extensions.SpecFlow
 {
     public static class TableExtensions
     {
-        public static ISpecFlowItem CreateInstance(this Table table, [NotNull] Type type, Dictionary<Type, IEnumerable<ISpecFlowItem>> relatedSpecFlowItems = default)
+        public static object CreateInstance(this Table table, [NotNull] Type type, Dictionary<Type, IEnumerable<ISpecFlowItem>> relatedSpecFlowItems = default)
         {
             var instance = Activator.CreateInstance(type) as ISpecFlowItem;
             table.FillInstance(instance);
 
-            if (relatedSpecFlowItems != default)
+            if (relatedSpecFlowItems != default && instance is ISpecFlowItem specFlowItem)
             {
                 foreach (var relatedSpecFlowItem in relatedSpecFlowItems)
                 {
@@ -32,25 +32,25 @@ namespace Cympatic.Extensions.SpecFlow
             return instance;
         }
 
-        public static IEnumerable<ISpecFlowItem> CreateSet(this Table table, [NotNull] Type type, Dictionary<Type, IEnumerable<ISpecFlowItem>> relatedSpecFlowItems = default)
+        public static IEnumerable<object> CreateSet(this Table table, [NotNull] Type type, Dictionary<Type, IEnumerable<ISpecFlowItem>> relatedSpecFlowItems = default)
         {
             if (table.ContainsColumn(TableHeaderNames.Field) &&
                 table.ContainsColumn(TableHeaderNames.Value))
             {
-                return new List<ISpecFlowItem> { table.CreateInstance(type, relatedSpecFlowItems) };
+                return new List<object> { table.CreateInstance(type, relatedSpecFlowItems) };
             }
 
             return table.Rows.Select(row => row.CreateInstance(type, relatedSpecFlowItems));
         }
 
-        public static IEnumerable<ISpecFlowItem> TransformToSpecFlowItems(this Table table, [NotNull] Type type, ScenarioContext scenarioContext)
+        public static IEnumerable<object> TransformToSpecFlowItems(this Table table, [NotNull] Type type, ScenarioContext scenarioContext)
         {
             var relatedSpecFlowItems = GetRelatedSpecFlowItems(table, type, scenarioContext);
 
             return CreateSet(table, type, relatedSpecFlowItems);
         }
 
-        public static IEnumerable<ISpecFlowItem> TransformToSpecFlowItemsAndRegisterInContext(this Table table, [NotNull] Type type, ScenarioContext scenarioContext)
+        public static IEnumerable<object> TransformToSpecFlowItemsAndRegister(this Table table, [NotNull] Type type, ScenarioContext scenarioContext)
         {
             if (type == null)
             {
@@ -61,11 +61,11 @@ namespace Cympatic.Extensions.SpecFlow
 
             if (scenarioContext.ContainsKey(type.FullName))
             {
-                var knownSpecFlowItems = scenarioContext.Get<IEnumerable<ISpecFlowItem>>(type.FullName);
+                var knownSpecFlowItems = scenarioContext.Get<IEnumerable<object>>(type.FullName);
                 specFlowItems.AddRange(knownSpecFlowItems);
             }
 
-            scenarioContext.Set<IEnumerable<ISpecFlowItem>>(specFlowItems, type.FullName);
+            scenarioContext.Set<IEnumerable<object>>(specFlowItems, type.FullName);
 
             return specFlowItems;
         }
@@ -79,13 +79,18 @@ namespace Cympatic.Extensions.SpecFlow
 
             var relatedTypes = GetAllRelatedTypes(type);
 
+            if (relatedTypes == default)
+            {
+                return new();
+            }
+
             var relatedSpecFlowItems = new Dictionary<Type, IEnumerable<ISpecFlowItem>>();
             foreach (var relatedType in relatedTypes)
             {
                 var columnAlias = relatedType.GetSpecFlowItemName();
                 if (table.ContainsColumn(columnAlias) && scenarioContext.ContainsKey(relatedType.FullName))
                 {
-                    relatedSpecFlowItems.Add(relatedType, scenarioContext.Get<IEnumerable<ISpecFlowItem>>(relatedType.FullName));
+                    relatedSpecFlowItems.Add(relatedType, scenarioContext.Get<IEnumerable<object>>(relatedType.FullName).OfType<ISpecFlowItem>());
                 }
             }
 
@@ -113,7 +118,7 @@ namespace Cympatic.Extensions.SpecFlow
                 return typeof(ISpecFlowItem).GetAllClassesOf();
             }
 
-            throw new ArgumentOutOfRangeException(nameof(type), $"{type.Name} isn't devired from {nameof(ISpecFlowItem)}");
+            return default;
         }
     }
 }

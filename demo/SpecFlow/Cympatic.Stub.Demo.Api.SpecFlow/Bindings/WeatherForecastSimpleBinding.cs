@@ -1,12 +1,10 @@
 ﻿using Cympatic.Extensions.SpecFlow;
 using Cympatic.Stub.Connectivity;
-using Cympatic.Stub.Connectivity.Interfaces;
 using Cympatic.Stub.Connectivity.Models;
 using Cympatic.Stub.Demo.Api.SpecFlow.Generators;
 using Cympatic.Stub.Demo.Api.SpecFlow.Models;
 using Cympatic.Stub.Demo.Api.SpecFlow.Services;
 using FluentAssertions;
-using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
@@ -16,14 +14,14 @@ using TechTalk.SpecFlow;
 namespace Cympatic.Stub.Demo.Api.SpecFlow.Bindings
 {
     [Binding]
-    public sealed class WeatherForecastBinding
+    public sealed class WeatherForecastSimpleBinding
     {
         private readonly ScenarioContext _scenarioContext;
         private readonly SetupResponseApiService _setupResponseApiService;
         private readonly VerifyRequestApiService _verifyRequestApiService;
         private readonly DemoApiService _demoApiService;
 
-        public WeatherForecastBinding(
+        public WeatherForecastSimpleBinding(
             ScenarioContext scenarioContext,
             SetupResponseApiService setupResponseApiService,
             VerifyRequestApiService verifyRequestApiService,
@@ -42,6 +40,8 @@ namespace Cympatic.Stub.Demo.Api.SpecFlow.Bindings
 
             _setupResponseApiService.SetClientStubIdentifierValue(clientStub, identifierValue);
             _verifyRequestApiService.SetClientStubIdentifierValue(clientStub, identifierValue);
+
+            _demoApiService.SetIdentifierValue(identifierValue);
         }
 
         [AfterScenario(Order = 20)]
@@ -80,10 +80,7 @@ namespace Cympatic.Stub.Demo.Api.SpecFlow.Bindings
         [When(@"I request for weather forecasts")]
         public async Task WhenIRequestWeatherForecasts()
         {
-            var (_, identifierValue) = _scenarioContext.GetStubInformation();
-
-            // identifierValue is add to the Request.Headers, but is done in the calling method of the DemoApiService
-            var actual = await _demoApiService.GetForecasts(identifierValue);
+            var actual = await _demoApiService.GetForecasts();
             _scenarioContext.Set(actual, "actual");
         }
 

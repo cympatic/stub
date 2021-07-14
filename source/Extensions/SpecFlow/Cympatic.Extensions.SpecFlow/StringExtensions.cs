@@ -5,7 +5,7 @@ namespace Cympatic.Extensions.SpecFlow
 {
     public static class StringExtensions
     {
-        public static Type GetSpecFlowItemByName(this string name)
+        public static Type GetSpecFlowItemType(this string name)
         {
             return AppDomain.CurrentDomain
                 .GetAssemblies()

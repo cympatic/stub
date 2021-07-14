@@ -1,4 +1,5 @@
-﻿using Cympatic.Stub.Connectivity;
+﻿using Cympatic.Extensions.SpecFlow.Interfaces;
+using Cympatic.Stub.Connectivity;
 using Cympatic.Stub.Connectivity.Models;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,22 +24,22 @@ namespace Cympatic.Extensions.SpecFlow
 
         public async Task AddPreparedDataToStubServer()
         {
-            var types = typeof(StubSpecFlowItem).GetAllClassesOf();
+            var types = typeof(IStubSpecFlowItem).GetAllClassesOf();
 
             foreach (var type in types)
             {
                 if (_scenarioContext.TryGetValue(type.FullName, out var registeredItems) &&
-                    registeredItems is IEnumerable<StubSpecFlowItem> items)
+                    registeredItems is IEnumerable<object> items)
                 {
-                    var itemList = items.ToList();
+                    var stubSpecFlowItems = items.ToList().OfType<IStubSpecFlowItem>();
 
-                    await AddRangeToStubServer(itemList);
-                    await AddItemToStubServer(itemList);
+                    await AddRangeToStubServer(stubSpecFlowItems);
+                    await AddItemToStubServer(stubSpecFlowItems);
                 }
             }
         }
 
-        public async Task AddRangeToStubServer(IEnumerable<StubSpecFlowItem> stubSpecFlowtems)
+        public async Task AddRangeToStubServer(IEnumerable<IStubSpecFlowItem> stubSpecFlowtems)
         {
             var groupedList = stubSpecFlowtems
                 .Where(item => item.ResponseToUrl is not null)
@@ -47,7 +48,8 @@ namespace Cympatic.Extensions.SpecFlow
                     Uri = item.ResponseToUrl,
                     Item = item
                 })
-                .GroupBy(item => item.Uri);
+                .GroupBy(item => item.Uri)
+                .ToList();
 
             foreach (var groupedItem in groupedList)
             {
@@ -65,9 +67,9 @@ namespace Cympatic.Extensions.SpecFlow
             }
         }
 
-        public async Task AddItemToStubServer(IEnumerable<StubSpecFlowItem> stubSpecFlowtems)
+        public async Task AddItemToStubServer(IEnumerable<IStubSpecFlowItem> stubSpecFlowtems)
         {
-            foreach (var item in stubSpecFlowtems.Where(item => item.ResponseToUrlScalar is not null))
+            foreach (var item in stubSpecFlowtems.Where(item => item.ResponseToUrlScalar is not null).ToList())
             {
                 await _setupResponseApiService.AddOrUpdateAsync(
                     new ResponseModel

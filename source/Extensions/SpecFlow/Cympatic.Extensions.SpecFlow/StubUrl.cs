@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Linq;
 using System.Net;
 
 namespace Cympatic.Extensions.SpecFlow
@@ -28,11 +29,11 @@ namespace Cympatic.Extensions.SpecFlow
             : this(path, queryParams, new List<string>(), HttpStatusCode.OK)
         { }
 
-        public StubUrl(string path, IDictionary<string, string> queryParams, IList<string> httpMethods)
+        public StubUrl(string path, IDictionary<string, string> queryParams, IEnumerable<string> httpMethods)
             : this(path, queryParams, httpMethods, HttpStatusCode.OK)
         { }
 
-        public StubUrl(string path, IDictionary<string, string> queryParams, IList<string> httpMethods, HttpStatusCode returnHttpStatusCode)
+        public StubUrl(string path, IDictionary<string, string> queryParams, IEnumerable<string> httpMethods, HttpStatusCode returnHttpStatusCode)
         {
             Path = path;
             QueryParams = queryParams ?? new Dictionary<string, string>();
@@ -82,14 +83,24 @@ namespace Cympatic.Extensions.SpecFlow
         {
             return other != null &&
                    Path == other.Path &&
-                   EqualityComparer<IDictionary<string, string>>.Default.Equals(QueryParams, other.QueryParams) &&
-                   EqualityComparer<IEnumerable<string>>.Default.Equals(HttpMethods, other.HttpMethods) &&
+                   QueryParams.SequenceEqual(other.QueryParams) &&
+                   HttpMethods.SequenceEqual(other.HttpMethods) &&
                    ReturnHttpStatusCode == other.ReturnHttpStatusCode;
         }
 
         public override int GetHashCode()
         {
-            return HashCode.Combine(Path, QueryParams, HttpMethods, ReturnHttpStatusCode);
+            unchecked
+            {
+                var hash = 0;
+                
+                hash ^= Path.GetHashCode();
+                hash ^= QueryParams.GetHashCodeOfElements();
+                hash ^= HttpMethods.GetHashCodeOfElements();
+                hash ^= ReturnHttpStatusCode.GetHashCode();
+             
+                return hash;
+            }
         }
     }
 }

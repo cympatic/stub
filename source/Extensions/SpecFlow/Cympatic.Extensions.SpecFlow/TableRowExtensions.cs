@@ -10,13 +10,13 @@ namespace Cympatic.Extensions.SpecFlow
 {
     public static class TableRowExtensions
     {
-        public static ISpecFlowItem CreateInstance(this TableRow row, [NotNull] Type type, Dictionary<Type, IEnumerable<ISpecFlowItem>> relatedSpecFlowItems = default)
+        public static object CreateInstance(this TableRow row, [NotNull] Type type, Dictionary<Type, IEnumerable<ISpecFlowItem>> relatedSpecFlowItems = default)
         {
-            var instance = Activator.CreateInstance(type) as ISpecFlowItem;
+            var instance = Activator.CreateInstance(type);
             var table = row.ToTable();
             table.FillInstance(instance);
 
-            if (relatedSpecFlowItems != default)
+            if (relatedSpecFlowItems != default && instance is ISpecFlowItem specFlowItem)
             {
                 foreach (var relatedSpecFlowItem in relatedSpecFlowItems)
                 {
@@ -25,7 +25,7 @@ namespace Cympatic.Extensions.SpecFlow
                     {
                         foreach (var item in relatedSpecFlowItem.Value.Where(specFlowItem => specFlowItem.Alias == alias))
                         {
-                            instance.ConnectSpecFlowItem(item);
+                            specFlowItem.ConnectSpecFlowItem(item);
                         }
                     }
                 }
