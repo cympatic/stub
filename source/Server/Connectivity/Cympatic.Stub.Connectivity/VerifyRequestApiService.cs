@@ -18,33 +18,28 @@ namespace Cympatic.Stub.Connectivity
 
         public void SetIdentifierValue(string identifierValue)
         {
-            SetIdentifierValue(DefaultClientStub, identifierValue);
+            SetClientStubIdentifierValue(ClientStub, identifierValue);
         }
 
-        public void SetIdentifierValue(IClientStub clientStub, string identifierValue)
+        public void SetClientStubIdentifierValue(IClientStub clientStub, string identifierValue)
         {
-            EnsureClientStubValid(clientStub);
+            SetClientStub(clientStub);
 
             var headers = new Dictionary<string, IEnumerable<string>>
             {
-                { clientStub.IdentifierHeaderName, new StringValues(identifierValue) } 
+                { ClientStub.IdentifierHeaderName, new StringValues(identifierValue) }
             };
             InternalHttpClient.DefaultRequestHeaders.AddRange(headers);
         }
 
-        public Task<IEnumerable<RequestModel>> GetAsync()
+        public async Task<IEnumerable<RequestModel>> GetAsync()
         {
-            return GetAsync(DefaultClientStub);
-        }
+            EnsureClientStubValid(ClientStub);
 
-        public async Task<IEnumerable<RequestModel>> GetAsync(IClientStub clientStub)
-        {
-            EnsureClientStubValid(clientStub);
-
-            EnsureHeadersValid(clientStub);
+            EnsureHeadersValid(ClientStub);
 
             var uri = InternalHttpClient.BaseAddress
-                .Append("verifyrequest", clientStub.Name, "getall");
+                .Append("verifyrequest", ClientStub.Name, "getall");
 
             using var response = await InternalHttpClient.GetAsync(uri);
                 response.EnsureSuccessStatusCode();
@@ -53,16 +48,11 @@ namespace Cympatic.Stub.Connectivity
             return await JsonSerializer.DeserializeAsync<List<RequestModel>>(stream);
         }
 
-        public Task<IEnumerable<RequestModel>> SearchAsync(RequestSearchModel searchModel)
+        public async Task<IEnumerable<RequestModel>> SearchAsync(RequestSearchModel searchModel)
         {
-            return SearchAsync(DefaultClientStub, searchModel);
-        }
+            EnsureClientStubValid(ClientStub);
 
-        public async Task<IEnumerable<RequestModel>> SearchAsync(IClientStub clientStub, RequestSearchModel searchModel)
-        {
-            EnsureClientStubValid(clientStub);
-
-            EnsureHeadersValid(clientStub);
+            EnsureHeadersValid(ClientStub);
 
             if (searchModel == null)
             {
@@ -70,7 +60,7 @@ namespace Cympatic.Stub.Connectivity
             }
 
             var uri = InternalHttpClient.BaseAddress
-                .Append("verifyrequest", clientStub.Name, "search")
+                .Append("verifyrequest", ClientStub.Name, "search")
                 .WithParameter("path", searchModel.Path);
 
             var i = 0;
@@ -101,19 +91,14 @@ namespace Cympatic.Stub.Connectivity
             return result;
         }
 
-        public Task RemoveAsync()
+        public async Task RemoveAsync()
         {
-            return RemoveAsync(DefaultClientStub);
-        }
+            EnsureClientStubValid(ClientStub);
 
-        public async Task RemoveAsync(IClientStub clientStub)
-        {
-            EnsureClientStubValid(clientStub);
-
-            EnsureHeadersValid(clientStub);
+            EnsureHeadersValid(ClientStub);
 
             var uri = InternalHttpClient.BaseAddress
-                .Append("verifyrequest", clientStub.Name, "remove");
+                .Append("verifyrequest", ClientStub.Name, "remove");
 
             using var response = await InternalHttpClient.DeleteAsync(uri);
             response.EnsureSuccessStatusCode();

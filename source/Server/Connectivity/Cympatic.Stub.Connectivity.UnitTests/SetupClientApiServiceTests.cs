@@ -26,13 +26,13 @@ namespace Cympatic.Stub.Connectivity.UnitTests
                     { "requestTtlInMinutes", expected.RequestTtlInMinutes.ToString() }
                 });
             var fakeMessageHandler = new FakeMessageHandler(HttpStatusCode.Created, uri.ToString());
-            var _sut = new SetupClientApiService(new HttpClient(fakeMessageHandler)
+            var sut = new SetupClientApiService(new HttpClient(fakeMessageHandler)
             {
                 BaseAddress = new Uri("http://fake.cympatic.com")
             });
 
             // Act
-            var actual = await _sut.SetupAsync();
+            var actual = await sut.SetupAsync();
 
             // Assert
             actual.Should().BeEquivalentTo(expected, options => options.Excluding(model => model.Name));
@@ -51,13 +51,13 @@ namespace Cympatic.Stub.Connectivity.UnitTests
                     { "requestTtlInMinutes", expected.RequestTtlInMinutes.ToString() }
                 });
             var fakeMessageHandler = new FakeMessageHandler(HttpStatusCode.Created, uri.ToString());
-            var _sut = new SetupClientApiService(new HttpClient(fakeMessageHandler)
+            var sut = new SetupClientApiService(new HttpClient(fakeMessageHandler)
             {
                 BaseAddress = new Uri("http://fake.cympatic.com")
             });
 
             // Act
-            var actual = await _sut.SetupAsync("TestClientStub", "TestIdentifierHeaderName");
+            var actual = await sut.SetupAsync("TestClientStub", "TestIdentifierHeaderName");
 
             // Assert
             actual.Should().BeEquivalentTo(expected);
@@ -76,13 +76,13 @@ namespace Cympatic.Stub.Connectivity.UnitTests
                     { "requestTtlInMinutes", expected.RequestTtlInMinutes.ToString() }
                 });
             var fakeMessageHandler = new FakeMessageHandler(HttpStatusCode.Created, uri.ToString());
-            var _sut = new SetupClientApiService(new HttpClient(fakeMessageHandler)
+            var sut = new SetupClientApiService(new HttpClient(fakeMessageHandler)
             {
                 BaseAddress = new Uri("http://fake.cympatic.com")
             });
 
             // Act
-            await _sut.SetupAsync(expected);
+            await sut.SetupAsync(expected);
 
             // Assert
             fakeMessageHandler.CallCount(uri.ToString()).Should().Be(1);
@@ -100,13 +100,13 @@ namespace Cympatic.Stub.Connectivity.UnitTests
                     { "requestTtlInMinutes", expected.RequestTtlInMinutes.ToString() }
                 });
             var fakeMessageHandler = new FakeMessageHandler(HttpStatusCode.Created, uri.ToString());
-            var _sut = new SetupClientApiService(new HttpClient(fakeMessageHandler)
+            var sut = new SetupClientApiService(new HttpClient(fakeMessageHandler)
             {
                 BaseAddress = new Uri("http://fake.cympatic.com")
             });
 
             // Act & Assert
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _sut.SetupAsync(null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => sut.SetupAsync(null));
             fakeMessageHandler.CallCount(uri.ToString()).Should().Be(0);
         }
 
@@ -122,13 +122,13 @@ namespace Cympatic.Stub.Connectivity.UnitTests
                     { "requestTtlInMinutes", expected.RequestTtlInMinutes.ToString() }
                 });
             var fakeMessageHandler = new FakeMessageHandler(HttpStatusCode.BadRequest, uri.ToString());
-            var _sut = new SetupClientApiService(new HttpClient(fakeMessageHandler)
+            var sut = new SetupClientApiService(new HttpClient(fakeMessageHandler)
             {
                 BaseAddress = new Uri("http://fake.cympatic.com")
             });
 
             // Act & Assert
-            await Assert.ThrowsAsync<HttpRequestException>(() => _sut.SetupAsync(expected));
+            await Assert.ThrowsAsync<HttpRequestException>(() => sut.SetupAsync(expected));
             fakeMessageHandler.CallCount(uri.ToString()).Should().Be(1);
         }
 
@@ -137,13 +137,13 @@ namespace Cympatic.Stub.Connectivity.UnitTests
         {
             // Arrange
             var fakeMessageHandler = new FakeMessageHandler(HttpStatusCode.NoContent, "remove");
-            var _sut = new SetupClientApiService(new HttpClient(fakeMessageHandler)
+            var sut = new SetupClientApiService(new HttpClient(fakeMessageHandler)
             {
                 BaseAddress = new Uri("http://fake.cympatic.com")
             });
 
             // Act
-            await _sut.RemoveAsync();
+            await sut.RemoveAsync();
 
             // Assert
             fakeMessageHandler.CallCount("remove").Should().Be(1);
@@ -155,13 +155,13 @@ namespace Cympatic.Stub.Connectivity.UnitTests
             // Arrange
             var clientStub = new ClientStub("TestClientStub", "TestIdentifierHeaderName", Defaults.ResponseTtlInMinutes, Defaults.RequestTtlInMinutes);
             var fakeMessageHandler = new FakeMessageHandler(HttpStatusCode.NoContent, "remove");
-            var _sut = new SetupClientApiService(new HttpClient(fakeMessageHandler)
+            var sut = new SetupClientApiService(new HttpClient(fakeMessageHandler)
             {
                 BaseAddress = new Uri("http://fake.cympatic.com")
             });
 
             // Act
-            await _sut.RemoveAsync(clientStub);
+            await sut.RemoveAsync(clientStub);
 
             // Assert
             fakeMessageHandler.CallCount("remove").Should().Be(1);
@@ -172,13 +172,13 @@ namespace Cympatic.Stub.Connectivity.UnitTests
         {
             // Arrange
             var fakeMessageHandler = new FakeMessageHandler(HttpStatusCode.NoContent, "remove");
-            var _sut = new SetupClientApiService(new HttpClient(fakeMessageHandler)
+            var sut = new SetupClientApiService(new HttpClient(fakeMessageHandler)
             {
                 BaseAddress = new Uri("http://fake.cympatic.com")
             });
 
             // Act & Assert
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _sut.RemoveAsync(null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => sut.RemoveAsync(null));
             fakeMessageHandler.CallCount("remove").Should().Be(0);
         }
 
@@ -188,13 +188,13 @@ namespace Cympatic.Stub.Connectivity.UnitTests
             // Arrange
             var clientStub = new ClientStub("TestClientStub", "TestIdentifierHeaderName", Defaults.ResponseTtlInMinutes, Defaults.RequestTtlInMinutes);
             var fakeMessageHandler = new FakeMessageHandler(HttpStatusCode.BadRequest, "remove");
-            var _sut = new SetupClientApiService(new HttpClient(fakeMessageHandler)
+            var sut = new SetupClientApiService(new HttpClient(fakeMessageHandler)
             {
                 BaseAddress = new Uri("http://fake.cympatic.com")
             });
 
             // Act & Assert
-            await Assert.ThrowsAsync<HttpRequestException>(() => _sut.RemoveAsync(clientStub));
+            await Assert.ThrowsAsync<HttpRequestException>(() => sut.RemoveAsync(clientStub));
             fakeMessageHandler.CallCount("remove").Should().Be(1);
         }
 
@@ -204,13 +204,13 @@ namespace Cympatic.Stub.Connectivity.UnitTests
             // Arrange
             var clientStub = new ClientStub("TestClientStub", "TestIdentifierHeaderName", Defaults.ResponseTtlInMinutes, Defaults.RequestTtlInMinutes);
             var fakeMessageHandler = new FakeMessageHandler(HttpStatusCode.OK, clientStub, "getclient");
-            var _sut = new SetupClientApiService(new HttpClient(fakeMessageHandler)
+            var sut = new SetupClientApiService(new HttpClient(fakeMessageHandler)
             {
                 BaseAddress = new Uri("http://fake.cympatic.com")
             });
 
             // Act
-            var actual = await _sut.GetClientAsync(clientStub.Name);
+            var actual = await sut.GetClientAsync(clientStub.Name);
 
             // Assert
             actual.Should().BeEquivalentTo(clientStub);
@@ -222,13 +222,13 @@ namespace Cympatic.Stub.Connectivity.UnitTests
         {
             // Arrange
             var fakeMessageHandler = new FakeMessageHandler(HttpStatusCode.BadRequest, null, "getclient");
-            var _sut = new SetupClientApiService(new HttpClient(fakeMessageHandler)
+            var sut = new SetupClientApiService(new HttpClient(fakeMessageHandler)
             {
                 BaseAddress = new Uri("http://fake.cympatic.com")
             });
 
             // Act
-            var actual = await _sut.GetClientAsync("fake");
+            var actual = await sut.GetClientAsync("fake");
 
             // Assert
             actual.Should().BeNull();
@@ -240,13 +240,13 @@ namespace Cympatic.Stub.Connectivity.UnitTests
         {
             // Arrange
             var fakeMessageHandler = new FakeMessageHandler(HttpStatusCode.OK, "getclient");
-            var _sut = new SetupClientApiService(new HttpClient(fakeMessageHandler)
+            var sut = new SetupClientApiService(new HttpClient(fakeMessageHandler)
             {
                 BaseAddress = new Uri("http://fake.cympatic.com")
             });
 
             // Act & Assert
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _sut.GetClientAsync(null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => sut.GetClientAsync(null));
             fakeMessageHandler.CallCount("getclient").Should().Be(0);
         }
     }

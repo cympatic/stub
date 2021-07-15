@@ -17,8 +17,8 @@ namespace Cympatic.Stub.Connectivity
 
         public async Task<IClientStub> SetupAsync()
         {
-            await SetupAsync(DefaultClientStub);
-            return DefaultClientStub;
+            await SetupAsync(ClientStub);
+            return ClientStub;
         }
 
         public async Task<IClientStub> SetupAsync(string clientName, string identifierHeader)
@@ -29,7 +29,7 @@ namespace Cympatic.Stub.Connectivity
             return client;
         }
 
-        public async Task SetupAsync(IClientStub clientStub)
+        public virtual async Task SetupAsync(IClientStub clientStub)
         {
             EnsureClientStubValid(clientStub);
 
@@ -43,6 +43,8 @@ namespace Cympatic.Stub.Connectivity
 
             using var response = await InternalHttpClient.PostAsync(uri, null);
             response.EnsureSuccessStatusCode();
+
+            SetClientStub(clientStub);
         }
 
         public async Task<IClientStub> GetClientAsync(string clientName)
@@ -69,10 +71,10 @@ namespace Cympatic.Stub.Connectivity
 
         public Task RemoveAsync()
         {
-            return RemoveAsync(DefaultClientStub);
+            return RemoveAsync(ClientStub);
         }
 
-        public async Task RemoveAsync(IClientStub clientStub)
+        public virtual async Task RemoveAsync(IClientStub clientStub)
         {
             EnsureClientStubValid(clientStub);
 
@@ -81,6 +83,8 @@ namespace Cympatic.Stub.Connectivity
 
             using var response = await InternalHttpClient.DeleteAsync(uri);
             response.EnsureSuccessStatusCode();
+
+            ClearClientStub();
         }
     }
 }
