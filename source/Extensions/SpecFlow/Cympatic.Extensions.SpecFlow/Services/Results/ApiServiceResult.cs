@@ -1,6 +1,4 @@
-﻿using Cympatic.Extensions.Http;
-using Cympatic.Extensions.SpecFlow.Interfaces;
-using System;
+﻿using Cympatic.Extensions.SpecFlow.Interfaces;
 using System.IO;
 using System.Net;
 using System.Net.Http;
@@ -14,9 +12,9 @@ namespace Cympatic.Extensions.SpecFlow.Services.Results
     {
         public HttpStatusCode StatusCode { get; private set; }
 
-        public HttpHeaders Headers { get; private set; }
+        public HttpResponseHeaders ResponseHeaders { get; private set; }
 
-        public Uri Location { get; private set; }
+        public HttpContentHeaders ContentHeaders { get; private set; }
 
         public string Content { get; private set; }
 
@@ -25,13 +23,12 @@ namespace Cympatic.Extensions.SpecFlow.Services.Results
         public virtual async Task InitializeAsync(HttpResponseMessage response, CancellationToken cancellationToken = default)
         {
             StatusCode = response.StatusCode;
-            Headers = response.Headers;
-            Location = response.Headers.Location;
+            ResponseHeaders = response.Headers;
             Content = string.Empty;
 
             if (response.Content is object)
             {
-                Headers.AddRange(response.Content.Headers);
+                ContentHeaders = response.Content.Headers;
 
                 var stream = await response.Content.ReadAsStreamAsync(cancellationToken);
                 if (stream.CanSeek)

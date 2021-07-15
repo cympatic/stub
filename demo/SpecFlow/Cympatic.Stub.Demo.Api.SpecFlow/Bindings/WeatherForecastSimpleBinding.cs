@@ -80,8 +80,8 @@ namespace Cympatic.Stub.Demo.Api.SpecFlow.Bindings
         [When(@"I request for weather forecasts")]
         public async Task WhenIRequestWeatherForecasts()
         {
-            var actual = await _demoApiService.GetForecasts();
-            _scenarioContext.Set(actual, "actual");
+            var actual = await _demoApiService.GetForecastsAsync();
+            _scenarioContext.Set(actual.Value, "actual");
         }
 
         [Then(@"the result should be equal to the weather forecasts")]

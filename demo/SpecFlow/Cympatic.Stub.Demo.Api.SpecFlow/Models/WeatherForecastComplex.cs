@@ -23,6 +23,7 @@ namespace Cympatic.Stub.Demo.Api.SpecFlow.Models
 
         public StubUrl ResponseToUrlScalar => default;
 
+        [Ignore]
         public WeatherForecast Parent { get; private set; }
 
         public void ConnectSpecFlowItem(ISpecFlowItem item)

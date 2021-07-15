@@ -9,6 +9,11 @@ namespace Cympatic.Extensions.SpecFlow
     {
         public static IEnumerable<string> GetIgnoredProperties(this Type type)
         {
+            if (type == null)
+            {
+                throw new ArgumentNullException(nameof(type));
+            }
+
             var properties = type.GetProperties();
             foreach (var property in properties)
             {
@@ -34,6 +39,11 @@ namespace Cympatic.Extensions.SpecFlow
 
         public static string GetSpecFlowItemName(this Type type)
         {
+            if (type == null)
+            {
+                throw new ArgumentNullException(nameof(type));
+            }
+
             var attribute = type
                 .GetCustomAttributes(typeof(SpecFlowItemAttribute), true)
                 .FirstOrDefault() as SpecFlowItemAttribute;
@@ -43,6 +53,11 @@ namespace Cympatic.Extensions.SpecFlow
 
         public static IEnumerable<Type> GetAllClassesOf(this Type type)
         {
+            if (type == null)
+            {
+                throw new ArgumentNullException(nameof(type));
+            }
+
             return AppDomain.CurrentDomain
                 .GetAssemblies()
                 .SelectMany(a => a.GetTypes())

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Cympatic.Extensions.SpecFlow.Interfaces;
+using System;
 using System.Net.Http;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -7,10 +8,12 @@ using System.Threading.Tasks;
 
 namespace Cympatic.Extensions.SpecFlow.Services.Results
 {
-    public abstract class ApiServiceResult<TModel> : ApiServiceResult
+    public class ApiServiceResult<TModel> : ApiServiceResult, IApiServiceResultValue
         where TModel : class
     {
         public TModel Value { get; protected set; }
+
+        object IApiServiceResultValue.Value => Value;
 
         public override async Task InitializeAsync(HttpResponseMessage response, CancellationToken cancellationToken = default)
         {

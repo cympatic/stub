@@ -1,5 +1,4 @@
-﻿using System;
-using System.Net;
+﻿using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading;
@@ -11,9 +10,9 @@ namespace Cympatic.Extensions.SpecFlow.Interfaces
     {
         HttpStatusCode StatusCode { get; }
 
-        HttpHeaders Headers { get; }
+        HttpResponseHeaders ResponseHeaders { get; }
 
-        Uri Location { get; }
+        HttpContentHeaders ContentHeaders { get; }
 
         string Content { get; }
 
