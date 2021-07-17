@@ -2,7 +2,7 @@
 
 namespace Cympatic.Stub.Server.Containers
 {
-    internal class ClientInfo : IDisposable
+    internal class ClientInfo : IDisposable, IEquatable<ClientInfo>
     {
         private bool disposedValue = false;
 
@@ -53,6 +53,23 @@ namespace Cympatic.Stub.Server.Containers
 
                 disposedValue = true;
             }
+        }
+
+        public override bool Equals(object obj)
+        {
+            return Equals(obj as ClientInfo);
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(Name, IdentifierHeaderName);
+        }
+
+        public bool Equals(ClientInfo other)
+        {
+            return other != null &&
+                   Name.Equals(other.Name, StringComparison.OrdinalIgnoreCase) &&
+                   IdentifierHeaderName.Equals(other.IdentifierHeaderName, StringComparison.OrdinalIgnoreCase);
         }
     }
 }

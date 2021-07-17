@@ -282,7 +282,11 @@ namespace Cympatic.Stub.Server.Containers
                 var clientInfo = _internalContainer.FirstOrDefault(client => client.Name.Equals(newClient.Name, StringComparison.OrdinalIgnoreCase));
                 if (clientInfo != null)
                 {
-                    throw new ArgumentOutOfRangeException(nameof(newClient), $"ClientName: {newClient.Name} already exists");
+                    if (newClient.Equals(clientInfo))
+                    {
+                        return;
+                    }
+                    throw new ArgumentOutOfRangeException(nameof(newClient), $"ClientName: {newClient.Name} already exists, but has differences");
                 }
 
                 _cacheLock.EnterWriteLock();

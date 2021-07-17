@@ -13,35 +13,37 @@ namespace Cympatic.Stub.Demo.Api.SpecFlow.Bindings
     public sealed class WeatherForecastComplexBinding
     {
         private readonly ScenarioContext _scenarioContext;
+        private readonly SetupResponseApiService _setupResponseApiService;
         private readonly VerifyRequestApiService _verifyRequestApiService;
         private readonly DemoApiService _demoApiService;
-        private readonly StubServerHelper _stubServerHelper;
 
         public WeatherForecastComplexBinding(
             ScenarioContext scenarioContext,
+            SetupResponseApiService setupResponseApiService,
             VerifyRequestApiService verifyRequestApiService,
-            DemoApiService demoApiService,
-            StubServerHelper stubServerHelper)
+            DemoApiService demoApiService)
         {
             _scenarioContext = scenarioContext;
+            _setupResponseApiService = setupResponseApiService;
             _verifyRequestApiService = verifyRequestApiService;
             _demoApiService = demoApiService;
-            _stubServerHelper = stubServerHelper;
         }
 
-        [BeforeScenario(Order = 20)]
+        [BeforeScenario("Complex", Order = 20)]
         public void BeforeScenarion()
         {
             var (clientStub, identifierValue) = _scenarioContext.GetStubInformation();
 
+            _setupResponseApiService.SetClientStubIdentifierValue(clientStub, identifierValue);
             _verifyRequestApiService.SetClientStubIdentifierValue(clientStub, identifierValue);
 
             _demoApiService.SetIdentifierValue(identifierValue);
         }
 
-        [AfterScenario(Order = 20)]
+        [AfterScenario("Complex", Order = 20)]
         public async Task AfterScenario()
         {
+            await _setupResponseApiService.RemoveAsync();
             await _verifyRequestApiService.RemoveAsync();
         }
 
@@ -57,7 +59,7 @@ namespace Cympatic.Stub.Demo.Api.SpecFlow.Bindings
         [When(@"the 'Stub Server' is prepared")]
         public async Task WhenTheStubServerIsPrepared()
         {
-            await _stubServerHelper.AddPreparedDataToStubServer();
+            await _scenarioContext.PostStubSpecFlowItemsToStubServerAsync(_setupResponseApiService);
         }
 
         [When(@"the 'Weather forecast' service is requested for weather forecasts")]

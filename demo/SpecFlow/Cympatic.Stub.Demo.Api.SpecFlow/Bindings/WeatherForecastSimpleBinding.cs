@@ -33,7 +33,7 @@ namespace Cympatic.Stub.Demo.Api.SpecFlow.Bindings
             _demoApiService = demoApiService;
         }
 
-        [BeforeScenario(Order = 20)]
+        [BeforeScenario("Simple", Order = 20)]
         public void BeforeScenarion()
         {
             var (clientStub, identifierValue) = _scenarioContext.GetStubInformation();
@@ -44,7 +44,7 @@ namespace Cympatic.Stub.Demo.Api.SpecFlow.Bindings
             _demoApiService.SetIdentifierValue(identifierValue);
         }
 
-        [AfterScenario(Order = 20)]
+        [AfterScenario("Simple", Order = 20)]
         public async Task AfterScenario()
         {
             await _setupResponseApiService.RemoveAsync();

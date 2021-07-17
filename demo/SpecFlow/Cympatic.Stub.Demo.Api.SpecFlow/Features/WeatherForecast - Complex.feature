@@ -1,10 +1,10 @@
-﻿Feature: WeatherForecast - Complex
+﻿@Complex
+Feature: WeatherForecast - Complex
 	In order to validate that the Demo.WebApi service gets pre-defined weahter forecasts are coming from a stub server
 	As a developer
 	I want to receive the pre-defined weather forecasts I added to the stub server
 	And validate these received weather forecasts against the ones added to the stub server
 
-@Demo
 Scenario: Receive pre-defined weather forecast
 	Given multiple 'WeatherForecast Complex' items containing the following values
 	| Date       | TemperatureC | Summary            | Alias |

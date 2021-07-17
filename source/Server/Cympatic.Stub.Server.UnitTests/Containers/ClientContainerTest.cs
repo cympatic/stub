@@ -95,9 +95,13 @@ namespace Cympatic.Stub.Server.UnitTests.Containers
         }
 
         [Fact]
-        public void Add_Client_Twice_UnsuccessFully()
+        public void Add_Client_Twice_SuccessFully()
         {
-            var expectedErrorMessage = $"ClientName: {_clientStub.Name} already exists (Parameter 'newClient')";
+            var excepted = new ClientModel
+            {
+                Name = _clientStub.Name,
+                IdentifierHeaderName = _clientStub.IdentifierHeaderName
+            };
 
             _context.Request.RouteValues.Add("client", _clientStub.Name);
             Mock.Get(_mockHttpContextAccessor)
@@ -105,7 +109,23 @@ namespace Cympatic.Stub.Server.UnitTests.Containers
                 .Returns(_context);
 
             _sut.Add(_clientStub.IdentifierHeaderName, 1, 1);
-            var actual = Assert.Throws<ArgumentOutOfRangeException>(() => _sut.Add(_clientStub.IdentifierHeaderName, 1, 1));
+            var actual = _sut.Add(_clientStub.IdentifierHeaderName, 1, 1);
+
+            actual.Should().BeEquivalentTo(excepted);
+        }
+
+        [Fact]
+        public void Add_Client_Twice_UnsuccessFully()
+        {
+            var expectedErrorMessage = $"ClientName: {_clientStub.Name} already exists, but has differences (Parameter 'newClient')";
+
+            _context.Request.RouteValues.Add("client", _clientStub.Name);
+            Mock.Get(_mockHttpContextAccessor)
+                .Setup(_ => _.HttpContext)
+                .Returns(_context);
+
+            _sut.Add(_clientStub.IdentifierHeaderName, 1, 1);
+            var actual = Assert.Throws<ArgumentOutOfRangeException>(() => _sut.Add("IdentifierHeaderName", 1, 1));
 
             actual.Message.Should().Be(expectedErrorMessage);
         }

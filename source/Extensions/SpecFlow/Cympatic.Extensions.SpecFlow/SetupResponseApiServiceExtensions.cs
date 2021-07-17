@@ -1,46 +1,23 @@
 ﻿using Cympatic.Extensions.SpecFlow.Interfaces;
 using Cympatic.Stub.Connectivity;
 using Cympatic.Stub.Connectivity.Models;
+using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
-using TechTalk.SpecFlow;
 
 namespace Cympatic.Extensions.SpecFlow
 {
-    public class StubServerHelper
+    public static class SetupResponseApiServiceExtensions
     {
-        private readonly ScenarioContext _scenarioContext;
-        private readonly SetupResponseApiService _setupResponseApiService;
-
-        public StubServerHelper(ScenarioContext scenarioContext, SetupResponseApiService setupResponseApiService)
+        public static async Task AddRangeToStubServerAsync(this SetupResponseApiService setupResponseApiService, [NotNull] IEnumerable<IStubSpecFlowItem> stubSpecFlowtems)
         {
-            _scenarioContext = scenarioContext;
-            _setupResponseApiService = setupResponseApiService;
-            var (clientStub, identifierValue) = scenarioContext.GetStubInformation();
-
-            _setupResponseApiService.SetClientStubIdentifierValue(clientStub, identifierValue);
-        }
-
-        public async Task AddPreparedDataToStubServer()
-        {
-            var types = typeof(IStubSpecFlowItem).GetAllClassesOf();
-
-            foreach (var type in types)
+            if (setupResponseApiService == null)
             {
-                if (_scenarioContext.TryGetValue(type.FullName, out var registeredItems) &&
-                    registeredItems is IEnumerable<object> items)
-                {
-                    var stubSpecFlowItems = items.ToList().OfType<IStubSpecFlowItem>();
-
-                    await AddRangeToStubServer(stubSpecFlowItems);
-                    await AddItemToStubServer(stubSpecFlowItems);
-                }
+                throw new ArgumentNullException(nameof(setupResponseApiService));
             }
-        }
 
-        public async Task AddRangeToStubServer(IEnumerable<IStubSpecFlowItem> stubSpecFlowtems)
-        {
             var groupedList = stubSpecFlowtems
                 .Where(item => item.ResponseToUrl is not null)
                 .Select(item => new
@@ -56,7 +33,7 @@ namespace Cympatic.Extensions.SpecFlow
                 var payload = new List<object>();
                 payload.AddRange(groupedItem.Select(obj => obj.Item));
 
-                await _setupResponseApiService.AddOrUpdateAsync(
+                await setupResponseApiService.AddOrUpdateAsync(
                     new ResponseModel
                     {
                         Path = groupedItem.Key.Path,
@@ -67,11 +44,16 @@ namespace Cympatic.Extensions.SpecFlow
             }
         }
 
-        public async Task AddItemToStubServer(IEnumerable<IStubSpecFlowItem> stubSpecFlowtems)
+        public static async Task AddItemToStubServerAsync(this SetupResponseApiService setupResponseApiService, [NotNull] IEnumerable<IStubSpecFlowItem> stubSpecFlowtems)
         {
+            if (setupResponseApiService == null)
+            {
+                throw new ArgumentNullException(nameof(setupResponseApiService));
+            }
+
             foreach (var item in stubSpecFlowtems.Where(item => item.ResponseToUrlScalar is not null).ToList())
             {
-                await _setupResponseApiService.AddOrUpdateAsync(
+                await setupResponseApiService.AddOrUpdateAsync(
                     new ResponseModel
                     {
                         Path = item.ResponseToUrlScalar.Path,
