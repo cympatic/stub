@@ -1,7 +1,15 @@
 [![Continuous integration build](https://github.com/cympatic/stub/actions/workflows/cympatic.stub.server.ci-build.yml/badge.svg)](https://github.com/cympatic/stub/actions/workflows/cympatic.stub.server.ci-build.yml)
 # Isolated system testing of microservices
 
-The stub server is used for system testing of a microservice in an isolated environment. 
+A C# .NET based, lightweight stub server to mimics functionality of an externally service used by microservices.
+
+## Key Features
+
+- Isolated system and integration tests of microservices
+- Per-request conditional responses
+- Recording requests
+- Can be used as (local) service or in CI/CD scenarios
+- Supporting libraries for implementing in SpecFlow
 
 ## Usage
 
