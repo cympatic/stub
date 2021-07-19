@@ -7,7 +7,7 @@ using System.Net.Http;
 
 namespace Cympatic.Stub.Example.Api.SpecFlow.Models
 {
-    [SpecFlowItem("WeatherForecast Complex")]
+    [SpecFlowItem("WeatherForecast Stub")]
     public class WeatherForecastComplex : WeatherForecast, IStubSpecFlowItem
     {
         public string Alias { get; set; }
@@ -23,15 +23,7 @@ namespace Cympatic.Stub.Example.Api.SpecFlow.Models
 
         public StubUrl ResponseToUrlScalar => default;
 
-        [Ignore]
-        public WeatherForecast Parent { get; private set; }
-
         public void ConnectSpecFlowItem(ISpecFlowItem item)
-        {
-            if (item is WeatherForecast weatherForecast)
-            {
-                Parent = weatherForecast;
-            }
-        }
+        { }
     }
 }
