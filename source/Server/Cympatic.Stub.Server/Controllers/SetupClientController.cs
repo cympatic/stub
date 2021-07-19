@@ -1,4 +1,5 @@
-﻿using Cympatic.Stub.Connectivity.Constants;
+﻿using Cympatic.Extensions.Http.Attributes;
+using Cympatic.Stub.Connectivity.Constants;
 using Cympatic.Stub.Connectivity.Models;
 using Cympatic.Stub.Server.Interfaces;
 using Microsoft.AspNetCore.Http;
@@ -13,6 +14,7 @@ namespace Cympatic.Stub.Server.Controllers
     [Produces("application/json")]
     [ApiController]
     [Route("[controller]")]
+    [Loggable]
     public class SetupClientController : ControllerBase
     {
         private readonly IClientContainer _clientContainer;

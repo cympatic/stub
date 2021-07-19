@@ -1,4 +1,5 @@
 ﻿using Cympatic.Extensions.Http;
+using Cympatic.Extensions.Http.Attributes;
 using Cympatic.Stub.Connectivity.Models;
 using Cympatic.Stub.Server.Extensions;
 using Cympatic.Stub.Server.Interfaces;
@@ -16,6 +17,7 @@ namespace Cympatic.Stub.Server.Controllers
     [ApiController]
     [Route("[controller]")]
     [ApiExplorerSettings(IgnoreApi = true)]
+    [Loggable]
     public class StubController : ControllerBase
     {
         private readonly IClientContainer _clientContainer;

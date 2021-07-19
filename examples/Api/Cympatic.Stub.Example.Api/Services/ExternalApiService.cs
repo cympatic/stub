@@ -21,10 +21,8 @@ namespace Cympatic.Stub.Example.Api.Services
             _externalApiServiceSettings = options.Value;
         }
 
-        public async Task<IEnumerable<WeatherForecast>> Get(string stubIdentifierValue)
+        public async Task<IEnumerable<WeatherForecast>> Get()
         {
-            _httpClient.DefaultRequestHeaders.Add("ExampleIdentifier", stubIdentifierValue);
-
             var uri = new Uri(_externalApiServiceSettings.Url)
                 .Append("example", "for", "testing")
                 .WithParameter("queryparam1", "test_param");

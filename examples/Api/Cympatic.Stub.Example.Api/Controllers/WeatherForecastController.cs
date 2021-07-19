@@ -1,16 +1,17 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using Cympatic.Extensions.Http.Attributes;
 using Cympatic.Stub.Example.Api.Models;
 using Cympatic.Stub.Example.Api.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Cympatic.Stub.Example.Api.Controllers
 {
     [Produces("application/json")]
     [ApiController]
     [Route("[controller]")]
+    [Loggable]
     public class WeatherForecastController : ControllerBase
     {
         private readonly ExternalApiService _service;
@@ -31,9 +32,7 @@ namespace Cympatic.Stub.Example.Api.Controllers
         [HttpGet()]
         public Task<IEnumerable<WeatherForecast>> GetAsync()
         {
-            var stubIdentifierValue = Request.Headers["ExampleIdentifier"];
-
-            return _service.Get(stubIdentifierValue.FirstOrDefault());
+            return _service.Get();
         }
     }
 }

@@ -1,8 +1,10 @@
+using Cympatic.Extensions.Http;
 using Cympatic.Stub.Example.Api.Filters;
 using Cympatic.Stub.Example.Api.Services;
 using Cympatic.Stub.Example.Api.Settings;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -10,7 +12,9 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net.Http.Headers;
 
 namespace Cympatic.Stub.Example.Api
@@ -50,6 +54,7 @@ namespace Cympatic.Stub.Example.Api
                 options.IncludeXmlComments(xmlFile);
             });
 
+            services.AddHttpContextAccessor();
 
             services
                 .AddOptions<ExternalApiServiceSettings>()
@@ -68,6 +73,15 @@ namespace Cympatic.Stub.Example.Api
                 config.DefaultRequestHeaders
                     .Accept
                     .Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+                var httpContext = serviceProvider.GetService<IHttpContextAccessor>()?.HttpContext;
+                if (httpContext != null)
+                {
+                    foreach (var item in httpContext.Request.Headers.Where(header => !config.DefaultRequestHeaders.Contains(header.Key)))
+                    {
+                        config.DefaultRequestHeaders.Add(item.Key, item.Value as IEnumerable<string>);
+                    }
+                }
             });
         }
 
@@ -89,6 +103,8 @@ namespace Cympatic.Stub.Example.Api
             });
 
             app.UseRouting();
+
+            app.UseDeveloperLogging();
 
             app.UseEndpoints(endpoints =>
             {

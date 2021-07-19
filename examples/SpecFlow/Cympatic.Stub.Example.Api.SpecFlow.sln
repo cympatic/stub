@@ -13,6 +13,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cympatic.Extensions.SpecFlo
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cympatic.Stub.Example.Api.SpecFlow", "Cympatic.Stub.Example.Api.SpecFlow\Cympatic.Stub.Example.Api.SpecFlow.csproj", "{EF3A620B-8E95-4AE6-A627-CE35A20D0994}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cympatic.Stub.Connectivity", "..\..\source\Server\Connectivity\Cympatic.Stub.Connectivity\Cympatic.Stub.Connectivity.csproj", "{01D79C1A-774D-4692-A293-653ABF2430D5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -31,6 +33,10 @@ Global
 		{EF3A620B-8E95-4AE6-A627-CE35A20D0994}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EF3A620B-8E95-4AE6-A627-CE35A20D0994}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EF3A620B-8E95-4AE6-A627-CE35A20D0994}.Release|Any CPU.Build.0 = Release|Any CPU
+		{01D79C1A-774D-4692-A293-653ABF2430D5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{01D79C1A-774D-4692-A293-653ABF2430D5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{01D79C1A-774D-4692-A293-653ABF2430D5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{01D79C1A-774D-4692-A293-653ABF2430D5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -39,6 +45,7 @@ Global
 		{16314DBA-CDB9-4365-A851-1D290A6472BA} = {B1E24A5C-8340-421C-ADB3-722323A13EAC}
 		{B9571458-02E3-4DAF-801F-37A2CDEE5031} = {16314DBA-CDB9-4365-A851-1D290A6472BA}
 		{01F1A3CD-0F0A-4433-821A-F2624F2BC379} = {16314DBA-CDB9-4365-A851-1D290A6472BA}
+		{01D79C1A-774D-4692-A293-653ABF2430D5} = {16314DBA-CDB9-4365-A851-1D290A6472BA}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {5DDEBFE1-CFF2-495E-A3A9-F47660E35882}

@@ -1,10 +1,10 @@
-﻿using Cympatic.Stub.Server.Extensions;
+﻿using Cympatic.Extensions.Http;
+using Cympatic.Stub.Connectivity.Models;
+using Cympatic.Stub.Server.Extensions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System.Linq;
-using Cympatic.Extensions.Http;
-using Cympatic.Stub.Connectivity.Models;
 
 namespace Cympatic.Stub.Server.Containers
 {

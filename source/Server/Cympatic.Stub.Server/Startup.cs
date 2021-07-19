@@ -1,3 +1,4 @@
+using Cympatic.Extensions.Http;
 using Cympatic.Stub.Server.Containers;
 using Cympatic.Stub.Server.Filters;
 using Cympatic.Stub.Server.Interfaces;
@@ -75,6 +76,8 @@ namespace Cympatic.Stub.Server
             });
 
             app.UseRouting();
+
+            app.UseDeveloperLogging();
 
             app.UseEndpoints(endpoints =>
             {
