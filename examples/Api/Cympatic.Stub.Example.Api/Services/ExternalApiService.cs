@@ -35,5 +35,20 @@ namespace Cympatic.Stub.Example.Api.Services
                 return JsonSerializer.Deserialize<List<WeatherForecast>>(content);
             }
         }
+
+        public async Task<IEnumerable<WeatherForecastDetails>> GetDetails(DateTime date)
+        {
+            var uri = new Uri(_externalApiServiceSettings.Url)
+                .Append("example", "for", "testing")
+                .WithParameter("date", date.ToString("yyyy-MM-dd"));
+
+            using var response = await _httpClient.GetAsync(uri);
+            {
+                response.EnsureSuccessStatusCode();
+
+                var content = await response.Content.ReadAsStringAsync();
+                return JsonSerializer.Deserialize<List<WeatherForecastDetails>>(content);
+            }
+        }
     }
 }

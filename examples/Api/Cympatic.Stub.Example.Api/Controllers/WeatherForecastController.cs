@@ -3,6 +3,7 @@ using Cympatic.Stub.Example.Api.Models;
 using Cympatic.Stub.Example.Api.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -33,6 +34,20 @@ namespace Cympatic.Stub.Example.Api.Controllers
         public Task<IEnumerable<WeatherForecast>> GetAsync()
         {
             return _service.Get();
+        }
+
+        /// <summary>
+        /// Get weather forecast details for a specific date that are found via a call to the related external service
+        /// </summary>
+        /// <returns>A list with weather forecast details for the given date</returns>
+        /// <response code="200">A list with weather forecast details for the given date that are returned from the related external service</response>
+        /// <response code="400">Check logging for more information about the occurred error</response>         
+        [ProducesResponseType(typeof(IEnumerable<WeatherForecastDetails>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [HttpGet("{date}/details")]
+        public Task<IEnumerable<WeatherForecastDetails>> GetDetails(DateTime date)
+        {
+            return _service.GetDetails(date);
         }
     }
 }
