@@ -45,8 +45,8 @@ namespace Cympatic.Extensions.SpecFlow
             }
 
             var attribute = type
-                .GetCustomAttributes(typeof(SpecFlowItemAttribute), true)
-                .FirstOrDefault() as SpecFlowItemAttribute;
+                .GetCustomAttributes(typeof(SpecFlowItemNameAttribute), true)
+                .FirstOrDefault() as SpecFlowItemNameAttribute;
 
             return attribute?.Name ?? type.Name;
         }

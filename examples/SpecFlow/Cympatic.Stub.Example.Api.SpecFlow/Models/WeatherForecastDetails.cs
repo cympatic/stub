@@ -1,9 +1,13 @@
-using Cympatic.Stub.Example.Api.Enums;
+using Cympatic.Extensions.SpecFlow;
+using Cympatic.Extensions.SpecFlow.Attributes;
+using Cympatic.Extensions.SpecFlow.Interfaces;
+using Cympatic.Stub.Example.Api.SpecFlow.Enums;
 using System;
 
-namespace Cympatic.Stub.Example.Api.Models
+namespace Cympatic.Stub.Example.Api.SpecFlow.Models
 {
-    public class WeatherForecastDetails
+    [SpecFlowItemName("Weather forecast details")]
+    public class WeatherForecastDetails : StubSpecFlowItem
     {
         public DateTime Date { get; set; }
 
@@ -28,5 +32,13 @@ namespace Cympatic.Stub.Example.Api.Models
         public int TemperatureC { get; set; }
 
         public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
+
+        public override void ConnectSpecFlowItem(ISpecFlowItem item)
+        {
+            if (item is WeatherForecastComplex weatherForecast)
+            {
+                weatherForecast.AddDetails(this);
+            }
+        }
     }
 }

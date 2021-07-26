@@ -1,4 +1,4 @@
-﻿namespace Cympatic.Stub.Example.Api.Enums
+﻿namespace Cympatic.Stub.Example.Api.SpecFlow.Enums
 {
     public enum ForecastDetailPosition
     {

@@ -10,7 +10,7 @@ namespace Cympatic.Extensions.SpecFlow
         [JsonIgnore]
         public string Alias { get; set; }
 
-        public void ConnectSpecFlowItem(ISpecFlowItem item)
+        public virtual void ConnectSpecFlowItem(ISpecFlowItem item)
         { }
     }
 }

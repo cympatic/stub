@@ -7,9 +7,11 @@ using System.Net.Http;
 
 namespace Cympatic.Stub.Example.Api.SpecFlow.Models
 {
-    [SpecFlowItem("WeatherForecast Stub")]
+    [SpecFlowItemName("Weather forecast")]
     public class WeatherForecastComplex : WeatherForecast, IStubSpecFlowItem
     {
+        public List<WeatherForecastDetails> Details { get; } = new();
+
         public string Alias { get; set; }
 
         public StubUrl ResponseToUrl => new(
@@ -22,6 +24,11 @@ namespace Cympatic.Stub.Example.Api.SpecFlow.Models
             returnHttpStatusCode: HttpStatusCode.OK);
 
         public StubUrl ResponseToUrlScalar => default;
+
+        public void AddDetails(WeatherForecastDetails details)
+        {
+            Details.Add(details);
+        }
 
         public void ConnectSpecFlowItem(ISpecFlowItem item)
         { }
