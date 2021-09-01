@@ -10,10 +10,10 @@ namespace Cympatic.Stub.Example.Api.SpecFlow.Models
     [SpecFlowItemName("Weather forecast")]
     public class WeatherForecastComplex : WeatherForecast, IStubSpecFlowItem
     {
-        public List<WeatherForecastDetails> Details { get; } = new();
-
+        [Ignore]
         public string Alias { get; set; }
 
+        [Ignore]
         public StubUrl ResponseToUrl => new(
             path: "example/{*wildcard}/testing",
             queryParams: new Dictionary<string, string>
@@ -23,6 +23,7 @@ namespace Cympatic.Stub.Example.Api.SpecFlow.Models
             httpMethods: new List<string> { HttpMethod.Get.Method },
             returnHttpStatusCode: HttpStatusCode.OK);
 
+        [Ignore]
         public StubUrl ResponseToUrlScalar => default;
 
         public void AddDetails(WeatherForecastDetails details)

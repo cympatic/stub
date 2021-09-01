@@ -1,6 +1,7 @@
 ﻿using Cympatic.Extensions.SpecFlow.Interfaces;
 using FluentAssertions;
 using System;
+using System.Collections;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 
@@ -17,15 +18,33 @@ namespace Cympatic.Extensions.SpecFlow
 
             if (result is IApiServiceResultValue apiServiceResultValue)
             {
-                var ignoredProperties = expected.GetType().GetIgnoredProperties();
+                var expectedType = GetExpectedType(expected);
+
+                var ignoredProperties = expectedType?.GetIgnoredProperties() ?? Array.Empty<string>();
 
                 apiServiceResultValue.Value
                     .Should()
                     .BeEquivalentTo(expected, options => options
                         .IncludingAllRuntimeProperties()
-                        .Excluding(model => ignoredProperties.Any(x => x == model.SelectedMemberInfo.Name))
+                        .Excluding(model => ignoredProperties.Any(x => x == model.Name))
                         .Using<string>(FluentAssertionsHelper.CompareStrings).WhenTypeIs<string>());
             }
+        }
+
+        private static Type GetExpectedType(object expected)
+        {
+            var type = expected.GetType();
+            if (!type.IsGenericType)
+            {
+                return type;
+            }
+
+            if (typeof(IEnumerable).IsAssignableFrom(type))
+            {
+                return type.GenericTypeArguments.FirstOrDefault();
+            }
+
+            return null;
         }
     }
 }

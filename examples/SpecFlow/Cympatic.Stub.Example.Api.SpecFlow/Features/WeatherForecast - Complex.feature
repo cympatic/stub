@@ -46,3 +46,7 @@ Scenario: Receive pre-defined weather forecast with details
 	When the 'Stub Server' is prepared
 	And the 'Weather forecast' service is requested for weather forecasts
 	Then the request returned httpCode 'OK'
+	And the request returned a container with one or more 'Weather forecast' items containing the following values
+	| Alias      |
+	| Forecast 1 |
+	| Forecast 2 |

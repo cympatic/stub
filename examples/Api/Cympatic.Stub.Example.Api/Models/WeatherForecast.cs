@@ -13,6 +13,6 @@ namespace Cympatic.Stub.Example.Api.Models
 
         public string Summary { get; set; }
 
-        public List<WeatherForecastDetails> Details { get; } = new();
+        public List<WeatherForecastDetails> Details { get; set; }
     }
 }

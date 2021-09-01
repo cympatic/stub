@@ -74,9 +74,9 @@ namespace Cympatic.Stub.Example.Api.SpecFlow.Bindings
         {
             var statusCode = httpStatusCode.ToEnum<HttpStatusCode>();
 
-            var result = _scenarioContext.Get<IApiServiceResult>($"{_exampleApiService.GetType().FullName}Result");
+            var actual = _scenarioContext.Get<IApiServiceResult>($"{_exampleApiService.GetType().FullName}Result");
 
-            result.StatusCode.Should().BeEquivalentTo(statusCode);
+            actual.StatusCode.Should().Be(statusCode);
         }
 
         [Then(@"the request returned one or more '(.*)' items containing the following values")]
@@ -84,10 +84,21 @@ namespace Cympatic.Stub.Example.Api.SpecFlow.Bindings
         {
             var type = itemName.GetSpecFlowItemType();
             var expected = table.TransformToSpecFlowItems(type, _scenarioContext);
-            var result = _scenarioContext.Get<IApiServiceResult>($"{_exampleApiService.GetType().FullName}Result");
+            var actual = _scenarioContext.Get<IApiServiceResult>($"{_exampleApiService.GetType().FullName}Result");
 
-            result.ValidateResult(expected);
+            actual.ValidateResult(expected);
         }
 
+        [Then(@"the request returned a container with one or more '(.*)' items containing the following values")]
+        public void ThenTheRequestReturnedAContainerWithOneOrMoreItemsContainingTheFollowingValues(string itemName, Table table)
+        {
+            var type = itemName.GetSpecFlowItemType();
+            var expected = table.CreateContainer(type, _scenarioContext);
+
+            var actual = _scenarioContext.Get<IApiServiceResult>($"{_exampleApiService.GetType().FullName}Result");
+
+
+            actual.ValidateResult(expected);
+        }
     }
 }

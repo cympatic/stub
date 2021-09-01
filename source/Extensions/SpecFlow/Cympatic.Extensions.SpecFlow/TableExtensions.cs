@@ -1,5 +1,6 @@
 ﻿using Cympatic.Extensions.SpecFlow.Interfaces;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
@@ -12,6 +13,11 @@ namespace Cympatic.Extensions.SpecFlow
     {
         public static object CreateInstance(this Table table, [NotNull] Type type, Dictionary<Type, IEnumerable<ISpecFlowItem>> relatedSpecFlowItems = default)
         {
+            if (table == null)
+            {
+                throw new ArgumentNullException(nameof(table));
+            }
+
             var instance = Activator.CreateInstance(type) as ISpecFlowItem;
             table.FillInstance(instance);
 
@@ -34,6 +40,11 @@ namespace Cympatic.Extensions.SpecFlow
 
         public static IEnumerable<object> CreateSet(this Table table, [NotNull] Type type, Dictionary<Type, IEnumerable<ISpecFlowItem>> relatedSpecFlowItems = default)
         {
+            if (table == null)
+            {
+                throw new ArgumentNullException(nameof(table));
+            }
+
             if (table.ContainsColumn(TableHeaderNames.Field) &&
                 table.ContainsColumn(TableHeaderNames.Value))
             {
@@ -52,9 +63,9 @@ namespace Cympatic.Extensions.SpecFlow
 
         public static IEnumerable<object> TransformToSpecFlowItemsAndRegister(this Table table, [NotNull] Type type, ScenarioContext scenarioContext)
         {
-            if (type == null)
+            if (table == null)
             {
-                throw new ArgumentNullException(nameof(type));
+                throw new ArgumentNullException(nameof(table));
             }
 
             var specFlowItems = TransformToSpecFlowItems(table, type, scenarioContext).ToList();
@@ -72,9 +83,9 @@ namespace Cympatic.Extensions.SpecFlow
 
         public static Dictionary<Type, IEnumerable<ISpecFlowItem>> GetRelatedSpecFlowItems(this Table table, [NotNull] Type type, ScenarioContext scenarioContext)
         {
-            if (type == null)
+            if (table == null)
             {
-                throw new ArgumentNullException(nameof(type));
+                throw new ArgumentNullException(nameof(table));
             }
 
             var relatedTypes = GetAllRelatedTypes(type);
@@ -95,6 +106,31 @@ namespace Cympatic.Extensions.SpecFlow
             }
 
             return relatedSpecFlowItems;
+        }
+
+        public static IList CreateContainer(this Table table, [NotNull] Type type, ScenarioContext scenarioContext)
+        {
+            if (table == null)
+            {
+                throw new ArgumentNullException(nameof(table));
+            }
+
+            var container = (IList)Activator.CreateInstance(typeof(List<>).MakeGenericType(type));
+
+            if (scenarioContext.ContainsKey(type.FullName))
+            {
+                var items = scenarioContext.Get<IEnumerable<object>>(type.FullName).OfType<ISpecFlowItem>();
+                foreach (var row in table.Rows)
+                {
+                    var value = row[TableHeaderNames.Alias];
+                    var item = items.Where(item => item.Alias == value).FirstOrDefault();
+                    if (item != null)
+                    {
+                        container.Add(item);
+                    }
+                }
+            }
+            return container;
         }
 
         public static bool TryGetValue(this Table table, [NotNull] string name, out string value)

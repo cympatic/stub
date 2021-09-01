@@ -1,9 +1,12 @@
 using System;
+using System.Collections.Generic;
 
 namespace Cympatic.Stub.Example.Api.SpecFlow.Models
 {
     public class WeatherForecast
     {
+        public List<WeatherForecastDetails> Details { get; set; } = new();
+
         public DateTime Date { get; set; }
 
         public int TemperatureC { get; set; }

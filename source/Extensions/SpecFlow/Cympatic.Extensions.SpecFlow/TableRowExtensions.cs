@@ -12,6 +12,11 @@ namespace Cympatic.Extensions.SpecFlow
     {
         public static object CreateInstance(this TableRow row, [NotNull] Type type, Dictionary<Type, IEnumerable<ISpecFlowItem>> relatedSpecFlowItems = default)
         {
+            if (row == null)
+            {
+                throw new ArgumentNullException(nameof(row));
+            }
+
             var instance = Activator.CreateInstance(type);
             var table = row.ToTable();
             table.FillInstance(instance);
@@ -36,6 +41,11 @@ namespace Cympatic.Extensions.SpecFlow
 
         private static Table ToTable(this TableRow row)
         {
+            if (row == null)
+            {
+                throw new ArgumentNullException(nameof(row));
+            }
+
             var instanceTable = new Table(TableHeaderNames.Field, TableHeaderNames.Value);
             foreach (var kvp in row)
             {

@@ -5,14 +5,14 @@ namespace Cympatic.Extensions.SpecFlow
 {
     public static class EnumerableExtensions
     {
-        public static int GetHashCodeOfElements<T>(this IEnumerable<T> source, IEqualityComparer<T> comparer = null)
+        public static int GetHashCodeOfElements<T>(this IEnumerable<T> source, IEqualityComparer<T> comparer = default)
         {
             if (source == null)
             {
                 throw new ArgumentNullException(nameof(source));
             }
 
-            if (comparer == null)
+            if (comparer == default)
             {
                 comparer = EqualityComparer<T>.Default;
             }
