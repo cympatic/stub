@@ -1,25 +1,89 @@
-using Microsoft.AspNetCore.Hosting;
+using Cympatic.Extensions.Http;
+using Cympatic.Stub.Server;
+using Cympatic.Stub.Server.Containers;
+using Cympatic.Stub.Server.Filters;
+using Cympatic.Stub.Server.Interfaces;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Formatters;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.OpenApi.Models;
 using Serilog;
+using System;
+using System.IO;
 
-namespace Cympatic.Stub.Server
-{
-    public static class Program
+var builder = WebApplication.CreateBuilder(args);
+
+builder.Logging.AddSerilog();
+
+builder.Services
+    .AddControllers(options =>
     {
-        public static void Main(string[] args)
-        {
-            CreateHostBuilder(args)
-                .Build()
-                .Run();
-        }
+        options.Filters.Add(new ResponseCacheAttribute { NoStore = true, Location = ResponseCacheLocation.None });
+        options.OutputFormatters.RemoveType<StringOutputFormatter>();
+        options.OutputFormatters.RemoveType<HttpNoContentOutputFormatter>();
+        options.OutputFormatters.RemoveType<StreamOutputFormatter>();
+    })
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.PropertyNamingPolicy = null;
+    });
 
-        public static IHostBuilder CreateHostBuilder(string[] args) =>
-            Host.CreateDefaultBuilder(args)
-                .ConfigureWebHostDefaults(webBuilder =>
-                {
-                    webBuilder.UseStartup<Startup>();
-                    webBuilder.UseSerilog((hostingContext, loggerConfiguration) =>
-                        loggerConfiguration.ReadFrom.Configuration(hostingContext.Configuration));
-                });
-    }
+builder.Services
+    .AddSwaggerGen(options =>
+    {
+        options.SwaggerDoc("v1", new OpenApiInfo
+        {
+            Version = "v1",
+            Title = AppDomain.CurrentDomain.FriendlyName
+        });
+        options.OperationFilter<StubServerHeaderOperationFilter>();
+
+        // Configure Swagger to use the xml documentation file
+        var xmlFile = Path.ChangeExtension(typeof(RouteTransformer).Assembly.Location, ".xml");
+        options.IncludeXmlComments(xmlFile);
+    });
+
+builder.Services.AddHttpContextAccessor();
+
+builder.Services.AddSingleton<RouteTransformer>();
+
+builder.Services.AddSingleton<IClientContainer, ClientContainer>();
+
+builder.Services.AddTransient<ResponseModelContainer>();
+builder.Services.AddTransient<RequestModelContainer>();
+
+builder.Services.AddSingleton<Func<ResponseModelContainer>>(serviceProvider => serviceProvider.GetRequiredService<ResponseModelContainer>);
+builder.Services.AddSingleton<Func<RequestModelContainer>>(serviceProvider => serviceProvider.GetRequiredService<RequestModelContainer>);
+
+
+var app = builder.Build();
+
+Log.Logger = new LoggerConfiguration().ReadFrom.Configuration(app.Configuration).CreateLogger();
+
+if (app.Environment.IsDevelopment())
+{
+    app.UseDeveloperExceptionPage();
 }
+
+app.UseHttpsRedirection();
+
+app.UseSwagger();
+app.UseSwaggerUI(c =>
+{
+    var swaggerJsonBasePath = string.IsNullOrWhiteSpace(c.RoutePrefix) ? "." : "..";
+    c.SwaggerEndpoint($"{swaggerJsonBasePath}/swagger/v1/swagger.json", AppDomain.CurrentDomain.FriendlyName);
+    c.DisplayRequestDuration();
+});
+
+app.UseRouting();
+
+app.UseDeveloperLogging();
+
+app.UseEndpoints(endpoints =>
+{
+    endpoints.MapDynamicControllerRoute<RouteTransformer>("{controller}/{client}/{**slug}");
+});
+
+app.Run();
