@@ -12,6 +12,7 @@ using Microsoft.OpenApi.Models;
 using Serilog;
 using System;
 using System.IO;
+using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -41,7 +42,7 @@ builder.Services
         options.OperationFilter<StubServerHeaderOperationFilter>();
 
         // Configure Swagger to use the xml documentation file
-        var xmlFile = Path.ChangeExtension(typeof(RouteTransformer).Assembly.Location, ".xml");
+        var xmlFile = Path.ChangeExtension(Assembly.GetExecutingAssembly().Location, ".xml");
         options.IncludeXmlComments(xmlFile);
     });
 
@@ -61,11 +62,6 @@ builder.Services.AddSingleton<Func<RequestModelContainer>>(serviceProvider => se
 var app = builder.Build();
 
 Log.Logger = new LoggerConfiguration().ReadFrom.Configuration(app.Configuration).CreateLogger();
-
-if (app.Environment.IsDevelopment())
-{
-    app.UseDeveloperExceptionPage();
-}
 
 app.UseHttpsRedirection();
 
