@@ -75,9 +75,9 @@ namespace Cympatic.Extensions.Stub.SpecFlow.Contexts
             }
         }
 
-        public IEnumerable<ISpecFlowItem> TransfromItems([NotNull] string itemName, [NotNull] Table table)
+        public IEnumerable<ISpecFlowItem> TransformItems([NotNull] string itemName, [NotNull] Table table)
         {
-            return _itemContext.Transfrom(itemName, table);
+            return _itemContext.Transform(itemName, table);
         }
 
         public void RegisterItems([NotNull] string itemName, [NotNull] Table table)
@@ -89,7 +89,6 @@ namespace Cympatic.Extensions.Stub.SpecFlow.Contexts
         {
             return _itemContext.CreateContainer(itemName, table);
         }
-
 
         public async Task PostItemsToStubServerAsync()
         {
