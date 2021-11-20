@@ -1,6 +1,6 @@
-using Cympatic.Extensions.SpecFlow;
-using Cympatic.Extensions.SpecFlow.Attributes;
-using Cympatic.Extensions.SpecFlow.Interfaces;
+using Cympatic.Extensions.Stub.SpecFlow;
+using Cympatic.Extensions.Stub.SpecFlow.Attributes;
+using Cympatic.Extensions.Stub.SpecFlow.Interfaces;
 using Cympatic.Stub.Example.Api.SpecFlow.Enums;
 using System;
 

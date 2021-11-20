@@ -1,4 +1,5 @@
 ﻿using Cympatic.Extensions.Configuration;
+using Cympatic.Extensions.Stub.SpecFlow;
 using Cympatic.Stub.Connectivity.Extensions;
 using Cympatic.Stub.Example.Api.SpecFlow.Services;
 using Cympatic.Stub.Example.Api.SpecFlow.Settings;
@@ -22,6 +23,7 @@ namespace Cympatic.Stub.Example.Api.SpecFlow.Dependencies
             var configuration = Configure();
             services.AddSingleton(configuration);
 
+            services.AddSpecFlowStub();
             services.AddStubConnectivity();
 
             services

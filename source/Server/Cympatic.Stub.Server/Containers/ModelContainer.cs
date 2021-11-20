@@ -33,8 +33,8 @@ namespace Cympatic.Stub.Server.Containers
             Dispose(true);
             GC.SuppressFinalize(this);
         }
-        public async ValueTask DisposeAsync()
 
+        public async ValueTask DisposeAsync()
         {
             await DisposeAsyncCore();
 

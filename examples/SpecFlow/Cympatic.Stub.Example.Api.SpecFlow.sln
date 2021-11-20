@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.31424.327
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31912.275
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "External", "External", "{B1E24A5C-8340-421C-ADB3-722323A13EAC}"
 EndProject
@@ -9,11 +9,17 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Extensions", "Extensions", 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cympatic.Extensions.Configuration", "..\..\source\Extensions\Configuration\Cympatic.Extensions.Configuration\Cympatic.Extensions.Configuration.csproj", "{B9571458-02E3-4DAF-801F-37A2CDEE5031}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cympatic.Extensions.SpecFlow", "..\..\source\Extensions\SpecFlow\Cympatic.Extensions.SpecFlow\Cympatic.Extensions.SpecFlow.csproj", "{01F1A3CD-0F0A-4433-821A-F2624F2BC379}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cympatic.Stub.Example.Api.SpecFlow", "Cympatic.Stub.Example.Api.SpecFlow\Cympatic.Stub.Example.Api.SpecFlow.csproj", "{EF3A620B-8E95-4AE6-A627-CE35A20D0994}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cympatic.Stub.Connectivity", "..\..\source\Server\Connectivity\Cympatic.Stub.Connectivity\Cympatic.Stub.Connectivity.csproj", "{01D79C1A-774D-4692-A293-653ABF2430D5}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cympatic.Extensions.Http", "..\..\source\Extensions\Http\Cympatic.Extensions.Http\Cympatic.Extensions.Http.csproj", "{4B388092-CD35-41C4-8EE1-D84B1EFE3B9B}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Server", "Server", "{C332AC7A-61DC-45B2-91BB-84539D7C900B}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Connectivity", "Connectivity", "{A507759B-6CA0-4ED7-ACA8-3F23A45BCDF0}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cympatic.Extensions.Stub.SpecFlow", "..\..\source\Extensions\Stub\SpecFlow\Cympatic.Extensions.Stub.SpecFlow\Cympatic.Extensions.Stub.SpecFlow.csproj", "{B0632819-7019-4473-B5FD-94D333B5D22D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -25,10 +31,6 @@ Global
 		{B9571458-02E3-4DAF-801F-37A2CDEE5031}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B9571458-02E3-4DAF-801F-37A2CDEE5031}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B9571458-02E3-4DAF-801F-37A2CDEE5031}.Release|Any CPU.Build.0 = Release|Any CPU
-		{01F1A3CD-0F0A-4433-821A-F2624F2BC379}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{01F1A3CD-0F0A-4433-821A-F2624F2BC379}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{01F1A3CD-0F0A-4433-821A-F2624F2BC379}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{01F1A3CD-0F0A-4433-821A-F2624F2BC379}.Release|Any CPU.Build.0 = Release|Any CPU
 		{EF3A620B-8E95-4AE6-A627-CE35A20D0994}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{EF3A620B-8E95-4AE6-A627-CE35A20D0994}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EF3A620B-8E95-4AE6-A627-CE35A20D0994}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -37,6 +39,14 @@ Global
 		{01D79C1A-774D-4692-A293-653ABF2430D5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{01D79C1A-774D-4692-A293-653ABF2430D5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{01D79C1A-774D-4692-A293-653ABF2430D5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4B388092-CD35-41C4-8EE1-D84B1EFE3B9B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4B388092-CD35-41C4-8EE1-D84B1EFE3B9B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4B388092-CD35-41C4-8EE1-D84B1EFE3B9B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4B388092-CD35-41C4-8EE1-D84B1EFE3B9B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B0632819-7019-4473-B5FD-94D333B5D22D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B0632819-7019-4473-B5FD-94D333B5D22D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B0632819-7019-4473-B5FD-94D333B5D22D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B0632819-7019-4473-B5FD-94D333B5D22D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -44,8 +54,11 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{16314DBA-CDB9-4365-A851-1D290A6472BA} = {B1E24A5C-8340-421C-ADB3-722323A13EAC}
 		{B9571458-02E3-4DAF-801F-37A2CDEE5031} = {16314DBA-CDB9-4365-A851-1D290A6472BA}
-		{01F1A3CD-0F0A-4433-821A-F2624F2BC379} = {16314DBA-CDB9-4365-A851-1D290A6472BA}
-		{01D79C1A-774D-4692-A293-653ABF2430D5} = {16314DBA-CDB9-4365-A851-1D290A6472BA}
+		{01D79C1A-774D-4692-A293-653ABF2430D5} = {A507759B-6CA0-4ED7-ACA8-3F23A45BCDF0}
+		{4B388092-CD35-41C4-8EE1-D84B1EFE3B9B} = {16314DBA-CDB9-4365-A851-1D290A6472BA}
+		{C332AC7A-61DC-45B2-91BB-84539D7C900B} = {B1E24A5C-8340-421C-ADB3-722323A13EAC}
+		{A507759B-6CA0-4ED7-ACA8-3F23A45BCDF0} = {C332AC7A-61DC-45B2-91BB-84539D7C900B}
+		{B0632819-7019-4473-B5FD-94D333B5D22D} = {16314DBA-CDB9-4365-A851-1D290A6472BA}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {5DDEBFE1-CFF2-495E-A3A9-F47660E35882}
