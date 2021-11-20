@@ -1,5 +1,5 @@
-﻿using Cympatic.Extensions.SpecFlow.Services;
-using Cympatic.Extensions.SpecFlow.Services.Results;
+﻿using Cympatic.Extensions.Http.Services;
+using Cympatic.Extensions.Http.Services.Results;
 using Cympatic.Stub.Example.Api.SpecFlow.Models;
 using System;
 using System.Collections.Generic;

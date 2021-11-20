@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.31410.357
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31912.275
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cympatic.Stub.Server", "Cympatic.Stub.Server\Cympatic.Stub.Server.csproj", "{F49074AA-2721-4131-BBC8-1B305B33BEE4}"
 EndProject
@@ -21,7 +21,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cympatic.Stub.Connectivity"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cympatic.Stub.Connectivity.UnitTests", "Connectivity\Cympatic.Stub.Connectivity.UnitTests\Cympatic.Stub.Connectivity.UnitTests.csproj", "{412BF271-FA99-45EC-98A1-507F28DB272C}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cympatic.Extensions.SpecFlow", "..\Extensions\SpecFlow\Cympatic.Extensions.SpecFlow\Cympatic.Extensions.SpecFlow.csproj", "{DB4D9DFB-6AF2-4ECC-BEAE-A314D8D5CD7D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cympatic.Extensions.Stub.SpecFlow", "..\Extensions\Stub\SpecFlow\Cympatic.Extensions.Stub.SpecFlow\Cympatic.Extensions.Stub.SpecFlow.csproj", "{6769DEE8-F697-473C-8E3E-1ACE45181F7B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -57,10 +57,10 @@ Global
 		{412BF271-FA99-45EC-98A1-507F28DB272C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{412BF271-FA99-45EC-98A1-507F28DB272C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{412BF271-FA99-45EC-98A1-507F28DB272C}.Release|Any CPU.Build.0 = Release|Any CPU
-		{DB4D9DFB-6AF2-4ECC-BEAE-A314D8D5CD7D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{DB4D9DFB-6AF2-4ECC-BEAE-A314D8D5CD7D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{DB4D9DFB-6AF2-4ECC-BEAE-A314D8D5CD7D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{DB4D9DFB-6AF2-4ECC-BEAE-A314D8D5CD7D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6769DEE8-F697-473C-8E3E-1ACE45181F7B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6769DEE8-F697-473C-8E3E-1ACE45181F7B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6769DEE8-F697-473C-8E3E-1ACE45181F7B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6769DEE8-F697-473C-8E3E-1ACE45181F7B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -71,7 +71,7 @@ Global
 		{52FF810E-E5C0-4D09-AFF7-578525D2784A} = {1DAFAA4D-9EB9-4ED6-A8B1-42815B53A895}
 		{7FC74A58-E8BC-4C18-8116-051D046CDE37} = {5EA7454A-B76E-43FF-B106-7CA33CD74CCB}
 		{412BF271-FA99-45EC-98A1-507F28DB272C} = {5EA7454A-B76E-43FF-B106-7CA33CD74CCB}
-		{DB4D9DFB-6AF2-4ECC-BEAE-A314D8D5CD7D} = {1DAFAA4D-9EB9-4ED6-A8B1-42815B53A895}
+		{6769DEE8-F697-473C-8E3E-1ACE45181F7B} = {1DAFAA4D-9EB9-4ED6-A8B1-42815B53A895}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {3525773D-6C4D-4D9B-9256-379978F2EF55}

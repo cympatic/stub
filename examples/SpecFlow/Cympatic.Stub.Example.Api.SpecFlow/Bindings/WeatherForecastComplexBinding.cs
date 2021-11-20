@@ -1,104 +1,80 @@
-﻿using Cympatic.Extensions.SpecFlow;
-using Cympatic.Extensions.SpecFlow.Interfaces;
-using Cympatic.Stub.Connectivity;
+﻿using Cympatic.Extensions.Http.Services.Results;
+using Cympatic.Extensions.Stub.SpecFlow;
+using Cympatic.Extensions.Stub.SpecFlow.Contexts;
+using Cympatic.Stub.Example.Api.SpecFlow.Models;
 using Cympatic.Stub.Example.Api.SpecFlow.Services;
 using FluentAssertions;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using TechTalk.SpecFlow;
+using TechTalk.SpecFlow.Assist;
 
 namespace Cympatic.Stub.Example.Api.SpecFlow.Bindings
 {
     [Binding]
     public sealed class WeatherForecastComplexBinding
     {
-        private readonly ScenarioContext _scenarioContext;
-        private readonly SetupResponseApiService _setupResponseApiService;
-        private readonly VerifyRequestApiService _verifyRequestApiService;
+        private readonly StubContext _stubContext;
         private readonly ExampleApiService _exampleApiService;
 
-        public WeatherForecastComplexBinding(
-            ScenarioContext scenarioContext,
-            SetupResponseApiService setupResponseApiService,
-            VerifyRequestApiService verifyRequestApiService,
-            ExampleApiService exampleApiService)
+        private ApiServiceResult<IEnumerable<WeatherForecast>> _actual;
+
+        public WeatherForecastComplexBinding(StubContext stubContext, ExampleApiService exampleApiService)
         {
-            _scenarioContext = scenarioContext;
-            _setupResponseApiService = setupResponseApiService;
-            _verifyRequestApiService = verifyRequestApiService;
+            _stubContext = stubContext;
             _exampleApiService = exampleApiService;
         }
 
         [BeforeScenario("Complex", Order = 20)]
         public void BeforeScenarion()
         {
-            var (clientStub, identifierValue) = _scenarioContext.GetStubInformation();
-
-            _setupResponseApiService.SetClientStubIdentifierValue(clientStub, identifierValue);
-            _verifyRequestApiService.SetClientStubIdentifierValue(clientStub, identifierValue);
-
-            _exampleApiService.SetIdentifierValue(identifierValue);
+            _exampleApiService.SetIdentifierValue(_stubContext.IdentifierValue);
         }
-
-        [AfterScenario("Complex", Order = 20)]
-        public async Task AfterScenario()
-        {
-            await _setupResponseApiService.RemoveAsync();
-            await _verifyRequestApiService.RemoveAsync();
-        }
-
 
         [Given(@"multiple '(.*)' items containing the following values")]
         public void GivenMultipleItemsContainingTheFollowingValues(string itemName, Table table)
         {
-            var type = itemName.GetSpecFlowItemType();
-            table.TransformToSpecFlowItemsAndRegister(type, _scenarioContext);
+            _stubContext.RegisterItems(itemName, table);
         }
 
         [Given(@"the 'Stub Server' is prepared")]
         [When(@"the 'Stub Server' is prepared")]
         public async Task WhenTheStubServerIsPrepared()
         {
-            await _scenarioContext.PostStubSpecFlowItemsToStubServerAsync(_setupResponseApiService);
+            await _stubContext.PostItemsToStubServerAsync();
         }
 
         [When(@"the 'Weather forecast' service is requested for weather forecasts")]
         public async Task WhenTheServiceIsRequestedForWeatherForecasts()
         {
-            var result = await _exampleApiService.GetForecastsAsync();
-            _scenarioContext.Set(result, $"{_exampleApiService.GetType().FullName}Result");
-        }
-
-        [Then(@"the request returned httpCode '(.*)'")]
-        public void ThenTheRequestReturnedHttpCode(string httpStatusCode)
-        {
-            var statusCode = httpStatusCode.ToEnum<HttpStatusCode>();
-
-            var actual = _scenarioContext.Get<IApiServiceResult>($"{_exampleApiService.GetType().FullName}Result");
-
-            actual.StatusCode.Should().Be(statusCode);
+            _actual = await _exampleApiService.GetForecastsAsync();
+            _actual.StatusCode.Should().Be(HttpStatusCode.OK);
         }
 
         [Then(@"the request returned one or more '(.*)' items containing the following values")]
         public void ThenTheRequestReturnedOneOrMoreItemsContainingTheFollowingValues(string itemName, Table table)
         {
-            var type = itemName.GetSpecFlowItemType();
-            var expected = table.TransformToSpecFlowItems(type, _scenarioContext);
-            var actual = _scenarioContext.Get<IApiServiceResult>($"{_exampleApiService.GetType().FullName}Result");
+            var expected = table.CreateSet(() => 
+            {
+                var type = itemName.GetSpecFlowItemType();
+                var instance = Activator.CreateInstance(type);
+                table.FillInstance(instance);
 
-            actual.ValidateResult(expected);
+                return instance;
+            });
+
+            _actual.ValidateResult(expected);
         }
 
         [Then(@"the request returned a container with one or more '(.*)' items containing the following values")]
         public void ThenTheRequestReturnedAContainerWithOneOrMoreItemsContainingTheFollowingValues(string itemName, Table table)
         {
-            var type = itemName.GetSpecFlowItemType();
-            var expected = table.CreateContainer(type, _scenarioContext);
+            var expected = _stubContext.CreateItemContainer(itemName, table);
 
-            var actual = _scenarioContext.Get<IApiServiceResult>($"{_exampleApiService.GetType().FullName}Result");
-
-
-            actual.ValidateResult(expected);
+            _actual.ValidateResult(expected);
         }
     }
 }

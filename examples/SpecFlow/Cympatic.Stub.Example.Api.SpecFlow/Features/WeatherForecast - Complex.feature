@@ -17,8 +17,7 @@ Scenario: Receive pre-defined weather forecast
 	| 11-02-2021 | -3           | Snow chance          |
 	When the 'Stub Server' is prepared
 	And the 'Weather forecast' service is requested for weather forecasts
-	Then the request returned httpCode 'OK'
-	And the request returned one or more 'WeatherForecast' items containing the following values
+	Then the request returned one or more 'WeatherForecast' items containing the following values
 	| Date       | TemperatureC | Summary              |
 	| 05-02-2021 | 1            | Scattered flurries   |
 	| 06-02-2021 | 0            | Wind returns         |
@@ -45,8 +44,7 @@ Scenario: Receive pre-defined weather forecast with details
 	| Forecast 2       | 25-07-2021 | Night     | Thunder risk | Thunderstorm | 5            | ESE           | 90                    | 5                       | 24           |
 	When the 'Stub Server' is prepared
 	And the 'Weather forecast' service is requested for weather forecasts
-	Then the request returned httpCode 'OK'
-	And the request returned a container with one or more 'Weather forecast' items containing the following values
+	Then the request returned a container with one or more 'Weather forecast' items containing the following values
 	| Alias      |
 	| Forecast 1 |
 	| Forecast 2 |
