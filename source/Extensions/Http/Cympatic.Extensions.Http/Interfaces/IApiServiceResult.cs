@@ -9,6 +9,8 @@ namespace Cympatic.Extensions.Http.Interfaces
     public interface IApiServiceResult
     {
         HttpStatusCode StatusCode { get; }
+        
+        string ReasonPhrase { get; }
 
         HttpResponseHeaders ResponseHeaders { get; }
 
