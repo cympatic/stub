@@ -14,7 +14,7 @@ namespace Cympatic.Extensions.Stub.SpecFlow.Contexts
     {
         public Dictionary<string, IEnumerable<ISpecFlowItem>> Items { get; } = new();
 
-        public IEnumerable<ISpecFlowItem> Transfrom([NotNull] string itemName, [NotNull] Table table)
+        public IEnumerable<ISpecFlowItem> Transform([NotNull] string itemName, [NotNull] Table table)
         {
             var type = ItemNameToType(itemName);
             return CreateSet(type, table);
