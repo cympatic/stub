@@ -61,7 +61,10 @@ namespace Cympatic.Stub.Example.Api.SpecFlow.Bindings
         [When(@"I request for weather forecasts")]
         public async Task WhenIRequestWeatherForecasts()
         {
-            _actual = (await _exampleApiService.GetForecastsAsync()).Value;
+            var result = await _exampleApiService.GetForecastsAsync();
+            result.EnsureSuccessStatusCode();
+
+            _actual = result.Value;
         }
 
         [Then(@"the result should be equal to the weather forecasts")]

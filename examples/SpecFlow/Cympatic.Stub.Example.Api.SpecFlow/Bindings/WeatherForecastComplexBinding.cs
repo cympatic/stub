@@ -3,11 +3,8 @@ using Cympatic.Extensions.Stub.SpecFlow;
 using Cympatic.Extensions.Stub.SpecFlow.Contexts;
 using Cympatic.Stub.Example.Api.SpecFlow.Models;
 using Cympatic.Stub.Example.Api.SpecFlow.Services;
-using FluentAssertions;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Net;
 using System.Threading.Tasks;
 using TechTalk.SpecFlow;
 using TechTalk.SpecFlow.Assist;
@@ -51,7 +48,7 @@ namespace Cympatic.Stub.Example.Api.SpecFlow.Bindings
         public async Task WhenTheServiceIsRequestedForWeatherForecasts()
         {
             _actual = await _exampleApiService.GetForecastsAsync();
-            _actual.StatusCode.Should().Be(HttpStatusCode.OK);
+            _actual.EnsureSuccessStatusCode();
         }
 
         [Then(@"the request returned one or more '(.*)' items containing the following values")]
