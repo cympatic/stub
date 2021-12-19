@@ -4,6 +4,7 @@ using Cympatic.Stub.Example.Api.SpecFlow.Models;
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Cympatic.Stub.Example.Api.SpecFlow.Services
@@ -23,11 +24,11 @@ namespace Cympatic.Stub.Example.Api.SpecFlow.Services
             HttpClient.DefaultRequestHeaders.Add("ExampleIdentifier", identifierValue);
         }
 
-        public Task<ApiServiceResult<IEnumerable<WeatherForecast>>> GetForecastsAsync()
+        public Task<ApiServiceResult<IEnumerable<WeatherForecast>>> GetForecastsAsync(CancellationToken cancellationToken = default)
         {
             var uri = new Uri("weatherforecast", UriKind.Relative);
 
-            return GetAsync<ApiServiceResult<IEnumerable<WeatherForecast>>>(uri);
+            return GetAsync<ApiServiceResult<IEnumerable<WeatherForecast>>>(uri, cancellationToken);
         }
     }
 }

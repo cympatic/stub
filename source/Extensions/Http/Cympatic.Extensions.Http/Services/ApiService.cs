@@ -21,79 +21,79 @@ namespace Cympatic.Extensions.Http.Services
             SerializerOptions = null;
         }
 
-        protected async Task<TResult> DeleteAsync<TResult>(Uri uri)
+        protected async Task<TResult> DeleteAsync<TResult>(Uri uri, CancellationToken cancellationToken = default)
             where TResult : IApiServiceResult, new()
         {
-            return await DeleteAsync<TResult>(uri, null);
+            return await DeleteAsync<TResult>(uri, null, cancellationToken);
         }
 
-        protected async Task<TResult> DeleteAsync<TResult>(Uri uri, HttpHeaders headers)
+        protected async Task<TResult> DeleteAsync<TResult>(Uri uri, HttpHeaders headers, CancellationToken cancellationToken = default)
             where TResult : IApiServiceResult, new()
         {
-            return await DeleteAsync<TResult>(uri, headers, null);
+            return await DeleteAsync<TResult>(uri, headers, null, cancellationToken);
         }
 
-        protected async Task<TResult> DeleteAsync<TResult>(Uri uri, HttpHeaders headers, object payload)
+        protected async Task<TResult> DeleteAsync<TResult>(Uri uri, HttpHeaders headers, object payload, CancellationToken cancellationToken = default)
             where TResult : IApiServiceResult, new()
         {
-            return await SendAsync<TResult>(HttpMethod.Delete, uri, headers, payload);
+            return await SendAsync<TResult>(HttpMethod.Delete, uri, headers, payload, cancellationToken);
         }
 
-        protected async Task<TResult> PutAsync<TResult>(Uri uri)
+        protected async Task<TResult> PutAsync<TResult>(Uri uri, CancellationToken cancellationToken = default)
             where TResult : IApiServiceResult, new()
         {
-            return await PutAsync<TResult>(uri, null);
+            return await PutAsync<TResult>(uri, null, cancellationToken);
         }
 
-        protected async Task<TResult> PutAsync<TResult>(Uri uri, HttpHeaders headers)
+        protected async Task<TResult> PutAsync<TResult>(Uri uri, HttpHeaders headers, CancellationToken cancellationToken = default)
             where TResult : IApiServiceResult, new()
         {
-            return await PutAsync<TResult>(uri, headers, null);
+            return await PutAsync<TResult>(uri, headers, null, cancellationToken);
         }
 
-        protected async Task<TResult> PutAsync<TResult>(Uri uri, HttpHeaders headers, object payload)
+        protected async Task<TResult> PutAsync<TResult>(Uri uri, HttpHeaders headers, object payload, CancellationToken cancellationToken = default)
             where TResult : IApiServiceResult, new()
         {
-            return await SendAsync<TResult>(HttpMethod.Put, uri, headers, payload);
+            return await SendAsync<TResult>(HttpMethod.Put, uri, headers, payload, cancellationToken);
         }
 
-        protected async Task<TResult> PostAsync<TResult>(Uri uri)
+        protected async Task<TResult> PostAsync<TResult>(Uri uri, CancellationToken cancellationToken = default)
             where TResult : IApiServiceResult, new()
         {
-            return await PostAsync<TResult>(uri, null);
+            return await PostAsync<TResult>(uri, null, cancellationToken);
         }
 
-        protected async Task<TResult> PostAsync<TResult>(Uri uri, HttpHeaders headers)
+        protected async Task<TResult> PostAsync<TResult>(Uri uri, HttpHeaders headers, CancellationToken cancellationToken = default)
             where TResult : IApiServiceResult, new()
         {
-            return await PostAsync<TResult>(uri, headers, null);
+            return await PostAsync<TResult>(uri, headers, null, cancellationToken);
         }
 
-        protected async Task<TResult> PostAsync<TResult>(Uri uri, object payload)
+        protected async Task<TResult> PostAsync<TResult>(Uri uri, object payload, CancellationToken cancellationToken = default)
             where TResult : IApiServiceResult, new()
         {
-            return await PostAsync<TResult>(uri, null, payload);
+            return await PostAsync<TResult>(uri, null, payload, cancellationToken);
         }
 
-        protected async Task<TResult> PostAsync<TResult>(Uri uri, HttpHeaders headers, object payload)
+        protected async Task<TResult> PostAsync<TResult>(Uri uri, HttpHeaders headers, object payload, CancellationToken cancellationToken = default)
             where TResult : IApiServiceResult, new()
         {
-            return await SendAsync<TResult>(HttpMethod.Post, uri, headers, payload);
+            return await SendAsync<TResult>(HttpMethod.Post, uri, headers, payload, cancellationToken);
         }
 
-        protected async Task<TResult> GetAsync<TResult>(Uri uri)
+        protected async Task<TResult> GetAsync<TResult>(Uri uri, CancellationToken cancellationToken = default)
             where TResult : IApiServiceResult, new()
         {
-            return await GetAsync<TResult>(uri, null);
+            return await GetAsync<TResult>(uri, null, cancellationToken);
         }
 
-        protected async Task<TResult> GetAsync<TResult>(Uri uri, HttpHeaders headers)
+        protected async Task<TResult> GetAsync<TResult>(Uri uri, HttpHeaders headers, CancellationToken cancellationToken = default)
             where TResult : IApiServiceResult, new()
         {
-            return await SendAsync<TResult>(HttpMethod.Get, uri, headers, null);
+            return await SendAsync<TResult>(HttpMethod.Get, uri, headers, null, cancellationToken);
         }
 
-        protected Task<TResult> SendAsync<TResult>([NotNull] HttpMethod httpMethod, [NotNull] Uri uri, HttpHeaders headers, object payload)
+        protected Task<TResult> SendAsync<TResult>([NotNull] HttpMethod httpMethod, [NotNull] Uri uri, HttpHeaders headers, object payload, CancellationToken cancellationToken = default)
             where TResult : IApiServiceResult, new()
         {
             var absoluteUri = uri.IsAbsoluteUri ? uri : HttpClient.BaseAddress.Append(uri.ToString());
@@ -111,7 +111,7 @@ namespace Cympatic.Extensions.Http.Services
                 httpRequestMessage.Content = new StringContent(payloadString, Encoding.UTF8, "application/json");
             }
 
-            return GetResultAsync<TResult>(httpRequestMessage);
+            return GetResultAsync<TResult>(httpRequestMessage, cancellationToken);
         }
 
         private async Task<TResult> GetResultAsync<TResult>(HttpRequestMessage httpRequestMessage, CancellationToken cancellationToken = default)

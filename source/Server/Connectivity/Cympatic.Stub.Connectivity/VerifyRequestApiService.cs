@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Net.Http;
 using System.Text.Json;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Cympatic.Stub.Connectivity
@@ -32,7 +33,7 @@ namespace Cympatic.Stub.Connectivity
             InternalHttpClient.DefaultRequestHeaders.AddRange(headers);
         }
 
-        public async Task<IEnumerable<RequestModel>> GetAsync()
+        public async Task<IEnumerable<RequestModel>> GetAsync(CancellationToken cancellationToken = default)
         {
             EnsureClientStubValid(ClientStub);
 
@@ -41,14 +42,14 @@ namespace Cympatic.Stub.Connectivity
             var uri = InternalHttpClient.BaseAddress
                 .Append("verifyrequest", ClientStub.Name, "getall");
 
-            using var response = await InternalHttpClient.GetAsync(uri);
+            using var response = await InternalHttpClient.GetAsync(uri, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
                 response.EnsureSuccessStatusCode();
 
-            var stream = await response.Content.ReadAsStreamAsync();
-            return await JsonSerializer.DeserializeAsync<List<RequestModel>>(stream);
+            var stream = await response.Content.ReadAsStreamAsync(cancellationToken);
+            return await JsonSerializer.DeserializeAsync<List<RequestModel>>(stream, default(JsonSerializerOptions), cancellationToken);
         }
 
-        public async Task<IEnumerable<RequestModel>> SearchAsync(RequestSearchModel searchModel)
+        public async Task<IEnumerable<RequestModel>> SearchAsync(RequestSearchModel searchModel, CancellationToken cancellationToken = default)
         {
             EnsureClientStubValid(ClientStub);
 
@@ -80,18 +81,18 @@ namespace Cympatic.Stub.Connectivity
                 i++;
             }
 
-            using var response = await InternalHttpClient.GetAsync(uri);
+            using var response = await InternalHttpClient.GetAsync(uri, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
             response.EnsureSuccessStatusCode();
 
-            var stream = await response.Content.ReadAsStreamAsync();
+            var stream = await response.Content.ReadAsStreamAsync(cancellationToken);
             var result = stream is object
-                ? await JsonSerializer.DeserializeAsync<List<RequestModel>>(stream)
+                ? await JsonSerializer.DeserializeAsync<List<RequestModel>>(stream, default(JsonSerializerOptions), cancellationToken)
                 : new List<RequestModel>();
 
             return result;
         }
 
-        public async Task RemoveAsync()
+        public async Task RemoveAsync(CancellationToken cancellationToken = default)
         {
             EnsureClientStubValid(ClientStub);
 
@@ -100,7 +101,7 @@ namespace Cympatic.Stub.Connectivity
             var uri = InternalHttpClient.BaseAddress
                 .Append("verifyrequest", ClientStub.Name, "remove");
 
-            using var response = await InternalHttpClient.DeleteAsync(uri);
+            using var response = await InternalHttpClient.DeleteAsync(uri, cancellationToken);
             response.EnsureSuccessStatusCode();
         }
     }

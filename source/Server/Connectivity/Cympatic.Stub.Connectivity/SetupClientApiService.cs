@@ -6,6 +6,7 @@ using System;
 using System.Collections.Specialized;
 using System.Net.Http;
 using System.Text.Json;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Cympatic.Stub.Connectivity
@@ -47,7 +48,7 @@ namespace Cympatic.Stub.Connectivity
             SetClientStub(clientStub);
         }
 
-        public async Task<IClientStub> GetClientAsync(string clientName)
+        public async Task<IClientStub> GetClientAsync(string clientName, CancellationToken cancellationToken = default)
         {
             if (string.IsNullOrWhiteSpace(clientName))
             {
@@ -57,11 +58,11 @@ namespace Cympatic.Stub.Connectivity
             var uri = InternalHttpClient.BaseAddress
                 .Append("setupclient", clientName, "getclient");
 
-            using var response = await InternalHttpClient.GetAsync(uri);
+            using var response = await InternalHttpClient.GetAsync(uri, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
             if (response.IsSuccessStatusCode)
             {
-                var stream = await response.Content.ReadAsStreamAsync();
-                var client = await JsonSerializer.DeserializeAsync<ClientModel>(stream);
+                var stream = await response.Content.ReadAsStreamAsync(cancellationToken);
+                var client = await JsonSerializer.DeserializeAsync<ClientModel>(stream, default(JsonSerializerOptions), cancellationToken);
 
                 return new ClientStub(client.Name, client.IdentifierHeaderName);
             }
@@ -69,19 +70,19 @@ namespace Cympatic.Stub.Connectivity
             return default;
         }
 
-        public Task RemoveAsync()
+        public Task RemoveAsync(CancellationToken cancellationToken = default)
         {
-            return RemoveAsync(ClientStub);
+            return RemoveAsync(ClientStub, cancellationToken);
         }
 
-        public virtual async Task RemoveAsync(IClientStub clientStub)
+        public virtual async Task RemoveAsync(IClientStub clientStub, CancellationToken cancellationToken = default)
         {
             EnsureClientStubValid(clientStub);
 
             var uri = InternalHttpClient.BaseAddress
                 .Append("setupclient", clientStub.Name, "remove");
 
-            using var response = await InternalHttpClient.DeleteAsync(uri);
+            using var response = await InternalHttpClient.DeleteAsync(uri, cancellationToken);
             response.EnsureSuccessStatusCode();
 
             ClearClientStub();
