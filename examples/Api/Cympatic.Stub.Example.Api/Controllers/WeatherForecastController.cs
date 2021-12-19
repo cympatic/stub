@@ -33,7 +33,7 @@ namespace Cympatic.Stub.Example.Api.Controllers
         [HttpGet()]
         public Task<IEnumerable<WeatherForecast>> GetAsync()
         {
-            return _service.Get();
+            return _service.GetAsync();
         }
 
         /// <summary>
@@ -47,7 +47,7 @@ namespace Cympatic.Stub.Example.Api.Controllers
         [HttpGet("{date}/details")]
         public Task<IEnumerable<WeatherForecastDetails>> GetDetails(DateTime date)
         {
-            return _service.GetDetails(date);
+            return _service.GetDetailsAsync(date);
         }
     }
 }

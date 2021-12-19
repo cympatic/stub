@@ -1,5 +1,4 @@
-﻿using Cympatic.Extensions.Stub.SpecFlow;
-using Cympatic.Extensions.Stub.SpecFlow.Interfaces;
+﻿using Cympatic.Extensions.Stub.SpecFlow.Interfaces;
 using Cympatic.Stub.Connectivity;
 using Cympatic.Stub.Connectivity.Models;
 using Cympatic.Stub.Connectivity.Settings;
@@ -43,7 +42,9 @@ namespace Cympatic.Extensions.Stub.SpecFlow.Contexts
         {
             await DisposeAsyncCore();
 
+#pragma warning disable CA1816 // Dispose methods should call SuppressFinalize
             GC.SuppressFinalize(this);
+#pragma warning restore CA1816 // Dispose methods should call SuppressFinalize
         }
 
         public void Dispose()
