@@ -3,12 +3,13 @@ using Cympatic.Extensions.Http.Attributes;
 using Cympatic.Stub.Connectivity.Models;
 using Cympatic.Stub.Server.Extensions;
 using Cympatic.Stub.Server.Interfaces;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
 using System.IO;
 using System.Net;
+using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Cympatic.Stub.Server.Controllers
@@ -29,16 +30,17 @@ namespace Cympatic.Stub.Server.Controllers
             _logger = logger;
         }
 
-        public async Task<IActionResult> Call()
+        public async Task<IActionResult> Call(CancellationToken cancellationToken)
         {
             try
             {
                 var path = Request.RouteValues.TryGetValue("slug", out var slug) && slug is string slugPath
                     ? slugPath
                     : Request.Path.Value;
-
+                var body = await GetRequestBodyAsync(cancellationToken);
                 var model = _clientContainer.FindResult(Request.Method, path, Request.Query);
-                await RegisterRequestAsync(path, model != null);
+
+                RegisterRequest(path, body, model != null);
 
                 if (model != null)
                 {
@@ -46,7 +48,7 @@ namespace Cympatic.Stub.Server.Controllers
 
                     if (model.DelayInMilliseconds > 0)
                     {
-                        await Task.Delay(model.DelayInMilliseconds);
+                        await Task.Delay(model.DelayInMilliseconds, cancellationToken);
                     }
 
                     return StatusCode((int)model.ReturnStatusCode, model.Result);
@@ -61,29 +63,36 @@ namespace Cympatic.Stub.Server.Controllers
             return NotFound();
         }
 
-        private async Task RegisterRequestAsync(string path, bool responseFound)
+        private void RegisterRequest(string path, string body, bool responseFound)
         {
             _clientContainer.AddRequest(
                 path,
                 Request.Query.ToDictionary(),
                 Request.Method,
                 Request.Headers.ToDictionary(),
-                await GetRequestBodyAsync(),
+                body,
                 responseFound);
         }
 
-        private async Task<string> GetRequestBodyAsync()
+        private async Task<string> GetRequestBodyAsync(CancellationToken cancellationToken)
         {
-            Request.EnableBuffering();
-            var stream = Request.Body;
-            using var reader = new StreamReader(stream);
-            var body = await reader.ReadToEndAsync();
-            if (stream.CanSeek)
+            try
             {
-                stream.Seek(0, SeekOrigin.Begin);
+                using var stream = new MemoryStream();
+                await Request.Body.CopyToAsync(stream, cancellationToken);
+                return Encoding.UTF8.GetString(stream.ToArray());
             }
-
-            return body;
+            catch 
+            { 
+                return string.Empty;
+            }
+            finally
+            {
+                if (Request.Body.CanSeek)
+                { 
+                    Request.Body.Seek(0, SeekOrigin.Begin);
+                }
+            }
         }
 
         private void AddHeadersToResponse(ResponseModel model)

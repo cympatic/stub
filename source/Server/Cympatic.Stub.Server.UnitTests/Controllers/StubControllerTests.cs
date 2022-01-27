@@ -74,7 +74,7 @@ namespace Cympatic.Stub.Server.UnitTests.Controllers
                 .Returns(requestModel)
                 .Verifiable();
 
-            var actual = _sut.Call();
+            var actual = _sut.Call(default);
 
             actual.Result.Should().BeEquivalentTo(expectedResult);
 
@@ -125,7 +125,7 @@ namespace Cympatic.Stub.Server.UnitTests.Controllers
                 .Returns(requestModel)
                 .Verifiable();
 
-            var actual = _sut.Call();
+            var actual = _sut.Call(default);
 
             actual.Result.Should().BeEquivalentTo(expectedResult);
             Mock.Get(_clientContainer)
@@ -161,7 +161,7 @@ namespace Cympatic.Stub.Server.UnitTests.Controllers
                     false))
                 .Verifiable();
 
-            var actual = _sut.Call();
+            var actual = _sut.Call(default);
 
             actual.Result.Should().BeEquivalentTo(expected);
             Mock.Get(_clientContainer)
