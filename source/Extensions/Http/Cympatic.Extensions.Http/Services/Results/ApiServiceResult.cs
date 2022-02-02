@@ -3,6 +3,7 @@ using System.IO;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -41,12 +42,7 @@ namespace Cympatic.Extensions.Http.Services.Results
 
                 using var memoryStream = new MemoryStream();
                 await stream.CopyToAsync(memoryStream, cancellationToken);
-                if (memoryStream.CanSeek)
-                {
-                    memoryStream.Seek(0, SeekOrigin.Begin);
-                }
-                using StreamReader reader = new(memoryStream);
-                Content = await reader.ReadToEndAsync();
+                Content = Encoding.UTF8.GetString(memoryStream.ToArray());
             }
         }
 

@@ -86,9 +86,9 @@ namespace Cympatic.Extensions.Stub.SpecFlow.Contexts
             _itemContext.Register(itemName, table);
         }
 
-        public IList CreateItemContainer([NotNull] string itemName, [NotNull] Table table)
+        public IList CreateItemList([NotNull] string itemName, [NotNull] Table table)
         {
-            return _itemContext.CreateContainer(itemName, table);
+            return _itemContext.CreateList(itemName, table);
         }
 
         public async Task PostItemsToStubServerAsync()
@@ -103,13 +103,13 @@ namespace Cympatic.Extensions.Stub.SpecFlow.Contexts
             }
         }
 
-        public async Task AddOrUpdateResponseAsync(ResponseModel model)
+        public async Task AddOrUpdateResponseAsync([NotNull] ResponseModel model)
         {
             await EnsureStubServicesAsync();
             await _setupResponseApiService.AddOrUpdateAsync(model);
         }
 
-        public async Task AddOrUpdateResponsesAsync(IEnumerable<ResponseModel> models)
+        public async Task AddOrUpdateResponsesAsync([NotNull] IEnumerable<ResponseModel> models)
         {
             await EnsureStubServicesAsync();
             await _setupResponseApiService.AddOrUpdateAsync(models);
@@ -121,7 +121,19 @@ namespace Cympatic.Extensions.Stub.SpecFlow.Contexts
             return await _verifyRequestApiService.GetAsync();
         }
 
-        public async Task<IEnumerable<RequestModel>> SearchRequestAsync(RequestSearchModel searchModel)
+
+        public Task<IEnumerable<RequestModel>> SearchRequestAsync([NotNull] StubUrl stubUrl)
+        {
+
+            return _verifyRequestApiService.SearchAsync(new RequestSearchModel
+            {
+                Path = stubUrl.Path,
+                Query = stubUrl.QueryParams,
+                HttpMethods = stubUrl.HttpMethods.ToList()
+            });
+        }
+
+        public async Task<IEnumerable<RequestModel>> SearchRequestAsync([NotNull] RequestSearchModel searchModel)
         {
             await EnsureStubServicesAsync();
             return await _verifyRequestApiService.SearchAsync(searchModel);

@@ -33,7 +33,7 @@ namespace Cympatic.Extensions.Stub.SpecFlow.Contexts
             Items.Add(type.FullName, specFlowItems);
         }
 
-        public IList CreateContainer([NotNull] string itemName, [NotNull] Table table)
+        public IList CreateList([NotNull] string itemName, [NotNull] Table table)
         {
             var type = ItemNameToType(itemName);
             var container = (IList)Activator.CreateInstance(typeof(List<>).MakeGenericType(type));

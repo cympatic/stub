@@ -5,10 +5,20 @@ namespace Cympatic.Extensions.Stub.SpecFlow
 {
     public abstract class StubSpecFlowItem : SpecFlowItem, IStubSpecFlowItem
     {
-        [Ignore]
-        public StubUrl ResponseToUrl { get; protected set; }
+        protected virtual StubUrl GetResponseToUrl()
+        { 
+            return null;
+        }
+
+        protected virtual StubUrl GetResponseToUrlScalar()
+        {
+            return null;
+        }
 
         [Ignore]
-        public StubUrl ResponseToUrlScalar { get; protected set; }
+        public StubUrl ResponseToUrl { get => GetResponseToUrl(); }
+
+        [Ignore]
+        public StubUrl ResponseToUrlScalar { get => GetResponseToUrlScalar(); }
     }
 }

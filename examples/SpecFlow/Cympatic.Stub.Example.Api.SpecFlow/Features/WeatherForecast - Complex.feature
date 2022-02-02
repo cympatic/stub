@@ -44,7 +44,7 @@ Scenario: Receive pre-defined weather forecast with details
 	| Forecast 2       | 25-07-2021 | Night     | Thunder risk | Thunderstorm | 5            | ESE           | 90                    | 5                       | 24           |
 	When the 'Stub Server' is prepared
 	And the 'Weather forecast' service is requested for weather forecasts
-	Then the request returned a container with one or more 'Weather forecast' items containing the following values
+	Then the request returned a list with one or more 'Weather forecast' items containing the following values
 	| Alias      |
 	| Forecast 1 |
 	| Forecast 2 |

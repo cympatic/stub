@@ -66,10 +66,10 @@ namespace Cympatic.Stub.Example.Api.SpecFlow.Bindings
             _actual.ValidateResult(expected);
         }
 
-        [Then(@"the request returned a container with one or more '(.*)' items containing the following values")]
-        public void ThenTheRequestReturnedAContainerWithOneOrMoreItemsContainingTheFollowingValues(string itemName, Table table)
+        [Then(@"the request returned a list with one or more '(.*)' items containing the following values")]
+        public void ThenTheRequestReturnedAListWithOneOrMoreItemsContainingTheFollowingValues(string itemName, Table table)
         {
-            var expected = _stubContext.CreateItemContainer(itemName, table);
+            var expected = _stubContext.CreateItemList(itemName, table);
 
             _actual.ValidateResult(expected);
         }
