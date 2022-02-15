@@ -18,7 +18,7 @@ namespace Cympatic.Extensions.Stub.SpecFlow
 
             if (result is IApiServiceResultValue apiServiceResultValue)
             {
-                var expectedType = GetExpectedType(expected);
+                var expectedType = GetExpectedType(apiServiceResultValue.Value);
 
                 var ignoredProperties = expectedType?.GetIgnoredProperties() ?? Array.Empty<string>();
 
