@@ -2,6 +2,8 @@
 using Cympatic.Stub.Server.Containers;
 using Cympatic.Stub.Server.UnitTests.TestData;
 using FluentAssertions;
+using Microsoft.Extensions.Logging;
+using Moq;
 using System;
 using System.Collections.Generic;
 using System.Threading;
@@ -11,32 +13,10 @@ namespace Cympatic.Stub.Server.UnitTests.Containers
 {
     public class ModelContainerTests
     {
-        private class FakeModelContainer : ModelContainer<RequestModel>
+        public class FakeModelContainer : ModelContainer<RequestModel>
         {
-            public FakeModelContainer() : base(new TimeSpan(1))
-            {
-            }
-
-            public void AddModel(string identifierValue, RequestModel requestModel)
-            {
-                _internalContainer.AddOrUpdate(identifierValue,
-                    new HashSet<RequestModel> { requestModel },
-                    (key, oldValue) =>
-                    {
-                        oldValue.Add(requestModel);
-                        return oldValue;
-                    });
-            }
-
-            public virtual IEnumerable<RequestModel> Get(string identifierValue)
-            {
-                if (_internalContainer.TryGetValue(identifierValue, out var models))
-                {
-                    return models;
-                }
-
-                return new List<RequestModel>();
-            }
+            public FakeModelContainer() : base(new TimeSpan(1), Mock.Of<ILogger<FakeModelContainer>>())
+            { }
         }
 
         private readonly FakeModelContainer _sut;

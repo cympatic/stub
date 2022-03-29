@@ -10,7 +10,7 @@ namespace Cympatic.Stub.Server.Containers
     {
         private readonly ILogger _logger;
 
-        public RequestModelContainer(ILogger<RequestModelContainer> logger) : base()
+        public RequestModelContainer(ILogger<RequestModelContainer> logger) : base(logger)
         {
             _logger = logger;
         }
@@ -47,44 +47,8 @@ namespace Cympatic.Stub.Server.Containers
             _logger.LogDebug("{type}.FindResult for identifier: '{identifier}', path: '{path}', httpMethods: '{httpMethods}', and query:\r\n{@query}",
                 GetType().Name, identifierValue, path, httpMethods, query);
 
-            if (_internalContainer.TryGetValue(identifierValue, out var models))
-            {
-                return models.Where(model => model.ResponseFound && model.IsMatching(httpMethods, path, query));
-            }
-
-            return default;
-        }
-
-        public virtual IEnumerable<RequestModel> Get(string identifierValue)
-        {
-            _logger.LogDebug("{type}.All for identifier: '{identifier}'", GetType().Name, identifierValue);
-
-            if (_internalContainer.TryGetValue(identifierValue, out var models))
-            {
-                return models;
-            }
-
-            return new List<RequestModel>();
-        }
-
-        public virtual void Remove(string identifierValue)
-        {
-            _logger.LogDebug("{type}.Clear for identifier: '{identifier}'", GetType().Name, identifierValue);
-
-            _internalContainer.TryRemove(identifierValue, out var _);
-        }
-
-        private void AddModel(string identifierValue, RequestModel requestModel)
-        {
-            _logger.LogDebug("{type}.AddModel for identifier: '{identifier}' with\r\n{@requestModel}", GetType().Name, identifierValue, requestModel);
-
-            _internalContainer.AddOrUpdate(identifierValue,
-                new HashSet<RequestModel> { requestModel },
-                (key, oldValue) =>
-                {
-                    oldValue.Add(requestModel);
-                    return oldValue;
-                });
+            return Get(identifierValue)
+                .Where(model => model.ResponseFound && model.IsMatching(httpMethods, path, query)).ToArray();
         }
     }
 }
