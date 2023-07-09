@@ -12,143 +12,142 @@ using System;
 using System.Collections.Generic;
 using Xunit;
 
-namespace Cympatic.Stub.Server.UnitTests.Controllers
+namespace Cympatic.Stub.Server.UnitTests.Controllers;
+
+public class VerifiyRequestControllerTests
 {
-    public class VerifiyRequestControllerTests
+    private readonly string _clientName;
+    private readonly VerifyRequestController _sut;
+    private readonly IClientContainer _clientContainer;
+
+    public VerifiyRequestControllerTests()
     {
-        private readonly string _clientName;
-        private readonly VerifyRequestController _sut;
-        private readonly IClientContainer _clientContainer;
-
-        public VerifiyRequestControllerTests()
+        _clientName = Guid.NewGuid().ToString("N");
+        var httpContext = new DefaultHttpContext();
+        httpContext.Request.RouteValues.Add("client", _clientName);
+        httpContext.Request.Query = new QueryCollection(new Dictionary<string, StringValues>
         {
-            _clientName = Guid.NewGuid().ToString("N");
-            var httpContext = new DefaultHttpContext();
-            httpContext.Request.RouteValues.Add("client", _clientName);
-            httpContext.Request.Query = new QueryCollection(new Dictionary<string, StringValues>
-            {
-                { "Testing", "1" },
-                { "Wildcarded", Guid.NewGuid().ToString("N") }
-            });
+            { "Testing", "1" },
+            { "Wildcarded", Guid.NewGuid().ToString("N") }
+        });
 
-            var controllerContext = new ControllerContext()
-            {
-                HttpContext = httpContext,
-            };
-
-            _clientContainer = Mock.Of<IClientContainer>();
-            _sut = new VerifyRequestController(_clientContainer, Mock.Of<ILogger<VerifyRequestController>>())
-            {
-                ControllerContext = controllerContext
-            };
-        }
-
-        [Fact]
-        public void GetAll_Ok()
+        var controllerContext = new ControllerContext()
         {
-            var models = RequestModelTestData.GetRequestModels();
-            var expected = new OkObjectResult(models);
+            HttpContext = httpContext,
+        };
 
-            Mock.Get(_clientContainer)
-                .Setup(_ => _.GetRequests())
-                .Returns(models)
-                .Verifiable();
-
-            var actual = _sut.GetAll(_clientName);
-
-            actual.Should().BeEquivalentTo(expected);
-            Mock.Get(_clientContainer)
-                .Verify(_ => _.GetRequests(), Times.Once);
-        }
-
-        [Fact]
-        public void GetAll_BadRequest_With_Exception()
+        _clientContainer = Mock.Of<IClientContainer>();
+        _sut = new VerifyRequestController(_clientContainer, Mock.Of<ILogger<VerifyRequestController>>())
         {
-            var exception = new ArgumentException("Unable to determine the identifierValue");
-            var expected = new BadRequestObjectResult(exception.Message);
+            ControllerContext = controllerContext
+        };
+    }
 
-            Mock.Get(_clientContainer)
-                .Setup(_ => _.GetRequests())
-                .Throws(exception)
-                .Verifiable();
+    [Fact]
+    public void GetAll_Ok()
+    {
+        var models = RequestModelTestData.GetRequestModels();
+        var expected = new OkObjectResult(models);
 
-            var actual = _sut.GetAll(_clientName);
+        Mock.Get(_clientContainer)
+            .Setup(_ => _.GetRequests())
+            .Returns(models)
+            .Verifiable();
 
-            actual.Should().BeEquivalentTo(expected);
-            Mock.Get(_clientContainer)
-                .Verify(_ => _.GetRequests(), Times.Once);
-        }
+        var actual = _sut.GetAll(_clientName);
 
-        [Fact]
-        public void Remove_NoContent()
-        {
-            var expected = new NoContentResult();
+        actual.Should().BeEquivalentTo(expected);
+        Mock.Get(_clientContainer)
+            .Verify(_ => _.GetRequests(), Times.Once);
+    }
 
-            Mock.Get(_clientContainer)
-                .Setup(_ => _.RemoveRequests())
-                .Verifiable();
+    [Fact]
+    public void GetAll_BadRequest_With_Exception()
+    {
+        var exception = new ArgumentException("Unable to determine the identifierValue");
+        var expected = new BadRequestObjectResult(exception.Message);
 
-            var actual = _sut.Remove(_clientName);
+        Mock.Get(_clientContainer)
+            .Setup(_ => _.GetRequests())
+            .Throws(exception)
+            .Verifiable();
 
-            actual.Should().BeEquivalentTo(expected);
-            Mock.Get(_clientContainer)
-                .Verify(_ => _.RemoveRequests(), Times.Once);
-        }
+        var actual = _sut.GetAll(_clientName);
 
-        [Fact]
-        public void Remove_BadRequest_With_Exception()
-        {
-            var exception = new ArgumentException("Unable to determine the identifierValue");
-            var expected = new BadRequestObjectResult(exception.Message);
+        actual.Should().BeEquivalentTo(expected);
+        Mock.Get(_clientContainer)
+            .Verify(_ => _.GetRequests(), Times.Once);
+    }
 
-            Mock.Get(_clientContainer)
-                .Setup(_ => _.RemoveRequests())
-                .Throws(exception)
-                .Verifiable();
+    [Fact]
+    public void Remove_NoContent()
+    {
+        var expected = new NoContentResult();
 
-            var actual = _sut.Remove(_clientName);
+        Mock.Get(_clientContainer)
+            .Setup(_ => _.RemoveRequests())
+            .Verifiable();
 
-            actual.Should().BeEquivalentTo(expected);
-            Mock.Get(_clientContainer)
-                .Verify(_ => _.RemoveRequests(), Times.Once);
-        }
+        var actual = _sut.Remove(_clientName);
 
-        [Fact]
-        public void Search_Ok()
-        {
-            var models = RequestModelTestData.GetRequestModels();
-            var search = new RequestSearchModel();
-            var expected = new OkObjectResult(models);
+        actual.Should().BeEquivalentTo(expected);
+        Mock.Get(_clientContainer)
+            .Verify(_ => _.RemoveRequests(), Times.Once);
+    }
 
-            Mock.Get(_clientContainer)
-                .Setup(_ => _.SearchRequests(search))
-                .Returns(models)
-                .Verifiable();
+    [Fact]
+    public void Remove_BadRequest_With_Exception()
+    {
+        var exception = new ArgumentException("Unable to determine the identifierValue");
+        var expected = new BadRequestObjectResult(exception.Message);
 
-            var actual = _sut.Search(_clientName, search);
+        Mock.Get(_clientContainer)
+            .Setup(_ => _.RemoveRequests())
+            .Throws(exception)
+            .Verifiable();
 
-            actual.Should().BeEquivalentTo(expected);
-            Mock.Get(_clientContainer)
-                .Verify(_ => _.SearchRequests(search), Times.Once);
-        }
+        var actual = _sut.Remove(_clientName);
 
-        [Fact]
-        public void Search_BadRequest_With_Exception()
-        {
-            var search = new RequestSearchModel();
-            var exception = new ArgumentException("Unable to determine the identifierValue");
-            var expected = new BadRequestObjectResult(exception.Message);
+        actual.Should().BeEquivalentTo(expected);
+        Mock.Get(_clientContainer)
+            .Verify(_ => _.RemoveRequests(), Times.Once);
+    }
 
-            Mock.Get(_clientContainer)
-                .Setup(_ => _.SearchRequests(search))
-                .Throws(exception)
-                .Verifiable();
+    [Fact]
+    public void Search_Ok()
+    {
+        var models = RequestModelTestData.GetRequestModels();
+        var search = new RequestSearchModel();
+        var expected = new OkObjectResult(models);
 
-            var actual = _sut.Search(_clientName, search);
+        Mock.Get(_clientContainer)
+            .Setup(_ => _.SearchRequests(search))
+            .Returns(models)
+            .Verifiable();
 
-            actual.Should().BeEquivalentTo(expected);
-            Mock.Get(_clientContainer)
-                .Verify(_ => _.SearchRequests(search), Times.Once);
-        }
+        var actual = _sut.Search(_clientName, search);
+
+        actual.Should().BeEquivalentTo(expected);
+        Mock.Get(_clientContainer)
+            .Verify(_ => _.SearchRequests(search), Times.Once);
+    }
+
+    [Fact]
+    public void Search_BadRequest_With_Exception()
+    {
+        var search = new RequestSearchModel();
+        var exception = new ArgumentException("Unable to determine the identifierValue");
+        var expected = new BadRequestObjectResult(exception.Message);
+
+        Mock.Get(_clientContainer)
+            .Setup(_ => _.SearchRequests(search))
+            .Throws(exception)
+            .Verifiable();
+
+        var actual = _sut.Search(_clientName, search);
+
+        actual.Should().BeEquivalentTo(expected);
+        Mock.Get(_clientContainer)
+            .Verify(_ => _.SearchRequests(search), Times.Once);
     }
 }

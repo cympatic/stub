@@ -6,6 +6,7 @@ using Cympatic.Stub.Server.Interfaces;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Formatters;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
 using Serilog;
@@ -45,6 +46,30 @@ builder.Services
         options.IncludeXmlComments(xmlFile);
     });
 
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(policy =>
+    {
+        var allowedOrigins = builder.Configuration["AllowedOrigins"];
+        if (string.IsNullOrEmpty(allowedOrigins) || allowedOrigins == "*")
+        {
+            policy
+                .AllowAnyHeader()
+                .AllowAnyMethod()
+                .SetIsOriginAllowed(_ => true)
+                .AllowCredentials();
+        }
+        else 
+        {
+            policy
+                .WithOrigins(allowedOrigins)
+                .AllowAnyHeader()
+                .AllowAnyMethod()
+                .AllowCredentials();
+        }
+    });
+});
+
 builder.Services.AddHttpContextAccessor();
 
 builder.Services.AddSingleton<RouteTransformer>();
@@ -71,6 +96,8 @@ app.UseSwaggerUI(c =>
     c.SwaggerEndpoint($"{swaggerJsonBasePath}/swagger/v1/swagger.json", AppDomain.CurrentDomain.FriendlyName);
     c.DisplayRequestDuration();
 });
+
+app.UseCors();
 
 app.UseRouting();
 

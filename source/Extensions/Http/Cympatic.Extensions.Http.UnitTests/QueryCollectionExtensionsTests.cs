@@ -4,42 +4,41 @@ using Microsoft.Extensions.Primitives;
 using System.Collections.Generic;
 using Xunit;
 
-namespace Cympatic.Extensions.Http.UnitTests
+namespace Cympatic.Extensions.Http.UnitTests;
+
+public class QueryCollectionExtensionsTests
 {
-    public class QueryCollectionExtensionsTests
+    [Fact]
+    public void Given_a_QueryCollection_When_ToDictionary_Then_the_Dictionary_should_items_correctly_formatted()
     {
-        [Fact]
-        public void Given_a_QueryCollection_When_ToDictionary_Then_the_Dictionary_should_items_correctly_formatted()
+        // Arrange
+        var sut = new QueryCollection(new Dictionary<string, StringValues>
         {
-            // Arrange
-            var sut = new QueryCollection(new Dictionary<string, StringValues>
-            {
-                { "test1", "value1" },
-                { "test2", new [] { "value2", "value3" } }
-            });
+            { "test1", "value1" },
+            { "test2", new [] { "value2", "value3" } }
+        });
 
-            // Act
-            var actual = sut.ToDictionary();
+        // Act
+        var actual = sut.ToDictionary();
 
-            // Assert
-            actual.Should().BeEquivalentTo(new Dictionary<string, string>
-            {
-                { "test1", "value1" },
-                { "test2", "value2,value3" }
-            });
-        }
-
-        [Fact]
-        public void Given_am_empty_QueryCollection_When_ToDictionary_Then_the_Dictionary_should_empty()
+        // Assert
+        actual.Should().BeEquivalentTo(new Dictionary<string, string>
         {
-            // Arrange
-            var sut = new QueryCollection(new Dictionary<string, StringValues>());
+            { "test1", "value1" },
+            { "test2", "value2,value3" }
+        });
+    }
 
-            // Act
-            var actual = sut.ToDictionary();
+    [Fact]
+    public void Given_am_empty_QueryCollection_When_ToDictionary_Then_the_Dictionary_should_empty()
+    {
+        // Arrange
+        var sut = new QueryCollection(new Dictionary<string, StringValues>());
 
-            // Assert
-            actual.Should().BeEquivalentTo(new Dictionary<string, string>());
-        }
+        // Act
+        var actual = sut.ToDictionary();
+
+        // Assert
+        actual.Should().BeEquivalentTo(new Dictionary<string, string>());
     }
 }

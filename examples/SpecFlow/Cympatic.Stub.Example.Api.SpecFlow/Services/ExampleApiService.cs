@@ -7,28 +7,27 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Cympatic.Stub.Example.Api.SpecFlow.Services
+namespace Cympatic.Stub.Example.Api.SpecFlow.Services;
+
+public class ExampleApiService : ApiService
 {
-    public class ExampleApiService : ApiService
+    public ExampleApiService(HttpClient httpClient) : base(httpClient)
+    { }
+
+    public void SetIdentifierValue(string identifierValue)
     {
-        public ExampleApiService(HttpClient httpClient) : base(httpClient)
-        { }
+        // NOTE:
+        // For example purpose only the identifierValue is added to the Request.Headers
+        // In real life use a headername should be chosen that can be manipulated,
+        // can contain an unique value, and is passed into all calls with the chain
 
-        public void SetIdentifierValue(string identifierValue)
-        {
-            // NOTE:
-            // For example purpose only the identifierValue is added to the Request.Headers
-            // In real life use a headername should be chosen that can be manipulated,
-            // can contain an unique value, and is passed into all calls with the chain
+        HttpClient.DefaultRequestHeaders.Add("ExampleIdentifier", identifierValue);
+    }
 
-            HttpClient.DefaultRequestHeaders.Add("ExampleIdentifier", identifierValue);
-        }
+    public Task<ApiServiceResult<IEnumerable<WeatherForecast>>> GetForecastsAsync(CancellationToken cancellationToken = default)
+    {
+        var uri = new Uri("weatherforecast", UriKind.Relative);
 
-        public Task<ApiServiceResult<IEnumerable<WeatherForecast>>> GetForecastsAsync(CancellationToken cancellationToken = default)
-        {
-            var uri = new Uri("weatherforecast", UriKind.Relative);
-
-            return GetAsync<ApiServiceResult<IEnumerable<WeatherForecast>>>(uri, cancellationToken);
-        }
+        return GetAsync<ApiServiceResult<IEnumerable<WeatherForecast>>>(uri, cancellationToken);
     }
 }

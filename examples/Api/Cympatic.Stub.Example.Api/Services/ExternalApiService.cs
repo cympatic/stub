@@ -8,35 +8,34 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Cympatic.Stub.Example.Api.Services
+namespace Cympatic.Stub.Example.Api.Services;
+
+public class ExternalApiService : ApiService
 {
-    public class ExternalApiService : ApiService
+    public ExternalApiService(HttpClient httpClient) : base(httpClient)
+    { }
+
+    public async Task<IEnumerable<WeatherForecast>> GetAsync(CancellationToken cancellationToken = default)
     {
-        public ExternalApiService(HttpClient httpClient) : base(httpClient)
-        { }
+        var uri = new Uri("example", UriKind.Relative)
+            .Append("for", "testing")
+            .WithParameter("queryparam1", "test_param");
 
-        public async Task<IEnumerable<WeatherForecast>> GetAsync(CancellationToken cancellationToken = default)
-        {
-            var uri = new Uri("example", UriKind.Relative)
-                .Append("for", "testing")
-                .WithParameter("queryparam1", "test_param");
+        var result = await GetAsync<ApiServiceResult<IEnumerable<WeatherForecast>>>(uri, cancellationToken);
+        result.EnsureSuccessStatusCode();
 
-            var result = await GetAsync<ApiServiceResult<IEnumerable<WeatherForecast>>>(uri, cancellationToken);
-            result.EnsureSuccessStatusCode();
+        return result.Value;
+    }
 
-            return result.Value;
-        }
+    public async Task<IEnumerable<WeatherForecastDetails>> GetDetailsAsync(DateTime date, CancellationToken cancellationToken = default)
+    {
+        var uri = new Uri("example", UriKind.Relative)
+            .Append("for", "testing")
+            .WithParameter(nameof(date), date.ToString("yyyy-MM-dd"));
 
-        public async Task<IEnumerable<WeatherForecastDetails>> GetDetailsAsync(DateTime date, CancellationToken cancellationToken = default)
-        {
-            var uri = new Uri("example", UriKind.Relative)
-                .Append("for", "testing")
-                .WithParameter(nameof(date), date.ToString("yyyy-MM-dd"));
+        var result = await GetAsync<ApiServiceResult<IEnumerable<WeatherForecastDetails>>>(uri, cancellationToken);
+        result.EnsureSuccessStatusCode();
 
-            var result = await GetAsync<ApiServiceResult<IEnumerable<WeatherForecastDetails>>>(uri, cancellationToken);
-            result.EnsureSuccessStatusCode();
-
-            return result.Value;
-        }
+        return result.Value;
     }
 }

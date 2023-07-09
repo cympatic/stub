@@ -1,33 +1,32 @@
 ﻿using System.ComponentModel;
 
-namespace Cympatic.Stub.Example.Api.Enums
+namespace Cympatic.Stub.Example.Api.Enums;
+
+public enum WeatherType
 {
-    public enum WeatherType
-    {
-        None,
+    None,
 
-        [Description("Sunny/Clear")]
-        Clear,
+    [Description("Sunny/Clear")]
+    Clear,
 
-        [Description("Partially Cloudy")]
-        PartiallyCloudy,
+    [Description("Partially Cloudy")]
+    PartiallyCloudy,
 
-        Cloudy,
+    Cloudy,
 
-        Overcast,
+    Overcast,
 
-        Rain,
+    Rain,
 
-        Drizzle,
+    Drizzle,
 
-        Hail,
+    Hail,
 
-        Snow,
+    Snow,
 
-        Stormy,
+    Stormy,
 
-        Thunderstorm,
+    Thunderstorm,
 
-        Fog
-    }
+    Fog
 }

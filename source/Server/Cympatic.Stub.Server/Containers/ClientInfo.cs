@@ -1,75 +1,74 @@
 ﻿using System;
 
-namespace Cympatic.Stub.Server.Containers
+namespace Cympatic.Stub.Server.Containers;
+
+internal class ClientInfo : IDisposable, IEquatable<ClientInfo>
 {
-    internal class ClientInfo : IDisposable, IEquatable<ClientInfo>
+    private bool disposedValue = false;
+
+    public string Name { get; }
+
+    public string IdentifierHeaderName { get; }
+
+    public ResponseModelContainer ResponseContainer { get; private set; }
+
+    public RequestModelContainer RequestContainer { get; private set; }
+
+    public ClientInfo(
+        string name,
+        string identifierHeaderName,
+        ResponseModelContainer responseContainer,
+        TimeSpan responseTtl,
+        RequestModelContainer requestContainer,
+        TimeSpan requestTtl)
     {
-        private bool disposedValue = false;
+        Name = name;
+        IdentifierHeaderName = identifierHeaderName;
 
-        public string Name { get; }
+        ResponseContainer = responseContainer;
+        ResponseContainer.SetTimeToLive(responseTtl);
 
-        public string IdentifierHeaderName { get; }
+        RequestContainer = requestContainer;
+        RequestContainer.SetTimeToLive(requestTtl);
+    }
 
-        public ResponseModelContainer ResponseContainer { get; private set; }
+    public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
 
-        public RequestModelContainer RequestContainer { get; private set; }
-
-        public ClientInfo(
-            string name,
-            string identifierHeaderName,
-            ResponseModelContainer responseContainer,
-            TimeSpan responseTtl,
-            RequestModelContainer requestContainer,
-            TimeSpan requestTtl)
+    protected virtual void Dispose(bool disposing)
+    {
+        if (!disposedValue)
         {
-            Name = name;
-            IdentifierHeaderName = identifierHeaderName;
-
-            ResponseContainer = responseContainer;
-            ResponseContainer.SetTimeToLive(responseTtl);
-
-            RequestContainer = requestContainer;
-            RequestContainer.SetTimeToLive(requestTtl);
-        }
-
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        protected virtual void Dispose(bool disposing)
-        {
-            if (!disposedValue)
+            if (disposing)
             {
-                if (disposing)
-                {
-                    ResponseContainer.Dispose();
-                    ResponseContainer = null;
+                ResponseContainer.Dispose();
+                ResponseContainer = null;
 
-                    RequestContainer.Dispose();
-                    RequestContainer = null;
-                }
-
-                disposedValue = true;
+                RequestContainer.Dispose();
+                RequestContainer = null;
             }
-        }
 
-        public override bool Equals(object obj)
-        {
-            return Equals(obj as ClientInfo);
+            disposedValue = true;
         }
+    }
 
-        public override int GetHashCode()
-        {
-            return HashCode.Combine(Name, IdentifierHeaderName);
-        }
+    public override bool Equals(object obj)
+    {
+        return Equals(obj as ClientInfo);
+    }
 
-        public bool Equals(ClientInfo other)
-        {
-            return other != null &&
-                   Name.Equals(other.Name, StringComparison.OrdinalIgnoreCase) &&
-                   IdentifierHeaderName.Equals(other.IdentifierHeaderName, StringComparison.OrdinalIgnoreCase);
-        }
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(Name, IdentifierHeaderName);
+    }
+
+    public bool Equals(ClientInfo other)
+    {
+        return other != null &&
+               Name.Equals(other.Name, StringComparison.OrdinalIgnoreCase) &&
+               IdentifierHeaderName.Equals(other.IdentifierHeaderName, StringComparison.OrdinalIgnoreCase);
     }
 }

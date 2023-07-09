@@ -10,81 +10,83 @@ using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Cympatic.Stub.Connectivity
+namespace Cympatic.Stub.Connectivity;
+
+public class SetupResponseApiService : StubApiService
 {
-    public class SetupResponseApiService : StubApiService
+    public SetupResponseApiService(HttpClient httpClient) : base(httpClient)
+    { }
+
+    public void SetIdentifierValue(string identifierValue)
     {
-        public SetupResponseApiService(HttpClient httpClient) : base(httpClient)
-        { }
+        SetClientStubIdentifierValue(ClientStub, identifierValue, true);
+    }
 
-        public void SetIdentifierValue(string identifierValue) 
+    public void SetClientStubIdentifierValue(IClientStub clientStub, string identifierValue, bool useIdentificationHeader)
+    {
+        SetClientStub(clientStub);
+
+        if (useIdentificationHeader)
         {
-            SetClientStubIdentifierValue(ClientStub, identifierValue);
-        }
-
-        public void SetClientStubIdentifierValue(IClientStub clientStub, string identifierValue)
-        {
-            SetClientStub(clientStub);
-
             var headers = new Dictionary<string, IEnumerable<string>>
             {
-                { ClientStub.IdentifierHeaderName, new StringValues(identifierValue) } 
+                { ClientStub.IdentifierHeaderName, new StringValues(identifierValue) }
             };
             InternalHttpClient.DefaultRequestHeaders.AddRange(headers);
         }
+    }
 
-        public Task AddOrUpdateAsync(ResponseModel model, CancellationToken cancellationToken = default)
+    public Task AddOrUpdateAsync(ResponseModel model, CancellationToken cancellationToken = default)
+    {
+        return AddOrUpdateAsync(new List<ResponseModel> { model }, cancellationToken);
+    }
+
+    public async Task AddOrUpdateAsync(IEnumerable<ResponseModel> models, CancellationToken cancellationToken = default)
+    {
+        EnsureClientStubValid(ClientStub);
+
+        EnsureHeadersValid(ClientStub);
+
+        if (models == null)
         {
-            return AddOrUpdateAsync(new List<ResponseModel> { model }, cancellationToken);
+            throw new ArgumentNullException(nameof(models));
         }
 
-        public async Task AddOrUpdateAsync(IEnumerable<ResponseModel> models, CancellationToken cancellationToken = default)
-        {
-            EnsureClientStubValid(ClientStub);
+        var uri = InternalHttpClient.BaseAddress
+            .Append("setupresponse", ClientStub.Name, "addorupdate");
 
-            EnsureHeadersValid(ClientStub);
+        using var response = await InternalHttpClient.PostAsync(uri, new StringContent(JsonSerializer.Serialize(models), Encoding.Default, "application/json"), cancellationToken);
+        response.EnsureSuccessStatusCode();
+    }
 
-            if (models == null)
-            {
-                throw new ArgumentNullException(nameof(models));
-            }
+    public async Task<IEnumerable<ResponseModel>> GetAsync(CancellationToken cancellationToken = default)
+    {
+        EnsureClientStubValid(ClientStub);
 
-            var uri = InternalHttpClient.BaseAddress
-                .Append("setupresponse", ClientStub.Name, "addorupdate");
+        EnsureHeadersValid(ClientStub);
 
-            using var response = await InternalHttpClient.PostAsync(uri, new StringContent(JsonSerializer.Serialize(models), Encoding.Default, "application/json"), cancellationToken);
-            response.EnsureSuccessStatusCode();
-        }
+        var uri = InternalHttpClient.BaseAddress
+            .Append("setupresponse", ClientStub.Name, "getall");
 
-        public async Task<IEnumerable<ResponseModel>> GetAsync(CancellationToken cancellationToken = default)
-        {
-            EnsureClientStubValid(ClientStub);
+        using var response = await InternalHttpClient.GetAsync(uri, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
+        response.EnsureSuccessStatusCode();
 
-            EnsureHeadersValid(ClientStub);
+        var stream = await response.Content.ReadAsStreamAsync(cancellationToken);
+        var models = await JsonSerializer.DeserializeAsync<List<ResponseModel>>(stream, default(JsonSerializerOptions), cancellationToken);
 
-            var uri = InternalHttpClient.BaseAddress
-                .Append("setupresponse", ClientStub.Name, "getall");
+        return models;
+    }
 
-            using var response = await InternalHttpClient.GetAsync(uri, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
-            response.EnsureSuccessStatusCode();
+    public async Task RemoveAsync(CancellationToken cancellationToken = default)
+    {
+        EnsureClientStubValid(ClientStub);
 
-            var stream = await response.Content.ReadAsStreamAsync(cancellationToken);
-            var models = await JsonSerializer.DeserializeAsync<List<ResponseModel>>(stream, default(JsonSerializerOptions), cancellationToken);
+        EnsureHeadersValid(ClientStub);
 
-            return models;
-        }
+        var uri = InternalHttpClient.BaseAddress
+            .Append("setupresponse", ClientStub.Name, "remove");
 
-        public async Task RemoveAsync(CancellationToken cancellationToken = default)
-        {
-            EnsureClientStubValid(ClientStub);
-
-            EnsureHeadersValid(ClientStub);
-
-            var uri = InternalHttpClient.BaseAddress
-                .Append("setupresponse", ClientStub.Name, "remove");
-
-            using var response = await InternalHttpClient.DeleteAsync(uri, cancellationToken);
-            response.EnsureSuccessStatusCode();
-        }
+        using var response = await InternalHttpClient.DeleteAsync(uri, cancellationToken);
+        response.EnsureSuccessStatusCode();
     }
 }
