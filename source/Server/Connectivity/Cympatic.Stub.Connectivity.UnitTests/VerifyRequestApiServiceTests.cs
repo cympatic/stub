@@ -1,4 +1,5 @@
 ﻿using Cympatic.Stub.Connectivity.Constants;
+using Cympatic.Stub.Connectivity.Interfaces;
 using Cympatic.Stub.Connectivity.Internal;
 using Cympatic.Stub.Connectivity.Models;
 using Cympatic.Stub.Connectivity.UnitTests.Fakes;
@@ -16,6 +17,20 @@ namespace Cympatic.Stub.Connectivity.UnitTests;
 
 public class VerifyRequestApiServiceTests
 {
+    private sealed class FakeVerifyRequestApiService : VerifyRequestApiService
+    {
+        public new IClientStub ClientStub => base.ClientStub;
+
+        public FakeVerifyRequestApiService(HttpClient httpClient) : base(httpClient)
+        {
+            SetClientStub(new ClientStub(
+                Guid.NewGuid().ToString("N"),
+                Defaults.IdentifierHeaderName,
+                Defaults.ResponseTtlInMinutes,
+                Defaults.RequestTtlInMinutes));
+        }
+    }
+
     [Fact]
     public void Given_a_VerifyRequestApiService_When_using_SetIdentifierValue_with_IdentifierValue_Then_the_HttpClient_Headers_should_have_the_IdentifierValue()
     {
@@ -27,7 +42,7 @@ public class VerifyRequestApiServiceTests
             BaseAddress = new Uri("http://fake.cympatic.com")
         };
         httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-        var sut = new VerifyRequestApiService(httpClient);
+        var sut = new FakeVerifyRequestApiService(httpClient);
 
         // Act
         sut.SetIdentifierValue(expected);
@@ -49,10 +64,10 @@ public class VerifyRequestApiServiceTests
             BaseAddress = new Uri("http://fake.cympatic.com")
         };
         httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-        var sut = new VerifyRequestApiService(httpClient);
+        var sut = new FakeVerifyRequestApiService(httpClient);
 
         // Act
-        sut.SetClientStubIdentifierValue(clientStub, expected);
+        sut.SetClientStubIdentifierValue(clientStub, expected, true);
 
         // Assert
         httpClient.DefaultRequestHeaders.TryGetValues(clientStub.IdentifierHeaderName, out var actual).Should().BeTrue();
@@ -72,7 +87,7 @@ public class VerifyRequestApiServiceTests
         };
         httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
         httpClient.DefaultRequestHeaders.Add(Defaults.IdentifierHeaderName, identifierValue);
-        var sut = new VerifyRequestApiService(httpClient);
+        var sut = new FakeVerifyRequestApiService(httpClient);
 
         // Act
         var actual = await sut.GetAsync();
@@ -95,8 +110,8 @@ public class VerifyRequestApiServiceTests
             BaseAddress = new Uri("http://fake.cympatic.com")
         };
         httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-        var sut = new VerifyRequestApiService(httpClient);
-        sut.SetClientStubIdentifierValue(clientStub, identifierValue);
+        var sut = new FakeVerifyRequestApiService(httpClient);
+        sut.SetClientStubIdentifierValue(clientStub, identifierValue, true);
 
         // Act
         var actual = await sut.GetAsync();
@@ -118,8 +133,8 @@ public class VerifyRequestApiServiceTests
         {
             BaseAddress = new Uri("http://fake.cympatic.com")
         };
-        var sut = new VerifyRequestApiService(httpClient);
-        sut.SetClientStubIdentifierValue(clientStub, identifierValue);
+        var sut = new FakeVerifyRequestApiService(httpClient);
+        sut.SetClientStubIdentifierValue(clientStub, identifierValue, true);
 
         // Act & Assert
         var actual = await Assert.ThrowsAsync<ArgumentException>(() => sut.GetAsync());
@@ -142,7 +157,7 @@ public class VerifyRequestApiServiceTests
             BaseAddress = new Uri("http://fake.cympatic.com")
         };
         httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-        var sut = new VerifyRequestApiService(httpClient);
+        var sut = new FakeVerifyRequestApiService(httpClient);
 
         // Act & Assert
         var actual = await sut.GetAsync();
@@ -164,8 +179,8 @@ public class VerifyRequestApiServiceTests
             BaseAddress = new Uri("http://fake.cympatic.com")
         };
         httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-        var sut = new VerifyRequestApiService(httpClient);
-        sut.SetClientStubIdentifierValue(clientStub, identifierValue);
+        var sut = new FakeVerifyRequestApiService(httpClient);
+        sut.SetClientStubIdentifierValue(clientStub, identifierValue, true);
 
         // Act
         await Assert.ThrowsAsync<HttpRequestException>(() => sut.GetAsync());
@@ -186,7 +201,7 @@ public class VerifyRequestApiServiceTests
         };
         httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
         httpClient.DefaultRequestHeaders.Add(Defaults.IdentifierHeaderName, identifierValue);
-        var sut = new VerifyRequestApiService(httpClient);
+        var sut = new FakeVerifyRequestApiService(httpClient);
 
         // Act
         await sut.RemoveAsync();
@@ -207,8 +222,8 @@ public class VerifyRequestApiServiceTests
             BaseAddress = new Uri("http://fake.cympatic.com")
         };
         httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-        var sut = new VerifyRequestApiService(httpClient);
-        sut.SetClientStubIdentifierValue(clientStub, identifierValue);
+        var sut = new FakeVerifyRequestApiService(httpClient);
+        sut.SetClientStubIdentifierValue(clientStub, identifierValue, true);
 
         // Act
         await sut.RemoveAsync();
@@ -229,8 +244,8 @@ public class VerifyRequestApiServiceTests
         {
             BaseAddress = new Uri("http://fake.cympatic.com")
         };
-        var sut = new VerifyRequestApiService(httpClient);
-        sut.SetClientStubIdentifierValue(clientStub, identifierValue);
+        var sut = new FakeVerifyRequestApiService(httpClient);
+        sut.SetClientStubIdentifierValue(clientStub, identifierValue, true);
 
         // Act & Assert
         var actual = await Assert.ThrowsAsync<ArgumentException>(() => sut.RemoveAsync());
@@ -250,7 +265,7 @@ public class VerifyRequestApiServiceTests
             BaseAddress = new Uri("http://fake.cympatic.com")
         };
         httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-        var sut = new VerifyRequestApiService(httpClient);
+        var sut = new FakeVerifyRequestApiService(httpClient);
 
         // Act & Assert
         await sut.RemoveAsync();
@@ -271,8 +286,8 @@ public class VerifyRequestApiServiceTests
             BaseAddress = new Uri("http://fake.cympatic.com")
         };
         httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-        var sut = new VerifyRequestApiService(httpClient);
-        sut.SetClientStubIdentifierValue(clientStub, identifierValue);
+        var sut = new FakeVerifyRequestApiService(httpClient);
+        sut.SetClientStubIdentifierValue(clientStub, identifierValue, true);
 
         // Act & Assert
         await Assert.ThrowsAsync<HttpRequestException>(() => sut.RemoveAsync());
@@ -292,8 +307,8 @@ public class VerifyRequestApiServiceTests
             BaseAddress = new Uri("http://fake.cympatic.com")
         };
         httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-        var sut = new VerifyRequestApiService(httpClient);
-        sut.SetClientStubIdentifierValue(clientStub, identifierValue);
+        var sut = new FakeVerifyRequestApiService(httpClient);
+        sut.SetClientStubIdentifierValue(clientStub, identifierValue, true);
 
         // Act
         var actual = await sut.SearchAsync(GetRequestSearchModel());
@@ -315,8 +330,8 @@ public class VerifyRequestApiServiceTests
         {
             BaseAddress = new Uri("http://fake.cympatic.com")
         };
-        var sut = new VerifyRequestApiService(httpClient);
-        sut.SetClientStubIdentifierValue(clientStub, identifierValue);
+        var sut = new FakeVerifyRequestApiService(httpClient);
+        sut.SetClientStubIdentifierValue(clientStub, identifierValue, true);
 
         // Act & Assert
         var actual = await Assert.ThrowsAsync<ArgumentException>(() => sut.SearchAsync(GetRequestSearchModel()));
@@ -339,7 +354,7 @@ public class VerifyRequestApiServiceTests
             BaseAddress = new Uri("http://fake.cympatic.com")
         };
         httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-        var sut = new VerifyRequestApiService(httpClient);
+        var sut = new FakeVerifyRequestApiService(httpClient);
 
         // Act & Assert
         var actual = await sut.SearchAsync(GetRequestSearchModel());
@@ -361,8 +376,8 @@ public class VerifyRequestApiServiceTests
             BaseAddress = new Uri("http://fake.cympatic.com")
         };
         httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-        var sut = new VerifyRequestApiService(httpClient);
-        sut.SetClientStubIdentifierValue(clientStub, identifierValue);
+        var sut = new FakeVerifyRequestApiService(httpClient);
+        sut.SetClientStubIdentifierValue(clientStub, identifierValue, true);
 
         // Act
         await Assert.ThrowsAsync<HttpRequestException>(() => sut.SearchAsync(GetRequestSearchModel()));

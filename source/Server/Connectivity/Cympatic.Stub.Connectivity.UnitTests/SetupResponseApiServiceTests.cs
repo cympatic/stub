@@ -1,4 +1,5 @@
 ﻿using Cympatic.Stub.Connectivity.Constants;
+using Cympatic.Stub.Connectivity.Interfaces;
 using Cympatic.Stub.Connectivity.Internal;
 using Cympatic.Stub.Connectivity.Models;
 using Cympatic.Stub.Connectivity.UnitTests.Fakes;
@@ -16,6 +17,20 @@ namespace Cympatic.Stub.Connectivity.UnitTests;
 
 public class SetupResponseApiServiceTests
 {
+    private sealed class FakeSetupResponseApiService : SetupResponseApiService
+    {
+        public new IClientStub ClientStub => base.ClientStub;
+
+        public FakeSetupResponseApiService(HttpClient httpClient) : base(httpClient)
+        {
+            SetClientStub(new ClientStub(
+                Guid.NewGuid().ToString("N"),
+                Defaults.IdentifierHeaderName,
+                Defaults.ResponseTtlInMinutes,
+                Defaults.RequestTtlInMinutes));
+        }
+    }
+
     [Fact]
     public void Given_a_SetupResponseApiService_When_using_SetIdentifierValue_with_IdentifierValue_Then_the_HttpClient_Headers_should_have_the_IdentifierValue()
     {
@@ -27,7 +42,7 @@ public class SetupResponseApiServiceTests
             BaseAddress = new Uri("http://fake.cympatic.com")
         };
         httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-        var sut = new SetupResponseApiService(httpClient);
+        var sut = new FakeSetupResponseApiService(httpClient);
 
         // Act
         sut.SetIdentifierValue(expected);
@@ -49,10 +64,10 @@ public class SetupResponseApiServiceTests
             BaseAddress = new Uri("http://fake.cympatic.com")
         };
         httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-        var sut = new SetupResponseApiService(httpClient);
+        var sut = new FakeSetupResponseApiService(httpClient);
 
         // Act
-        sut.SetClientStubIdentifierValue(clientStub, expected);
+        sut.SetClientStubIdentifierValue(clientStub, expected, true);
 
         // Assert
         httpClient.DefaultRequestHeaders.TryGetValues(clientStub.IdentifierHeaderName, out var actual).Should().BeTrue();
@@ -71,7 +86,7 @@ public class SetupResponseApiServiceTests
         };
         httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
         httpClient.DefaultRequestHeaders.Add(Defaults.IdentifierHeaderName, identifierValue);
-        var sut = new SetupResponseApiService(httpClient);
+        var sut = new FakeSetupResponseApiService(httpClient);
 
         // Act
         await sut.AddOrUpdateAsync(GetResponseModels().FirstOrDefault());
@@ -92,8 +107,8 @@ public class SetupResponseApiServiceTests
             BaseAddress = new Uri("http://fake.cympatic.com")
         };
         httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-        var sut = new SetupResponseApiService(httpClient);
-        sut.SetClientStubIdentifierValue(clientStub, identifierValue);
+        var sut = new FakeSetupResponseApiService(httpClient);
+        sut.SetClientStubIdentifierValue(clientStub, identifierValue, true);
 
         // Act
         await sut.AddOrUpdateAsync(GetResponseModels().FirstOrDefault());
@@ -114,8 +129,8 @@ public class SetupResponseApiServiceTests
             BaseAddress = new Uri("http://fake.cympatic.com")
         };
         httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-        var sut = new SetupResponseApiService(httpClient);
-        sut.SetClientStubIdentifierValue(clientStub, identifierValue);
+        var sut = new FakeSetupResponseApiService(httpClient);
+        sut.SetClientStubIdentifierValue(clientStub, identifierValue, true);
 
         // Act
         await sut.AddOrUpdateAsync(GetResponseModels());
@@ -136,8 +151,8 @@ public class SetupResponseApiServiceTests
         {
             BaseAddress = new Uri("http://fake.cympatic.com")
         };
-        var sut = new SetupResponseApiService(httpClient);
-        sut.SetClientStubIdentifierValue(clientStub, identifierValue);
+        var sut = new FakeSetupResponseApiService(httpClient);
+        sut.SetClientStubIdentifierValue(clientStub, identifierValue, true);
 
         // Act & Assert
         var actual = await Assert.ThrowsAsync<ArgumentException>(() => sut.AddOrUpdateAsync(GetResponseModels()));
@@ -157,7 +172,7 @@ public class SetupResponseApiServiceTests
             BaseAddress = new Uri("http://fake.cympatic.com")
         };
         httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-        var sut = new SetupResponseApiService(httpClient);
+        var sut = new FakeSetupResponseApiService(httpClient);
 
         // Act & Assert
         await sut.AddOrUpdateAsync(GetResponseModels());
@@ -178,8 +193,8 @@ public class SetupResponseApiServiceTests
             BaseAddress = new Uri("http://fake.cympatic.com")
         };
         httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-        var sut = new SetupResponseApiService(httpClient);
-        sut.SetClientStubIdentifierValue(clientStub, identifierValue);
+        var sut = new FakeSetupResponseApiService(httpClient);
+        sut.SetClientStubIdentifierValue(clientStub, identifierValue, true);
 
         // Act
         await Assert.ThrowsAsync<HttpRequestException>(() => sut.AddOrUpdateAsync(GetResponseModels()));
@@ -201,7 +216,7 @@ public class SetupResponseApiServiceTests
         };
         httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
         httpClient.DefaultRequestHeaders.Add(Defaults.IdentifierHeaderName, identifierValue);
-        var sut = new SetupResponseApiService(httpClient);
+        var sut = new FakeSetupResponseApiService(httpClient);
 
         // Act
         var actual = await sut.GetAsync();
@@ -224,8 +239,8 @@ public class SetupResponseApiServiceTests
             BaseAddress = new Uri("http://fake.cympatic.com")
         };
         httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-        var sut = new SetupResponseApiService(httpClient);
-        sut.SetClientStubIdentifierValue(clientStub, identifierValue);
+        var sut = new FakeSetupResponseApiService(httpClient);
+        sut.SetClientStubIdentifierValue(clientStub, identifierValue, true);
 
         // Act
         var actual = await sut.GetAsync();
@@ -247,8 +262,8 @@ public class SetupResponseApiServiceTests
         {
             BaseAddress = new Uri("http://fake.cympatic.com")
         };
-        var sut = new SetupResponseApiService(httpClient);
-        sut.SetClientStubIdentifierValue(clientStub, identifierValue);
+        var sut = new FakeSetupResponseApiService(httpClient);
+        sut.SetClientStubIdentifierValue(clientStub, identifierValue, true);
 
         // Act & Assert
         var actual = await Assert.ThrowsAsync<ArgumentException>(() => sut.GetAsync());
@@ -269,7 +284,7 @@ public class SetupResponseApiServiceTests
             BaseAddress = new Uri("http://fake.cympatic.com")
         };
         httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-        var sut = new SetupResponseApiService(httpClient);
+        var sut = new FakeSetupResponseApiService(httpClient);
 
         // Act & Assert
         var actual = await sut.GetAsync();
@@ -291,8 +306,8 @@ public class SetupResponseApiServiceTests
             BaseAddress = new Uri("http://fake.cympatic.com")
         };
         httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-        var sut = new SetupResponseApiService(httpClient);
-        sut.SetClientStubIdentifierValue(clientStub, identifierValue);
+        var sut = new FakeSetupResponseApiService(httpClient);
+        sut.SetClientStubIdentifierValue(clientStub, identifierValue, true);
 
         // Act
         await Assert.ThrowsAsync<HttpRequestException>(() => sut.GetAsync());
@@ -313,7 +328,7 @@ public class SetupResponseApiServiceTests
         };
         httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
         httpClient.DefaultRequestHeaders.Add(Defaults.IdentifierHeaderName, identifierValue);
-        var sut = new SetupResponseApiService(httpClient);
+        var sut = new FakeSetupResponseApiService(httpClient);
 
         // Act
         await sut.RemoveAsync();
@@ -334,8 +349,8 @@ public class SetupResponseApiServiceTests
             BaseAddress = new Uri("http://fake.cympatic.com")
         };
         httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-        var sut = new SetupResponseApiService(httpClient);
-        sut.SetClientStubIdentifierValue(clientStub, identifierValue);
+        var sut = new FakeSetupResponseApiService(httpClient);
+        sut.SetClientStubIdentifierValue(clientStub, identifierValue, true);
 
         // Act
         await sut.RemoveAsync();
@@ -356,8 +371,8 @@ public class SetupResponseApiServiceTests
         {
             BaseAddress = new Uri("http://fake.cympatic.com")
         };
-        var sut = new SetupResponseApiService(httpClient);
-        sut.SetClientStubIdentifierValue(clientStub, identifierValue);
+        var sut = new FakeSetupResponseApiService(httpClient);
+        sut.SetClientStubIdentifierValue(clientStub, identifierValue, true);
 
         // Act & Assert
         var actual = await Assert.ThrowsAsync<ArgumentException>(() => sut.RemoveAsync());
@@ -377,7 +392,7 @@ public class SetupResponseApiServiceTests
             BaseAddress = new Uri("http://fake.cympatic.com")
         };
         httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-        var sut = new SetupResponseApiService(httpClient);
+        var sut = new FakeSetupResponseApiService(httpClient);
 
         // Act & Assert
         await sut.RemoveAsync();
@@ -398,8 +413,8 @@ public class SetupResponseApiServiceTests
             BaseAddress = new Uri("http://fake.cympatic.com")
         };
         httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-        var sut = new SetupResponseApiService(httpClient);
-        sut.SetClientStubIdentifierValue(clientStub, identifierValue);
+        var sut = new FakeSetupResponseApiService(httpClient);
+        sut.SetClientStubIdentifierValue(clientStub, identifierValue, true);
 
         // Act & Assert
         await Assert.ThrowsAsync<HttpRequestException>(() => sut.RemoveAsync());

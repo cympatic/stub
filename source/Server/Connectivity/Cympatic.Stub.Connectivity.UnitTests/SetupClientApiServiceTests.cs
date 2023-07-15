@@ -1,5 +1,6 @@
 ﻿using Cympatic.Extensions.Http;
 using Cympatic.Stub.Connectivity.Constants;
+using Cympatic.Stub.Connectivity.Interfaces;
 using Cympatic.Stub.Connectivity.Internal;
 using Cympatic.Stub.Connectivity.UnitTests.Fakes;
 using FluentAssertions;
@@ -14,6 +15,20 @@ namespace Cympatic.Stub.Connectivity.UnitTests;
 
 public class SetupClientApiServiceTests
 {
+    private sealed class FakeSetupClientApiService : SetupClientApiService
+    {
+        public new IClientStub ClientStub => base.ClientStub;
+
+        public FakeSetupClientApiService(HttpClient httpClient) : base(httpClient)
+        {
+            SetClientStub(new ClientStub(
+                Guid.NewGuid().ToString("N"),
+                Defaults.IdentifierHeaderName,
+                Defaults.ResponseTtlInMinutes,
+                Defaults.RequestTtlInMinutes));
+        }
+    }
+
     [Fact]
     public async Task Given_a_SetupClientApiService_When_using_the_default_SetupAsync_Then_a_default_ClientStub_should_be_returned()
     {
@@ -26,7 +41,7 @@ public class SetupClientApiServiceTests
                 { "requestTtlInMinutes", expected.RequestTtlInMinutes.ToString() }
             });
         var fakeMessageHandler = new FakeMessageHandler(HttpStatusCode.Created, uri.ToString());
-        var sut = new SetupClientApiService(new HttpClient(fakeMessageHandler)
+        var sut = new FakeSetupClientApiService(new HttpClient(fakeMessageHandler)
         {
             BaseAddress = new Uri("http://fake.cympatic.com")
         });
@@ -51,7 +66,7 @@ public class SetupClientApiServiceTests
                 { "requestTtlInMinutes", expected.RequestTtlInMinutes.ToString() }
             });
         var fakeMessageHandler = new FakeMessageHandler(HttpStatusCode.Created, uri.ToString());
-        var sut = new SetupClientApiService(new HttpClient(fakeMessageHandler)
+        var sut = new FakeSetupClientApiService(new HttpClient(fakeMessageHandler)
         {
             BaseAddress = new Uri("http://fake.cympatic.com")
         });
@@ -76,7 +91,7 @@ public class SetupClientApiServiceTests
                 { "requestTtlInMinutes", expected.RequestTtlInMinutes.ToString() }
             });
         var fakeMessageHandler = new FakeMessageHandler(HttpStatusCode.Created, uri.ToString());
-        var sut = new SetupClientApiService(new HttpClient(fakeMessageHandler)
+        var sut = new FakeSetupClientApiService(new HttpClient(fakeMessageHandler)
         {
             BaseAddress = new Uri("http://fake.cympatic.com")
         });
@@ -100,7 +115,7 @@ public class SetupClientApiServiceTests
                 { "requestTtlInMinutes", expected.RequestTtlInMinutes.ToString() }
             });
         var fakeMessageHandler = new FakeMessageHandler(HttpStatusCode.Created, uri.ToString());
-        var sut = new SetupClientApiService(new HttpClient(fakeMessageHandler)
+        var sut = new FakeSetupClientApiService(new HttpClient(fakeMessageHandler)
         {
             BaseAddress = new Uri("http://fake.cympatic.com")
         });
@@ -122,7 +137,7 @@ public class SetupClientApiServiceTests
                 { "requestTtlInMinutes", expected.RequestTtlInMinutes.ToString() }
             });
         var fakeMessageHandler = new FakeMessageHandler(HttpStatusCode.BadRequest, uri.ToString());
-        var sut = new SetupClientApiService(new HttpClient(fakeMessageHandler)
+        var sut = new FakeSetupClientApiService(new HttpClient(fakeMessageHandler)
         {
             BaseAddress = new Uri("http://fake.cympatic.com")
         });
@@ -137,7 +152,7 @@ public class SetupClientApiServiceTests
     {
         // Arrange
         var fakeMessageHandler = new FakeMessageHandler(HttpStatusCode.NoContent, "remove");
-        var sut = new SetupClientApiService(new HttpClient(fakeMessageHandler)
+        var sut = new FakeSetupClientApiService(new HttpClient(fakeMessageHandler)
         {
             BaseAddress = new Uri("http://fake.cympatic.com")
         });
@@ -155,7 +170,7 @@ public class SetupClientApiServiceTests
         // Arrange
         var clientStub = new ClientStub("TestClientStub", "TestIdentifierHeaderName", Defaults.ResponseTtlInMinutes, Defaults.RequestTtlInMinutes);
         var fakeMessageHandler = new FakeMessageHandler(HttpStatusCode.NoContent, "remove");
-        var sut = new SetupClientApiService(new HttpClient(fakeMessageHandler)
+        var sut = new FakeSetupClientApiService(new HttpClient(fakeMessageHandler)
         {
             BaseAddress = new Uri("http://fake.cympatic.com")
         });
@@ -172,7 +187,7 @@ public class SetupClientApiServiceTests
     {
         // Arrange
         var fakeMessageHandler = new FakeMessageHandler(HttpStatusCode.NoContent, "remove");
-        var sut = new SetupClientApiService(new HttpClient(fakeMessageHandler)
+        var sut = new FakeSetupClientApiService(new HttpClient(fakeMessageHandler)
         {
             BaseAddress = new Uri("http://fake.cympatic.com")
         });
@@ -188,7 +203,7 @@ public class SetupClientApiServiceTests
         // Arrange
         var clientStub = new ClientStub("TestClientStub", "TestIdentifierHeaderName", Defaults.ResponseTtlInMinutes, Defaults.RequestTtlInMinutes);
         var fakeMessageHandler = new FakeMessageHandler(HttpStatusCode.BadRequest, "remove");
-        var sut = new SetupClientApiService(new HttpClient(fakeMessageHandler)
+        var sut = new FakeSetupClientApiService(new HttpClient(fakeMessageHandler)
         {
             BaseAddress = new Uri("http://fake.cympatic.com")
         });
@@ -204,7 +219,7 @@ public class SetupClientApiServiceTests
         // Arrange
         var clientStub = new ClientStub("TestClientStub", "TestIdentifierHeaderName", Defaults.ResponseTtlInMinutes, Defaults.RequestTtlInMinutes);
         var fakeMessageHandler = new FakeMessageHandler(HttpStatusCode.OK, clientStub, "getclient");
-        var sut = new SetupClientApiService(new HttpClient(fakeMessageHandler)
+        var sut = new FakeSetupClientApiService(new HttpClient(fakeMessageHandler)
         {
             BaseAddress = new Uri("http://fake.cympatic.com")
         });
@@ -222,7 +237,7 @@ public class SetupClientApiServiceTests
     {
         // Arrange
         var fakeMessageHandler = new FakeMessageHandler(HttpStatusCode.BadRequest, null, "getclient");
-        var sut = new SetupClientApiService(new HttpClient(fakeMessageHandler)
+        var sut = new FakeSetupClientApiService(new HttpClient(fakeMessageHandler)
         {
             BaseAddress = new Uri("http://fake.cympatic.com")
         });
@@ -240,13 +255,13 @@ public class SetupClientApiServiceTests
     {
         // Arrange
         var fakeMessageHandler = new FakeMessageHandler(HttpStatusCode.OK, "getclient");
-        var sut = new SetupClientApiService(new HttpClient(fakeMessageHandler)
+        var sut = new FakeSetupClientApiService(new HttpClient(fakeMessageHandler)
         {
             BaseAddress = new Uri("http://fake.cympatic.com")
         });
 
         // Act & Assert
-        await Assert.ThrowsAsync<ArgumentNullException>(() => sut.GetClientAsync(null));
+        await Assert.ThrowsAsync<ArgumentException>(() => sut.GetClientAsync(null));
         fakeMessageHandler.CallCount("getclient").Should().Be(0);
     }
 }
