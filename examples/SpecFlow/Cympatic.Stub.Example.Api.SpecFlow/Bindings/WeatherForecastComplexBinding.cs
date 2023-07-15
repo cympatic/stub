@@ -26,7 +26,7 @@ public sealed class WeatherForecastComplexBinding
     }
 
     [BeforeScenario("Complex", Order = 20)]
-    public void BeforeScenarion()
+    public void BeforeScenario()
     {
         _exampleApiService.SetIdentifierValue(_stubContext.IdentifierValue);
     }

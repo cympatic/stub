@@ -1,6 +1,8 @@
 ﻿using Cympatic.Extensions.Http.Services;
 using Cympatic.Extensions.Http.Services.Results;
+using Cympatic.Stub.Connectivity.Settings;
 using Cympatic.Stub.Example.Api.SpecFlow.Models;
+using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
@@ -11,8 +13,13 @@ namespace Cympatic.Stub.Example.Api.SpecFlow.Services;
 
 public class ExampleApiService : ApiService
 {
-    public ExampleApiService(HttpClient httpClient) : base(httpClient)
-    { }
+    private StubConnectivitySettings _options;
+
+    public ExampleApiService(HttpClient httpClient, IOptions<StubConnectivitySettings> options) 
+        : base(httpClient)
+    { 
+        _options = options.Value;
+    }
 
     public void SetIdentifierValue(string identifierValue)
     {
@@ -20,8 +27,10 @@ public class ExampleApiService : ApiService
         // For example purpose only the identifierValue is added to the Request.Headers
         // In real life use a headername should be chosen that can be manipulated,
         // can contain an unique value, and is passed into all calls with the chain
-
-        HttpClient.DefaultRequestHeaders.Add("ExampleIdentifier", identifierValue);
+        if (_options.UseIdentificationHeader)
+        {
+            HttpClient.DefaultRequestHeaders.Add(_options.IdentificationHeaderName, identifierValue);
+        }
     }
 
     public Task<ApiServiceResult<IEnumerable<WeatherForecast>>> GetForecastsAsync(CancellationToken cancellationToken = default)
