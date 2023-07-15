@@ -1,7 +1,6 @@
-﻿namespace Cympatic.Stub.Example.Api.Settings
+﻿namespace Cympatic.Stub.Example.Api.Settings;
+
+public class ExternalApiServiceSettings
 {
-    public class ExternalApiServiceSettings
-    {
-        public string Url { get; set; }
-    }
+    public string Url { get; set; }
 }

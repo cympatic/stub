@@ -1,11 +1,10 @@
-﻿namespace Cympatic.Stub.Connectivity.Models
+﻿namespace Cympatic.Stub.Connectivity.Models;
+
+public class RequestModel : StubModel
 {
-    public class RequestModel : StubModel
-    {
-        public string HttpMethod { get; set; }
+    public string HttpMethod { get; set; }
 
-        public string Body { get; set; }
+    public string Body { get; set; }
 
-        public bool ResponseFound { get; set; }
-    }
+    public bool ResponseFound { get; set; }
 }

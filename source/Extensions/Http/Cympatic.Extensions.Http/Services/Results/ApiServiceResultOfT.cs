@@ -6,31 +6,30 @@ using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Cympatic.Extensions.Http.Services.Results
+namespace Cympatic.Extensions.Http.Services.Results;
+
+public class ApiServiceResult<TModel> : ApiServiceResult, IApiServiceResultValue
+    where TModel : class
 {
-    public class ApiServiceResult<TModel> : ApiServiceResult, IApiServiceResultValue
-        where TModel : class
+    public TModel Value { get; protected set; }
+
+    object IApiServiceResultValue.Value => Value;
+
+    public override async Task InitializeAsync(HttpResponseMessage response, CancellationToken cancellationToken = default)
     {
-        public TModel Value { get; protected set; }
+        await base.InitializeAsync(response, cancellationToken);
 
-        object IApiServiceResultValue.Value => Value;
-
-        public override async Task InitializeAsync(HttpResponseMessage response, CancellationToken cancellationToken = default)
+        try
         {
-            await base.InitializeAsync(response, cancellationToken);
+            var options = new JsonSerializerOptions();
+            options.Converters.Add(new JsonStringEnumConverter(JsonNamingPolicy.CamelCase));
+            options.PropertyNameCaseInsensitive = true;
 
-            try
-            {
-                var options = new JsonSerializerOptions();
-                options.Converters.Add(new JsonStringEnumConverter(JsonNamingPolicy.CamelCase));
-                options.PropertyNameCaseInsensitive = true;
-
-                Value = JsonSerializer.Deserialize<TModel>(Content, options);
-            }
-            catch (Exception)
-            {
-                Value = default;
-            }
+            Value = JsonSerializer.Deserialize<TModel>(Content, options);
+        }
+        catch (Exception)
+        {
+            Value = default;
         }
     }
 }

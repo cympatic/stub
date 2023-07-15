@@ -1,15 +1,14 @@
-﻿namespace Cympatic.Stub.Example.Api.SpecFlow.Enums
+﻿namespace Cympatic.Stub.Example.Api.SpecFlow.Enums;
+
+public enum ForecastDetailPosition
 {
-    public enum ForecastDetailPosition
-    {
-        None,
+    None,
 
-        Morning,
+    Morning,
 
-        Afternoon,
+    Afternoon,
 
-        Evening,
+    Evening,
 
-        Night
-    }
+    Night
 }

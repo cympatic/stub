@@ -1,9 +1,8 @@
 ﻿using System;
 
-namespace Cympatic.Extensions.Http.Attributes
+namespace Cympatic.Extensions.Http.Attributes;
+
+[AttributeUsage(AttributeTargets.Method | AttributeTargets.Class, AllowMultiple = false)]
+public class LoggableAttribute : Attribute
 {
-    [AttributeUsage(AttributeTargets.Method | AttributeTargets.Class, AllowMultiple = false)]
-    public class LoggableAttribute : Attribute
-    {
-    }
 }

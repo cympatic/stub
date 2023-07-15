@@ -1,7 +1,6 @@
-﻿namespace Cympatic.Stub.Example.Api.SpecFlow.Settings
+﻿namespace Cympatic.Stub.Example.Api.SpecFlow.Settings;
+
+public class ExampleApiServiceSettings
 {
-    public class ExampleApiServiceSettings
-    {
-        public string Url { get; set; }
-    }
+    public string Url { get; set; }
 }

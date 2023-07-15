@@ -10,49 +10,48 @@ using SolidToken.SpecFlow.DependencyInjection;
 using System;
 using System.Net.Http.Headers;
 
-namespace Cympatic.Stub.Example.Api.SpecFlow.Dependencies
+namespace Cympatic.Stub.Example.Api.SpecFlow.Dependencies;
+
+public static class TestDependencies
 {
-    public static class TestDependencies
+    [ScenarioDependencies]
+    public static IServiceCollection CreateServices()
     {
-        [ScenarioDependencies]
-        public static IServiceCollection CreateServices()
+        var services = new ServiceCollection();
+
+        // Add test dependencies
+        var configuration = Configure();
+        services.AddSingleton(configuration);
+
+        services.AddSpecFlowStub();
+        services.AddStubConnectivity();
+
+        services
+           .AddOptions<ExampleApiServiceSettings>()
+           .Configure<IConfiguration>((options, configuration) => configuration.GetSection(nameof(ExampleApiServiceSettings)).Bind(options));
+
+        services.AddHttpClient<ExampleApiService>((serviceProvider, config) =>
         {
-            var services = new ServiceCollection();
+            var exampleApiServiceSettings = serviceProvider.GetRequiredService<IOptions<ExampleApiServiceSettings>>().Value;
 
-            // Add test dependencies
-            var configuration = Configure();
-            services.AddSingleton(configuration);
-
-            services.AddSpecFlowStub();
-            services.AddStubConnectivity();
-
-            services
-               .AddOptions<ExampleApiServiceSettings>()
-               .Configure<IConfiguration>((options, configuration) => configuration.GetSection(nameof(ExampleApiServiceSettings)).Bind(options));
-
-            services.AddHttpClient<ExampleApiService>((serviceProvider, config) =>
+            if (string.IsNullOrWhiteSpace(exampleApiServiceSettings.Url))
             {
-                var exampleApiServiceSettings = serviceProvider.GetRequiredService<IOptions<ExampleApiServiceSettings>>().Value;
+                throw new ArgumentException($"{nameof(exampleApiServiceSettings.Url)} must be provided");
+            }
 
-                if (string.IsNullOrWhiteSpace(exampleApiServiceSettings.Url))
-                {
-                    throw new ArgumentException($"{nameof(exampleApiServiceSettings.Url)} must be provided");
-                }
+            config.BaseAddress = new Uri(exampleApiServiceSettings.Url);
+            config.DefaultRequestHeaders
+                .Accept
+                .Add(new MediaTypeWithQualityHeaderValue("application/json"));
+        });
 
-                config.BaseAddress = new Uri(exampleApiServiceSettings.Url);
-                config.DefaultRequestHeaders
-                    .Accept
-                    .Add(new MediaTypeWithQualityHeaderValue("application/json"));
-            });
+        return services;
+    }
 
-            return services;
-        }
-
-        private static IConfiguration Configure()
-        {
-            return new ConfigurationBuilder()
-                .AddAvailableConfigurations()
-                .Build();
-        }
+    private static IConfiguration Configure()
+    {
+        return new ConfigurationBuilder()
+            .AddAvailableConfigurations()
+            .Build();
     }
 }

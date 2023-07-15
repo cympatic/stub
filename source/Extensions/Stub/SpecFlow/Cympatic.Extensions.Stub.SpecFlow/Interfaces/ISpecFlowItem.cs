@@ -1,9 +1,8 @@
-﻿namespace Cympatic.Extensions.Stub.SpecFlow.Interfaces
-{
-    public interface ISpecFlowItem
-    {
-        string Alias { get; set; }
+﻿namespace Cympatic.Extensions.Stub.SpecFlow.Interfaces;
 
-        void ConnectSpecFlowItem(ISpecFlowItem item);
-    }
+public interface ISpecFlowItem
+{
+    string Alias { get; set; }
+
+    void ConnectSpecFlowItem(ISpecFlowItem item);
 }

@@ -4,22 +4,21 @@ using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Cympatic.Extensions.Http.Interfaces
+namespace Cympatic.Extensions.Http.Interfaces;
+
+public interface IApiServiceResult
 {
-    public interface IApiServiceResult
-    {
-        HttpStatusCode StatusCode { get; }
-        
-        string ReasonPhrase { get; }
+    HttpStatusCode StatusCode { get; }
+    
+    string ReasonPhrase { get; }
 
-        HttpResponseHeaders ResponseHeaders { get; }
+    HttpResponseHeaders ResponseHeaders { get; }
 
-        HttpContentHeaders ContentHeaders { get; }
+    HttpContentHeaders ContentHeaders { get; }
 
-        string Content { get; }
+    string Content { get; }
 
-        bool IsSuccessStatusCode { get; }
+    bool IsSuccessStatusCode { get; }
 
-        Task InitializeAsync(HttpResponseMessage response, CancellationToken cancellationToken = default);
-    }
+    Task InitializeAsync(HttpResponseMessage response, CancellationToken cancellationToken = default);
 }

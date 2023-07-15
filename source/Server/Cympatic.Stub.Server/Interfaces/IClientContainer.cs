@@ -2,32 +2,31 @@
 using Microsoft.AspNetCore.Http;
 using System.Collections.Generic;
 
-namespace Cympatic.Stub.Server.Interfaces
+namespace Cympatic.Stub.Server.Interfaces;
+
+public interface IClientContainer
 {
-    public interface IClientContainer
-    {
-        ClientModel Add(string identifierHeaderName, int responseTtlInMinutes, int requestTtlInMinutes);
+    ClientModel Add(string identifierHeaderName, int responseTtlInMinutes, int requestTtlInMinutes);
 
-        ClientModel GetClient();
+    ClientModel GetClient();
 
-        IEnumerable<ClientModel> GetClients();
+    IEnumerable<ClientModel> GetClients();
 
-        void AddOrUpdateResponses(IEnumerable<ResponseModel> responses);
+    void AddOrUpdateResponses(IEnumerable<ResponseModel> responses);
 
-        RequestModel AddRequest(string path, IDictionary<string, string> query, string httpMethod, IDictionary<string, IEnumerable<string>> headers, string body, bool responseFound);
+    RequestModel AddRequest(string path, IDictionary<string, string> query, string httpMethod, IDictionary<string, IEnumerable<string>> headers, string body, bool responseFound);
 
-        ResponseModel FindResult(string httpMethod, string path, IQueryCollection query);
+    ResponseModel FindResult(string httpMethod, string path, IQueryCollection query);
 
-        IEnumerable<RequestModel> GetRequests();
+    IEnumerable<RequestModel> GetRequests();
 
-        IEnumerable<ResponseModel> GetResponses();
+    IEnumerable<ResponseModel> GetResponses();
 
-        void Remove();
+    void Remove();
 
-        void RemoveRequests();
+    void RemoveRequests();
 
-        void RemoveResponses();
+    void RemoveResponses();
 
-        IEnumerable<RequestModel> SearchRequests(RequestSearchModel searchModel);
-    }
+    IEnumerable<RequestModel> SearchRequests(RequestSearchModel searchModel);
 }

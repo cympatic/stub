@@ -12,101 +12,100 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Cympatic.Stub.Server.Controllers
+namespace Cympatic.Stub.Server.Controllers;
+
+[Produces("application/json")]
+[ApiController]
+[Route("[controller]")]
+[ApiExplorerSettings(IgnoreApi = true)]
+[Loggable]
+public class StubController : ControllerBase
 {
-    [Produces("application/json")]
-    [ApiController]
-    [Route("[controller]")]
-    [ApiExplorerSettings(IgnoreApi = true)]
-    [Loggable]
-    public class StubController : ControllerBase
+    private readonly IClientContainer _clientContainer;
+    private readonly ILogger _logger;
+
+    public StubController(IClientContainer clientContainer, ILogger<StubController> logger)
     {
-        private readonly IClientContainer _clientContainer;
-        private readonly ILogger _logger;
+        _clientContainer = clientContainer;
+        _logger = logger;
+    }
 
-        public StubController(IClientContainer clientContainer, ILogger<StubController> logger)
+    public async Task<IActionResult> Call(CancellationToken cancellationToken)
+    {
+        try
         {
-            _clientContainer = clientContainer;
-            _logger = logger;
-        }
+            var path = Request.RouteValues.TryGetValue("slug", out var slug) && slug is string slugPath
+                ? slugPath
+                : Request.Path.Value;
+            var body = await GetRequestBodyAsync(cancellationToken);
+            var model = _clientContainer.FindResult(Request.Method, path, Request.Query);
 
-        public async Task<IActionResult> Call(CancellationToken cancellationToken)
-        {
-            try
+            RegisterRequest(path, body, model != null);
+
+            if (model != null)
             {
-                var path = Request.RouteValues.TryGetValue("slug", out var slug) && slug is string slugPath
-                    ? slugPath
-                    : Request.Path.Value;
-                var body = await GetRequestBodyAsync(cancellationToken);
-                var model = _clientContainer.FindResult(Request.Method, path, Request.Query);
+                AddHeadersToResponse(model);
 
-                RegisterRequest(path, body, model != null);
-
-                if (model != null)
+                if (model.DelayInMilliseconds > 0)
                 {
-                    AddHeadersToResponse(model);
-
-                    if (model.DelayInMilliseconds > 0)
-                    {
-                        await Task.Delay(model.DelayInMilliseconds, cancellationToken);
-                    }
-
-                    return StatusCode((int)model.ReturnStatusCode, model.Result);
+                    await Task.Delay(model.DelayInMilliseconds, cancellationToken);
                 }
-            }
-            catch (Exception exception)
-            {
-                _logger.LogError(exception, "An exception occurred while retrieving a response (routevalues: '{routeValues}', queryParams: '{queryParams}')", Request.RouteValues, Request.QueryString);
 
-                return BadRequest(exception.Message);
+                return StatusCode((int)model.ReturnStatusCode, model.Result);
             }
-            return NotFound();
         }
-
-        private void RegisterRequest(string path, string body, bool responseFound)
+        catch (Exception exception)
         {
-            _clientContainer.AddRequest(
-                path,
-                Request.Query.ToDictionary(),
-                Request.Method,
-                Request.Headers.ToDictionary(),
-                body,
-                responseFound);
+            _logger.LogError(exception, "An exception occurred while retrieving a response (routevalues: '{routeValues}', queryParams: '{queryParams}')", Request.RouteValues, Request.QueryString);
+
+            return BadRequest(exception.Message);
         }
+        return NotFound();
+    }
 
-        private async Task<string> GetRequestBodyAsync(CancellationToken cancellationToken)
+    private void RegisterRequest(string path, string body, bool responseFound)
+    {
+        _clientContainer.AddRequest(
+            path,
+            Request.Query.ToDictionary(),
+            Request.Method,
+            Request.Headers.ToDictionary(),
+            body,
+            responseFound);
+    }
+
+    private async Task<string> GetRequestBodyAsync(CancellationToken cancellationToken)
+    {
+        try
         {
-            try
-            {
-                using var stream = new MemoryStream();
-                await Request.Body.CopyToAsync(stream, cancellationToken);
-                return Encoding.UTF8.GetString(stream.ToArray());
-            }
-            catch 
+            using var stream = new MemoryStream();
+            await Request.Body.CopyToAsync(stream, cancellationToken);
+            return Encoding.UTF8.GetString(stream.ToArray());
+        }
+        catch 
+        { 
+            return string.Empty;
+        }
+        finally
+        {
+            if (Request.Body.CanSeek)
             { 
-                return string.Empty;
-            }
-            finally
-            {
-                if (Request.Body.CanSeek)
-                { 
-                    Request.Body.Seek(0, SeekOrigin.Begin);
-                }
+                Request.Body.Seek(0, SeekOrigin.Begin);
             }
         }
+    }
 
-        private void AddHeadersToResponse(ResponseModel model)
+    private void AddHeadersToResponse(ResponseModel model)
+    {
+        Response.Headers.AddRange(model.Headers);
+        if (model.ReturnStatusCode == HttpStatusCode.Created)
         {
-            Response.Headers.AddRange(model.Headers);
-            if (model.ReturnStatusCode == HttpStatusCode.Created)
+            if (Response.Headers.ContainsKey("Location"))
             {
-                if (Response.Headers.ContainsKey("Location"))
-                {
-                    Response.Headers.Remove("Location");
-                }
-
-                Response.Headers.Add("Location", model.GetCreatedLocation(Request.Scheme, Request.Host));
+                Response.Headers.Remove("Location");
             }
+
+            Response.Headers.Add("Location", model.GetCreatedLocation(Request.Scheme, Request.Host));
         }
     }
 }
