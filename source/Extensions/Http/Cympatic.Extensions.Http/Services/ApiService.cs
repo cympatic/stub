@@ -75,7 +75,7 @@ public abstract class ApiService
         var absoluteUri = uri.IsAbsoluteUri ? uri : HttpClient.BaseAddress.Append(uri.ToString());
         var httpRequestMessage = new HttpRequestMessage(httpMethod, absoluteUri);
 
-        headers?.AddRange(httpRequestMessage.Headers);
+        httpRequestMessage.Headers.AddRange(headers);
 
         if (payload != null)
         {
