@@ -1,5 +1,5 @@
-﻿@Complex
-Feature: WeatherForecast - Complex
+﻿Feature: WeatherForecast - Complex
+
 	In order to validate that the Example.WebApi service gets pre-defined weahter forecasts are coming from a stub server
 	As a developer
 	I want to receive the pre-defined weather forecasts I added to the stub server

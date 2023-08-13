@@ -12,23 +12,30 @@ using TechTalk.SpecFlow.Assist;
 namespace Cympatic.Stub.Example.Api.SpecFlow.Bindings;
 
 [Binding]
-public sealed class WeatherForecastComplexBinding
+[Scope(Feature = "WeatherForecast - Complex")]
+public sealed class WeatherForecastComplexStepDefinition
 {
     private readonly StubContext _stubContext;
     private readonly ExampleApiService _exampleApiService;
 
     private ApiServiceResult<IEnumerable<WeatherForecast>> _actual;
 
-    public WeatherForecastComplexBinding(StubContext stubContext, ExampleApiService exampleApiService)
+    public WeatherForecastComplexStepDefinition(StubContext stubContext, ExampleApiService exampleApiService)
     {
         _stubContext = stubContext;
         _exampleApiService = exampleApiService;
     }
 
-    [BeforeScenario("Complex", Order = 20)]
+    [BeforeScenario]
     public void BeforeScenario()
     {
         _exampleApiService.SetIdentifierValue(_stubContext.IdentifierValue);
+    }
+
+    [AfterScenario]
+    public Task AfterScenario()
+    {
+        return _stubContext.Clear();
     }
 
     [Given(@"multiple '(.*)' items containing the following values")]

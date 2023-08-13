@@ -13,7 +13,8 @@ using TechTalk.SpecFlow;
 namespace Cympatic.Stub.Example.Api.SpecFlow.Bindings;
 
 [Binding]
-public sealed class WeatherForecastSimpleBinding
+[Scope(Feature = "WeatherForecast - Simple")]
+public sealed class WeatherForecastSimpleStepDefinition
 {
     private readonly StubContext _stubContext;
     private readonly ExampleApiService _exampleApiService;
@@ -21,16 +22,22 @@ public sealed class WeatherForecastSimpleBinding
     private IEnumerable<WeatherForecast> _expected;
     private IEnumerable<WeatherForecast> _actual;
 
-    public WeatherForecastSimpleBinding(StubContext stubContext, ExampleApiService exampleApiService)
+    public WeatherForecastSimpleStepDefinition(StubContext stubContext, ExampleApiService exampleApiService)
     {
         _stubContext = stubContext;
         _exampleApiService = exampleApiService;
     }
 
-    [BeforeScenario("Simple", Order = 20)]
+    [BeforeScenario]
     public void BeforeScenario()
     {
         _exampleApiService.SetIdentifierValue(_stubContext.IdentifierValue);
+    }
+
+    [AfterScenario]
+    public Task AfterScenario() 
+    {
+        return _stubContext.Clear();
     }
 
     [Given(@"I have generate a random number of weahter forecasts")]
