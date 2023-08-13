@@ -1,5 +1,6 @@
 ﻿using Cympatic.Extensions.Stub.SpecFlow.Interfaces;
 using Cympatic.Stub.Connectivity;
+using Cympatic.Stub.Connectivity.Interfaces;
 using Cympatic.Stub.Connectivity.Models;
 using Cympatic.Stub.Connectivity.Settings;
 using Microsoft.Extensions.Options;
@@ -23,6 +24,7 @@ public class StubContext : IAsyncDisposable, IDisposable
     private readonly SetupClientApiService _setupClientApiService;
     private readonly SetupResponseApiService _setupResponseApiService;
     private readonly VerifyRequestApiService _verifyRequestApiService;
+
     private bool initializedStubServices;
 
     public StubContext(
@@ -105,19 +107,24 @@ public class StubContext : IAsyncDisposable, IDisposable
         }, cancellationToken);
     }
 
-    public async Task<IEnumerable<RequestModel>> SearchRequestAsync([NotNull] RequestSearchModel searchModel, CancellationToken cancellationToken = default)
-    {
-        await EnsureStubServicesAsync(cancellationToken);
-        return await _verifyRequestApiService.SearchAsync(searchModel, cancellationToken);
-    }
-
-    protected virtual async ValueTask DisposeAsyncCore(CancellationToken cancellationToken = default)
+    public async Task Clear(CancellationToken cancellationToken = default)
     {
         if (initializedStubServices)
         {
             await _setupResponseApiService.RemoveAsync(cancellationToken);
             await _verifyRequestApiService.RemoveAsync(cancellationToken);
         }
+    }
+
+    public async Task<IEnumerable<RequestModel>> SearchRequestAsync([NotNull] RequestSearchModel searchModel, CancellationToken cancellationToken = default)
+    {
+        await EnsureStubServicesAsync(cancellationToken);
+        return await _verifyRequestApiService.SearchAsync(searchModel, cancellationToken);
+    }
+
+    protected virtual ValueTask DisposeAsyncCore(CancellationToken cancellationToken = default)
+    {
+        return new ValueTask(Clear(cancellationToken));
     }
 
     private async Task EnsureStubServicesAsync(CancellationToken cancellationToken)

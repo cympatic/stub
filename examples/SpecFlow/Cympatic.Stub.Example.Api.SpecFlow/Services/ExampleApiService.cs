@@ -13,7 +13,7 @@ namespace Cympatic.Stub.Example.Api.SpecFlow.Services;
 
 public class ExampleApiService : ApiService
 {
-    private StubConnectivitySettings _options;
+    private readonly StubConnectivitySettings _options;
 
     public ExampleApiService(HttpClient httpClient, IOptions<StubConnectivitySettings> options) 
         : base(httpClient)
