@@ -13,16 +13,9 @@ namespace Cympatic.Stub.Server.Controllers;
 [ApiController]
 [Route("[controller]")]
 [Loggable]
-public class VerifyRequestController : ControllerBase
+public class VerifyRequestController(IClientContainer clientContainer, ILogger<VerifyRequestController> logger) : ControllerBase
 {
-    private readonly IClientContainer _clientContainer;
-    private readonly ILogger _logger;
-
-    public VerifyRequestController(IClientContainer clientContainer, ILogger<VerifyRequestController> logger)
-    {
-        _clientContainer = clientContainer;
-        _logger = logger;
-    }
+    private readonly ILogger _logger = logger;
 
     /// <summary>
     /// Get all registered requests that are posted for a client and session (via identifierValue)
@@ -43,7 +36,7 @@ public class VerifyRequestController : ControllerBase
                 throw new ArgumentException("No clientName was given in route");
             }
 
-            var models = _clientContainer.GetRequests();
+            var models = clientContainer.GetRequests();
 
             return Ok(models);
         }
@@ -75,7 +68,7 @@ public class VerifyRequestController : ControllerBase
                 throw new ArgumentException("No clientName was given in route");
             }
 
-            var models = _clientContainer.SearchRequests(searchModel);
+            var models = clientContainer.SearchRequests(searchModel);
 
             return Ok(models);
         }
@@ -105,7 +98,7 @@ public class VerifyRequestController : ControllerBase
                 throw new ArgumentException("No clientName was given in route");
             }
 
-            _clientContainer.RemoveRequests();
+            clientContainer.RemoveRequests();
 
             return NoContent();
         }

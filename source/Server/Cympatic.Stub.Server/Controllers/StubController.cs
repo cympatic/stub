@@ -3,6 +3,7 @@ using Cympatic.Extensions.Http.Attributes;
 using Cympatic.Stub.Connectivity.Models;
 using Cympatic.Stub.Server.Extensions;
 using Cympatic.Stub.Server.Interfaces;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
@@ -105,7 +106,7 @@ public class StubController : ControllerBase
                 Response.Headers.Remove("Location");
             }
 
-            Response.Headers.Add("Location", model.GetCreatedLocation(Request.Scheme, Request.Host));
+            Response.Headers.Append("Location", model.GetCreatedLocation(Request.Scheme, Request.Host));
         }
     }
 }

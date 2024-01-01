@@ -10,16 +10,9 @@ using System.Threading.Tasks;
 
 namespace Cympatic.Extensions.Http.Middleware;
 
-public class DeveloperLoggingMiddleware
+public class DeveloperLoggingMiddleware(RequestDelegate next, ILogger<DeveloperLoggingMiddleware> logger)
 {
-    private readonly RequestDelegate _next;
-    private readonly ILogger _logger;
-
-    public DeveloperLoggingMiddleware(RequestDelegate next, ILogger<DeveloperLoggingMiddleware> logger)
-    {
-        _next = next;
-        _logger = logger;
-    }
+    private readonly ILogger _logger = logger;
 
     public async Task Invoke(HttpContext httpContext)
     {
@@ -42,7 +35,7 @@ public class DeveloperLoggingMiddleware
                     using var responseBody = new MemoryStream();
                     response.Body = responseBody;
 
-                    await _next(httpContext);
+                    await next(httpContext);
 
                     stopWatch.Stop();
 
@@ -64,7 +57,7 @@ public class DeveloperLoggingMiddleware
             }
             else
             {
-                await _next(httpContext);
+                await next(httpContext);
             }
         }
         catch (Exception ex)

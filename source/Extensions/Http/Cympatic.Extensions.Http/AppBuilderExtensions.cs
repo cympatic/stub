@@ -12,10 +12,7 @@ public static class AppBuilderExtensions
     // More information can be found at: https://docs.microsoft.com/en-us/aspnet/core/fundamentals/routing?view=aspnetcore-5.0#routing-concepts
     public static IApplicationBuilder UseDeveloperLogging(this IApplicationBuilder app)
     {
-        if (app == null)
-        {
-            throw new ArgumentNullException(nameof(app));
-        }
+        ArgumentNullException.ThrowIfNull(app);
 
         var env = app.ApplicationServices.GetService(typeof(IWebHostEnvironment)) as IWebHostEnvironment;
         if (env.IsDevelopment())

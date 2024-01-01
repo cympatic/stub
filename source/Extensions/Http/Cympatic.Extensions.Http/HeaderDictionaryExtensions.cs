@@ -24,7 +24,7 @@ public static class HeaderDictionaryExtensions
                 {
                     headers.Remove(key);
                 }
-                headers.Add(key, value.Union(values).ToArray());
+                headers.Append(key, value.Union(values).ToArray());
             }
         }
     }
