@@ -1,0 +1,119 @@
+﻿using Cympatic.Extensions.Stub.Internal.Interfaces;
+
+namespace Cympatic.Extensions.Stub.Internal.Collections;
+
+internal class AutomaticExpireCollection<TItem> : IAsyncDisposable, IDisposable
+    where TItem : IAutomaticExpireItem
+{
+    private readonly object _lock = new();
+    private readonly HashSet<TItem> _internalList = [];
+
+    private readonly TimeSpan _timerInterval;
+
+    private Timer? _timer;
+    private TimeSpan _ttl;
+
+    protected AutomaticExpireCollection() : this(new TimeSpan(0, 1, 0))
+    { }
+
+    protected AutomaticExpireCollection(TimeSpan timerInterval)
+    {
+        _timerInterval = timerInterval;
+
+        _timer = new Timer(new TimerCallback(CleanUpTimer));
+    }
+
+    public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        await DisposeAsyncCore();
+
+        Dispose(false);
+        GC.SuppressFinalize(this);
+    }
+
+    public virtual void SetTimeToLive(TimeSpan timeToLive)
+    {
+        _ttl = timeToLive;
+        _timer?.Change(_timerInterval, _timerInterval);
+    }
+
+    public virtual IEnumerable<TItem> All()
+    {
+        return Find(_ => true);
+    }
+
+    public virtual void Add(TItem model)
+    {
+        lock (_lock)
+        {
+            _internalList.Add(model);
+        }
+    }
+
+    public virtual bool Remove(TItem model)
+    {
+        lock (_lock)
+        {
+            return _internalList.Remove(model);
+        }
+    }
+
+    public virtual void Clear()
+    {
+        lock (_lock)
+        {
+            _internalList.Clear();
+        }
+    }
+
+    protected virtual void Dispose(bool disposing)
+    {
+        if (disposing)
+        {
+            _timer?.Dispose();
+        }
+        _timer = null;
+    }
+
+    protected virtual async ValueTask DisposeAsyncCore()
+    {
+        if (_timer is not null)
+        {
+            await _timer.DisposeAsync();
+        }
+
+        _timer = null;
+    }
+
+    protected void AddOrUpdate(IEnumerable<TItem> items, Action<HashSet<TItem>, TItem> addOrUpdateAction)
+    {
+        lock (_lock)
+        {
+            items
+                .ToList()
+                .ForEach(item => addOrUpdateAction(_internalList, item));
+        }
+    }
+
+    protected IEnumerable<TItem> Find(Func<TItem, bool> predicate)
+    {
+        lock (_lock)
+        {
+            return _internalList.Where(predicate);
+        }
+    }
+
+    private void CleanUpTimer(object? state)
+    {
+        lock (_lock)
+        {
+            _internalList.RemoveWhere(model => model.CreatedDateTime.Add(_ttl) < DateTimeOffset.UtcNow);
+        }
+    }
+}

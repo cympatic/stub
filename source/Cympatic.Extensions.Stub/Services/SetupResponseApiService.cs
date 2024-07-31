@@ -1,0 +1,75 @@
+﻿using Cympatic.Extensions.Stub.Models;
+using Cympatic.Extensions.Stub.Services.Results;
+
+namespace Cympatic.Extensions.Stub.Services;
+
+public class SetupResponseApiService(HttpClient httpClient) : ApiService(httpClient)
+{
+    public async Task<IEnumerable<ResponseSetup>> GetAllAsync(CancellationToken cancellationToken = default)
+    {
+        var uri = new Uri("setup");
+
+        var apiResult = await GetAsync<ApiServiceResult<IEnumerable<ResponseSetup>>>(uri, cancellationToken);
+        apiResult.EnsureSuccessStatusCode();
+
+        return apiResult.Value ?? [];
+    }
+
+    public async Task<ResponseSetup> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
+    {
+        var uri = new Uri("setup").Append(id.ToString("N"));
+
+        var apiResult = await GetAsync<ApiServiceResult<ResponseSetup>>(uri, cancellationToken);
+        apiResult.EnsureSuccessStatusCode();
+
+        return apiResult.Value ?? new();
+    }
+
+    public async Task<ResponseSetup> AddAsync(ResponseSetup responseSetup, CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(responseSetup);
+
+        var uri = new Uri("setup").Append("response");
+
+        var apiResult = await PostAsync<ApiServiceResult<ResponseSetup>>(uri, responseSetup, cancellationToken);
+        apiResult.EnsureSuccessStatusCode();
+
+        return apiResult.Value ?? new();
+    }
+
+    public async Task AddAsync(IEnumerable<ResponseSetup> responseSetups, CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(responseSetups);
+
+        var uri = new Uri("setup").Append("responses");
+
+        var apiResult = await PostAsync<ApiServiceResult>(uri, responseSetups, cancellationToken);
+        apiResult.EnsureSuccessStatusCode();
+    }
+
+    public async Task RemoveAsync(ResponseSetup responseSetup, CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(responseSetup);
+
+        var uri = new Uri("setup").Append("remove");
+
+        var apiResult = await PostAsync<ApiServiceResult>(uri, responseSetup.Id, cancellationToken);
+        apiResult.EnsureSuccessStatusCode();
+    }
+
+    public async Task RemoveAsync(Guid id, CancellationToken cancellationToken = default)
+    {
+        var uri = new Uri("setup").Append("remove", id.ToString("N"));
+
+        var apiResult = await DeleteAsync<ApiServiceResult>(uri, cancellationToken);
+        apiResult.EnsureSuccessStatusCode();
+    }
+
+    public async Task RemoveAlAsync(CancellationToken cancellationToken = default)
+    {
+        var uri = new Uri("setup").Append("clear");
+
+        var apiResult = await DeleteAsync<ApiServiceResult>(uri, cancellationToken);
+        apiResult.EnsureSuccessStatusCode();
+    }
+}
