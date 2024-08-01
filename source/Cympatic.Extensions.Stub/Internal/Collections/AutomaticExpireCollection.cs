@@ -13,6 +13,17 @@ internal class AutomaticExpireCollection<TItem> : IAsyncDisposable, IDisposable
     private Timer? _timer;
     private TimeSpan _ttl;
 
+    public int Count
+    {
+        get
+        {
+            lock (_lock)
+            {
+                return _internalList.Count;
+            }
+        }
+    }
+
     protected AutomaticExpireCollection() : this(new TimeSpan(0, 1, 0))
     { }
 
@@ -48,19 +59,22 @@ internal class AutomaticExpireCollection<TItem> : IAsyncDisposable, IDisposable
         return Find(_ => true);
     }
 
-    public virtual void Add(TItem model)
+    public virtual void Add(TItem item)
     {
+        ArgumentNullException.ThrowIfNull(item);
+
         lock (_lock)
         {
-            _internalList.Add(model);
+            _internalList.Add(item);
         }
     }
 
-    public virtual bool Remove(TItem model)
+    public virtual bool Remove(TItem item)
     {
+        ArgumentNullException.ThrowIfNull(item);
         lock (_lock)
         {
-            return _internalList.Remove(model);
+            return _internalList.Remove(item);
         }
     }
 
@@ -87,7 +101,6 @@ internal class AutomaticExpireCollection<TItem> : IAsyncDisposable, IDisposable
         {
             await _timer.DisposeAsync();
         }
-
         _timer = null;
     }
 

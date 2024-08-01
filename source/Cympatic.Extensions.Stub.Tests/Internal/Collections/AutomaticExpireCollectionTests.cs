@@ -1,15 +1,18 @@
 ﻿using Cympatic.Extensions.Stub.Internal.Collections;
 using Cympatic.Extensions.Stub.Internal.Interfaces;
 using FluentAssertions;
+using System.Security.Cryptography;
 
 namespace Cympatic.Extensions.Stub.Tests.Internal.Collections;
 
 public class AutomaticExpireCollectionTests
 {
-    internal class FakeAutomaticExpireItem : IAutomaticExpireItem
+    internal class FakeAutomaticExpireItem: IAutomaticExpireItem
     {
         private readonly DateTimeOffset _createdDateTime = DateTimeOffset.UtcNow;
-        
+
+        public Guid Id { get; set; } = Guid.NewGuid();
+
         public DateTimeOffset CreatedDateTime => _createdDateTime;
     }
 
@@ -20,10 +23,11 @@ public class AutomaticExpireCollectionTests
     }
 
     private const int NumberOfItems = 10;
+
     private readonly FakeModelContainer _sut = new();
 
     [Fact]
-    public void When_the_Ttl_expires_Then_the_items_are_removed()
+    public void When_the_Ttl_expires_Then_all_items_are_removed_that_meet_the_expiration_criteria()
     {
         // Arrange
         for (int i = 0; i < NumberOfItems; i++)
@@ -41,5 +45,104 @@ public class AutomaticExpireCollectionTests
         // Assert
         actual = _sut.All();
         actual.Should().BeEmpty();
+    }
+
+    [Fact]
+    public void When_All_is_called_Then_all_items_are_returned()
+    {
+        // Arrange
+        for (int i = 0; i < NumberOfItems; i++)
+        {
+            _sut.Add(new FakeAutomaticExpireItem());
+        }
+
+        // Act
+        var actual = _sut.All();
+
+        // Assert
+        actual.Should().HaveCount(NumberOfItems);
+    }
+
+    [Fact]
+    public void When_Add_is_called_with_a_valid_Item_Then_the_Item_is_added_to_the_Collection()
+    {
+        // Arrange
+        var expected = new FakeAutomaticExpireItem();
+
+        // Act
+        _sut.Add(expected);
+        var actual = _sut.All().SingleOrDefault();
+
+        // Assert
+        actual.Should().Be(expected);
+    }
+
+    [Fact]
+    public void When_Add_is_called_with_a_null_Item_Then_an_ArgumentNullException_is_thrown()
+    {
+        // Arrange & Act
+        var act = () => _sut.Add(default!);
+
+        // Assert
+        act.Should().Throw<ArgumentNullException>()
+            .WithParameterName("item");
+    }
+
+    [Fact]
+    public void When_Remove_is_called_with_a_valid_Item_Then_the_Item_is_removed_to_the_Collection()
+    {
+        // Arrange
+        var item = new FakeAutomaticExpireItem();
+        _sut.Add(item);
+
+        // Act
+        var actual = _sut.Remove(item);
+
+        // Assert
+        actual.Should().BeTrue();
+    }
+
+    [Fact]
+    public void When_Remove_is_called_with_a_null_Item_Then_an_ArgumentNullException_is_thrown()
+    {
+        // Arrange & Act
+        var act = () => _sut.Remove(default!);
+
+        // Assert
+        act.Should().Throw<ArgumentNullException>()
+            .WithParameterName("item");
+    }
+
+    [Fact]
+    public void When_Clear_is_called_Then_all_items_are_removed_and_is_the_Collection_empty()
+    {
+        // Arrange
+        for (int i = 0; i < NumberOfItems; i++)
+        {
+            _sut.Add(new FakeAutomaticExpireItem());
+        }
+
+        // Act
+        _sut.Clear();
+
+        // Assert
+        _sut.Count.Should().Be(0);
+    }
+
+    [Fact]
+    public void When_Count_is_called_Then_the_number_of_items_is_returned()
+    {
+        // Arrange
+        const int expected = NumberOfItems;
+        for (int i = 0; i < NumberOfItems; i++)
+        {
+            _sut.Add(new FakeAutomaticExpireItem());
+        }
+
+        // Act
+        var actual = _sut.Count;
+
+        // Assert
+        actual.Should().Be(expected);
     }
 }

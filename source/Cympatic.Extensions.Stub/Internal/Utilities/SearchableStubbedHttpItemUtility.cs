@@ -24,12 +24,13 @@ internal class SearchableStubbedHttpItemUtility
 
         for (int i = 0; i < currentPath.Count; i++)
         {
-            if (!(currentPath[i].Equals(otherPath[i], StringComparison.OrdinalIgnoreCase) ||
-                  currentPath[i].StartsWith("{*") && currentPath[i].EndsWith("}") ||
-                  otherPath[i].StartsWith("{*") && otherPath[i].EndsWith("}")))
+            if (currentPath[i].Equals(otherPath[i], StringComparison.OrdinalIgnoreCase) ||
+                currentPath[i].StartsWith("{*") && currentPath[i].EndsWith("*}") ||
+                otherPath[i].StartsWith("{*") && otherPath[i].EndsWith("*}"))
             {
-                return false;
+                continue;
             }
+            return false;
         }
 
         return true;
@@ -44,6 +45,6 @@ internal class SearchableStubbedHttpItemUtility
             currentQuery.Keys.All(key =>
                 otherQuery.ContainsKey(key) &&
                 (currentQuery[key].Equals(otherQuery[key], StringComparison.OrdinalIgnoreCase) ||
-                 currentQuery[key].StartsWith("{*") && currentQuery[key].EndsWith("}")));
+                 currentQuery[key].StartsWith("{*") && currentQuery[key].EndsWith("*}")));
     }
 }

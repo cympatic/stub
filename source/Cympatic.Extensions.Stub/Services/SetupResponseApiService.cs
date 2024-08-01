@@ -7,7 +7,7 @@ public class SetupResponseApiService(HttpClient httpClient) : ApiService(httpCli
 {
     public async Task<IEnumerable<ResponseSetup>> GetAllAsync(CancellationToken cancellationToken = default)
     {
-        var uri = new Uri("setup");
+        var uri = new Uri("setup", UriKind.Relative);
 
         var apiResult = await GetAsync<ApiServiceResult<IEnumerable<ResponseSetup>>>(uri, cancellationToken);
         apiResult.EnsureSuccessStatusCode();
@@ -17,7 +17,7 @@ public class SetupResponseApiService(HttpClient httpClient) : ApiService(httpCli
 
     public async Task<ResponseSetup> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
-        var uri = new Uri("setup").Append(id.ToString("N"));
+        var uri = new Uri("setup", UriKind.Relative).Append(id.ToString("N"));
 
         var apiResult = await GetAsync<ApiServiceResult<ResponseSetup>>(uri, cancellationToken);
         apiResult.EnsureSuccessStatusCode();
@@ -29,7 +29,7 @@ public class SetupResponseApiService(HttpClient httpClient) : ApiService(httpCli
     {
         ArgumentNullException.ThrowIfNull(responseSetup);
 
-        var uri = new Uri("setup").Append("response");
+        var uri = new Uri("setup", UriKind.Relative).Append("response");
 
         var apiResult = await PostAsync<ApiServiceResult<ResponseSetup>>(uri, responseSetup, cancellationToken);
         apiResult.EnsureSuccessStatusCode();
@@ -41,7 +41,7 @@ public class SetupResponseApiService(HttpClient httpClient) : ApiService(httpCli
     {
         ArgumentNullException.ThrowIfNull(responseSetups);
 
-        var uri = new Uri("setup").Append("responses");
+        var uri = new Uri("setup", UriKind.Relative).Append("responses");
 
         var apiResult = await PostAsync<ApiServiceResult>(uri, responseSetups, cancellationToken);
         apiResult.EnsureSuccessStatusCode();
@@ -51,7 +51,7 @@ public class SetupResponseApiService(HttpClient httpClient) : ApiService(httpCli
     {
         ArgumentNullException.ThrowIfNull(responseSetup);
 
-        var uri = new Uri("setup").Append("remove");
+        var uri = new Uri("setup", UriKind.Relative).Append("remove");
 
         var apiResult = await PostAsync<ApiServiceResult>(uri, responseSetup.Id, cancellationToken);
         apiResult.EnsureSuccessStatusCode();
@@ -59,7 +59,7 @@ public class SetupResponseApiService(HttpClient httpClient) : ApiService(httpCli
 
     public async Task RemoveAsync(Guid id, CancellationToken cancellationToken = default)
     {
-        var uri = new Uri("setup").Append("remove", id.ToString("N"));
+        var uri = new Uri("setup", UriKind.Relative).Append("remove", id.ToString("N"));
 
         var apiResult = await DeleteAsync<ApiServiceResult>(uri, cancellationToken);
         apiResult.EnsureSuccessStatusCode();
@@ -67,7 +67,7 @@ public class SetupResponseApiService(HttpClient httpClient) : ApiService(httpCli
 
     public async Task RemoveAlAsync(CancellationToken cancellationToken = default)
     {
-        var uri = new Uri("setup").Append("clear");
+        var uri = new Uri("setup", UriKind.Relative).Append("clear");
 
         var apiResult = await DeleteAsync<ApiServiceResult>(uri, cancellationToken);
         apiResult.EnsureSuccessStatusCode();

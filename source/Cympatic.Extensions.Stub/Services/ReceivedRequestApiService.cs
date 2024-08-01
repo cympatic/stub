@@ -8,7 +8,7 @@ public class ReceivedRequestApiService(HttpClient httpClient) : ApiService(httpC
 {
     public async Task<IEnumerable<ReceivedRequest>> GetAllAsync(CancellationToken cancellationToken = default)
     {
-        var uri = new Uri("received");
+        var uri = new Uri("received", UriKind.Relative);
 
         var apiResult = await GetAsync<ApiServiceResult<IEnumerable<ReceivedRequest>>>(uri, cancellationToken);
         apiResult.EnsureSuccessStatusCode();
@@ -20,7 +20,7 @@ public class ReceivedRequestApiService(HttpClient httpClient) : ApiService(httpC
     {
         ArgumentNullException.ThrowIfNull(searchParams);
 
-        var uri = new Uri("received").Append("find");
+        var uri = new Uri("received", UriKind.Relative).Append("find");
 
         if (!string.IsNullOrWhiteSpace(searchParams.Path))
         {
@@ -52,7 +52,7 @@ public class ReceivedRequestApiService(HttpClient httpClient) : ApiService(httpC
 
     public async Task RemoveAlAsync(CancellationToken cancellationToken = default)
     {
-        var uri = new Uri("received").Append("clear");
+        var uri = new Uri("received", UriKind.Relative).Append("clear");
 
         var apiResult = await DeleteAsync<ApiServiceResult>(uri, cancellationToken);
         apiResult.EnsureSuccessStatusCode();

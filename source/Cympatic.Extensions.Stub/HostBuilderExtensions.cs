@@ -19,6 +19,8 @@ public static class HostBuilderExtensions
         {
             webHostBuilder.ConfigureServices((services) =>
             {
+                services.AddRouting();
+
                 services.AddSingleton<ReceivedRequestCollection>();
                 services.AddSingleton<ResponseSetupCollection>();
             });

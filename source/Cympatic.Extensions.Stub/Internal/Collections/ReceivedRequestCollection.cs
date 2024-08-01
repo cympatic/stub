@@ -10,8 +10,8 @@ internal sealed class ReceivedRequestCollection : AutomaticExpireCollection<Rece
         return Find(item => item.FoundMatchingResponse && IsMatching(item, searchParams.HttpMethods, searchParams.Path, searchParams.Query)).ToArray();
     }
 
-    private static bool IsMatching(ReceivedRequest model, IList<string> httpMethods, string? path, IDictionary<string, string> query)
+    private static bool IsMatching(ReceivedRequest item, IList<string> httpMethods, string? path, IDictionary<string, string> query)
     {
-        return SearchableStubbedHttpItemUtility.IsMatching(httpMethods, model.HttpMethod, model.Path, path, model.Query, query);
+        return SearchableStubbedHttpItemUtility.IsMatching(httpMethods, item.HttpMethod, item.Path, path, item.Query, query);
     }
 }

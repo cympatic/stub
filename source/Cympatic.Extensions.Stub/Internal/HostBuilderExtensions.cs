@@ -27,6 +27,8 @@ internal static class HostBuilderExtensions
                 return new HttpClientHandler
                 {
                     UseProxy = false,
+                    UseDefaultCredentials = true,
+                    ServerCertificateCustomValidationCallback = (_, _, _, _) => true
                 };
             });
         });
