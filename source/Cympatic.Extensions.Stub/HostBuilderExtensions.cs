@@ -1,5 +1,6 @@
 ﻿using Cympatic.Extensions.Stub.Internal;
 using Cympatic.Extensions.Stub.Internal.Collections;
+using Cympatic.Extensions.Stub.Internal.Interfaces;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
@@ -21,8 +22,8 @@ public static class HostBuilderExtensions
             {
                 services.AddRouting();
 
-                services.AddSingleton<ReceivedRequestCollection>();
-                services.AddSingleton<ResponseSetupCollection>();
+                services.AddSingleton<IReceivedRequestCollection, ReceivedRequestCollection>();
+                services.AddSingleton<IResponseSetupCollection, ResponseSetupCollection>();
             });
         });
 

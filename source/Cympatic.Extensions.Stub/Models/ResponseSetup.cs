@@ -1,5 +1,4 @@
 ﻿using Cympatic.Extensions.Stub.Internal.Interfaces;
-using System.ComponentModel.DataAnnotations;
 using System.Net;
 
 namespace Cympatic.Extensions.Stub.Models;
@@ -10,7 +9,7 @@ public record ResponseSetup : IAutomaticExpireItem
 
     public readonly Guid Id = Guid.NewGuid();
 
-    public IList<string>? HttpMethods { get; set; }
+    public IList<string> HttpMethods { get; set; } = [];
 
     public HttpStatusCode ReturnStatusCode { get; set; }
 
@@ -20,12 +19,11 @@ public record ResponseSetup : IAutomaticExpireItem
 
     public int DelayInMilliseconds { get; set; }
 
-    [Required]
-    public string? Path { get; set; }
+    public string Path { get; set; } = string.Empty;
 
-    public IDictionary<string, string>? Query { get; set; }
+    public IDictionary<string, string> Query { get; set; } = new Dictionary<string, string>();
 
-    public IDictionary<string, IEnumerable<string?>>? Headers { get; set; }
+    public IDictionary<string, IEnumerable<string?>> Headers { get; set; } = new Dictionary<string, IEnumerable<string?>>();
 
     public DateTimeOffset CreatedDateTime => _createdDateTime;
 }

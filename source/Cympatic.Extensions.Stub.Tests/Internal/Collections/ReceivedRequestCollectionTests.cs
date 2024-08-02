@@ -8,7 +8,7 @@ public class ReceivedRequestCollectionTests
 {
     private const int NumberOfItems = 10;
 
-    private ReceivedRequestCollection _sut = new();
+    private readonly ReceivedRequestCollection _sut = new();
 
     [Fact]
     public void When_Find_is_called_with_strict_SearchParams_Then_the_matching_Items_where_FoundMatchingResponse_is_True_are_return()
@@ -67,7 +67,7 @@ public class ReceivedRequestCollectionTests
     }
 
     private static ReceivedRequest GenerateReceivedRequest()
-    { 
+    {
         var random = new Random();
         var query = new Dictionary<string, string>
         {
@@ -80,7 +80,7 @@ public class ReceivedRequestCollectionTests
             { Guid.NewGuid().ToString("N"), [ Guid.NewGuid().ToString("N") ] }
         };
 
-        return new ReceivedRequest
+        return new
         (
             Guid.NewGuid().ToString("N"),
             Guid.NewGuid().ToString("N"),

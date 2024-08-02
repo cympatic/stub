@@ -29,16 +29,7 @@ public class ApiServiceResult : IApiServiceResult
         if (response.Content is not null)
         {
             ContentHeaders = response.Content.Headers;
-
-            var stream = await response.Content.ReadAsStreamAsync(cancellationToken);
-            if (stream.CanSeek)
-            {
-                stream.Seek(0, SeekOrigin.Begin);
-            }
-
-            using var memoryStream = new MemoryStream();
-            await stream.CopyToAsync(memoryStream, cancellationToken);
-            Content = Encoding.UTF8.GetString(memoryStream.ToArray());
+            Content = await response.Content.ReadAsStringAsync(cancellationToken);
         }
     }
 

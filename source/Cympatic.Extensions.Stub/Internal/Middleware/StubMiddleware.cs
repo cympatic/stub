@@ -1,4 +1,5 @@
-﻿using Cympatic.Extensions.Stub.Internal.Collections;
+﻿using Cympatic.Extensions.Stub.Internal.Interfaces;
+using Cympatic.Extensions.Stub.Models;
 using Microsoft.AspNetCore.Http;
 using System.Net;
 
@@ -8,7 +9,7 @@ internal class StubMiddleware(RequestDelegate next)
 {
     private const int MaxContentLength = 49152;
 
-    public async Task InvokeAsync(HttpContext context, ResponseSetupCollection responseSetups, ReceivedRequestCollection receivedRequests)
+    public async Task InvokeAsync(HttpContext context, IResponseSetupCollection responseSetups, IReceivedRequestCollection receivedRequests)
     {
         context.Request.EnableBuffering();
         var requestBody = await context.Request.Body.ReadAsStringAsync(true);
@@ -21,9 +22,9 @@ internal class StubMiddleware(RequestDelegate next)
         }
         context.Request.Body.Position = 0;
 
-        var responseSetup = responseSetups.Find(context.Request.Method, context.Request.Path.Value!, context.Request.Query);
+        var responseSetup = responseSetups.Find(context.Request.Method, context.Request.Path.Value!, context.Request.Query).FirstOrDefault();
 
-        receivedRequests.Add(new(context.Request.Path.Value, context.Request.Method, context.Request.Query.ToDictionary(), context.Request.Headers.ToDictionary(), requestBody, responseSetup != null));
+        receivedRequests.Add(new(context.Request.Path.Value!, context.Request.Method, context.Request.Query.ToDictionary(), context.Request.Headers.ToDictionary(), requestBody, responseSetup != null));
 
         if (responseSetup is not null)
         {
@@ -35,7 +36,7 @@ internal class StubMiddleware(RequestDelegate next)
                     context.Response.Headers.Remove("Location");
                 }
 
-                context.Response.Headers.Append("Location", responseSetup.GetCreatedLocation(context.Request.Scheme, context.Request.Host));
+                context.Response.Headers.Append("Location", GetCreatedLocation(responseSetup, context.Request.Scheme, context.Request.Host));
             }
 
             if (responseSetup.DelayInMilliseconds > 0)
@@ -55,5 +56,19 @@ internal class StubMiddleware(RequestDelegate next)
         }
 
         await next(context);
+    }
+
+    private static string GetCreatedLocation(ResponseSetup model, string scheme, HostString host)
+    {
+        if (host.HasValue && model.Location != null && !model.Location.IsAbsoluteUri)
+        {
+            var uriBuilder = host.Port.HasValue
+                ? new UriBuilder(scheme, host.Host, host.Port.Value)
+                : new UriBuilder(scheme, host.Host);
+
+            return uriBuilder.Uri.Append(model.Location.ToString()).ToString();
+        }
+
+        return model.Location?.ToString() ?? string.Empty;
     }
 }

@@ -2,9 +2,10 @@
 
 internal class SearchableStubbedHttpItemUtility
 {
-    public static bool IsMatching(IList<string>? httpMethods, string? httpMethod, string? path, string? modelPath, IDictionary<string, string>? query, IDictionary<string, string>? modelQuery)
+    public static bool IsMatching(IList<string> httpMethods, string httpMethod, string path, string modelPath, IDictionary<string, string> query, IDictionary<string, string> modelQuery)
     {
         httpMethods ??= [];
+
         return
             (!httpMethods.Any() ||
              httpMethods.Any(value => value.Equals(httpMethod, StringComparison.OrdinalIgnoreCase))) &&
@@ -12,7 +13,7 @@ internal class SearchableStubbedHttpItemUtility
             CompareQuery(modelQuery, query);
     }
 
-    public static bool ComparePath(string? current, string? other)
+    public static bool ComparePath(string current, string other)
     {
         var currentPath = current?.Split("/", StringSplitOptions.RemoveEmptyEntries).ToList() ?? [];
         var otherPath = other?.Split("/", StringSplitOptions.RemoveEmptyEntries).ToList() ?? [];
@@ -25,8 +26,7 @@ internal class SearchableStubbedHttpItemUtility
         for (int i = 0; i < currentPath.Count; i++)
         {
             if (currentPath[i].Equals(otherPath[i], StringComparison.OrdinalIgnoreCase) ||
-                currentPath[i].StartsWith("{*") && currentPath[i].EndsWith("*}") ||
-                otherPath[i].StartsWith("{*") && otherPath[i].EndsWith("*}"))
+                currentPath[i].StartsWith("{*") && currentPath[i].EndsWith("*}"))
             {
                 continue;
             }
@@ -36,7 +36,7 @@ internal class SearchableStubbedHttpItemUtility
         return true;
     }
 
-    public static bool CompareQuery(IDictionary<string, string>? current, IDictionary<string, string>? other)
+    public static bool CompareQuery(IDictionary<string, string> current, IDictionary<string, string> other)
     {
         var currentQuery = new Dictionary<string, string>(current ?? new Dictionary<string, string>(), StringComparer.OrdinalIgnoreCase);
         var otherQuery = new Dictionary<string, string>(other ?? new Dictionary<string, string>(), StringComparer.OrdinalIgnoreCase);

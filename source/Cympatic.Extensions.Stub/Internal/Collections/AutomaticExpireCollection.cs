@@ -72,6 +72,7 @@ internal class AutomaticExpireCollection<TItem> : IAsyncDisposable, IDisposable
     public virtual bool Remove(TItem item)
     {
         ArgumentNullException.ThrowIfNull(item);
+
         lock (_lock)
         {
             return _internalList.Remove(item);
@@ -106,6 +107,8 @@ internal class AutomaticExpireCollection<TItem> : IAsyncDisposable, IDisposable
 
     protected void AddOrUpdate(IEnumerable<TItem> items, Action<HashSet<TItem>, TItem> addOrUpdateAction)
     {
+        ArgumentNullException.ThrowIfNull(items);
+
         lock (_lock)
         {
             items

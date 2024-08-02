@@ -21,7 +21,7 @@ public class ApiServiceResult<TModel> : ApiServiceResult
     {
         await base.InitializeAsync(response, cancellationToken);
 
-        if (Content is null)
+        if (string.IsNullOrWhiteSpace(Content))
         {
             return;
         }
