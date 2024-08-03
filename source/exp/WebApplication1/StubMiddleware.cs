@@ -1,4 +1,6 @@
-﻿using System.Text.Json;
+﻿using Cympatic.Extensions.Stub;
+using Microsoft.AspNetCore.Http.Extensions;
+using System.Text.Json;
 
 namespace WebApplication1;
 
@@ -23,6 +25,13 @@ public class StubMiddleware(RequestDelegate next)
     public async Task InvokeAsync(HttpContext context)
     {
         Console.WriteLine($"4. Endpoint: {context.GetEndpoint()?.DisplayName ?? "(null)"}");
+
+        var b = context.Request.Path.StartsWithSegments("/stub", StringComparison.OrdinalIgnoreCase);
+
+        var arr = context.Request.Path.Value?.Split("/", StringSplitOptions.RemoveEmptyEntries) ?? [];
+
+        var uri = new Uri("/", UriKind.Relative).Append(arr[1..]);
+        var str = uri.ToString();
 
         object forecast = Enumerable
             .Range(1, 5)

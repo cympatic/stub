@@ -1,7 +1,7 @@
 ﻿using Cympatic.Extensions.Stub.Internal.Utilities;
 using FluentAssertions;
 
-namespace Cympatic.Extensions.Stub.Tests.Internal.Utilities;
+namespace Cympatic.Extensions.Stub.UnitTests.Internal.Utilities;
 
 public class SearchableStubbedHttpItemUtilityTests
 {
@@ -60,7 +60,7 @@ public class SearchableStubbedHttpItemUtilityTests
     public static TheoryData<string, string, string, bool> ComparePathTestData()
     {
         string[] keys = [Guid.NewGuid().ToString("N"), Guid.NewGuid().ToString("N"), Guid.NewGuid().ToString("N")];
-     
+
         return new TheoryData<string, string, string, bool>
         {
             // Both null

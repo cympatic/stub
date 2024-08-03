@@ -1,8 +1,9 @@
-﻿using Cympatic.Extensions.Stub.Internal.Collections;
+﻿using Cympatic.Extensions.Stub;
+using Cympatic.Extensions.Stub.Internal.Collections;
 using Cympatic.Extensions.Stub.Models;
 using FluentAssertions;
 
-namespace Cympatic.Extensions.Stub.Tests.Internal.Collections;
+namespace Cympatic.Extensions.Stub.UnitTests.Internal.Collections;
 
 public class ReceivedRequestCollectionTests
 {
@@ -25,13 +26,13 @@ public class ReceivedRequestCollectionTests
         var expected = list
             .Where(_ => _.FoundMatchingResponse)
             .ToList()[random.Next(list.Where(_ => _.FoundMatchingResponse).Count())];
-        var searchParams = new ReceivedRequestSearchParams(expected.Path, expected.Query!, [ expected.HttpMethod! ]);
+        var searchParams = new ReceivedRequestSearchParams(expected.Path, expected.Query!, [expected.HttpMethod!]);
 
         // Act
         var actual = _sut.Find(searchParams);
 
         // Arrange
-        actual.Should().BeEquivalentTo([ expected ]);
+        actual.Should().BeEquivalentTo([expected]);
     }
 
     [Fact]

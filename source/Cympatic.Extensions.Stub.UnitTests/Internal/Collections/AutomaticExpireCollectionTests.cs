@@ -1,13 +1,12 @@
 ﻿using Cympatic.Extensions.Stub.Internal.Collections;
 using Cympatic.Extensions.Stub.Internal.Interfaces;
 using FluentAssertions;
-using System.Security.Cryptography;
 
-namespace Cympatic.Extensions.Stub.Tests.Internal.Collections;
+namespace Cympatic.Extensions.Stub.UnitTests.Internal.Collections;
 
 public class AutomaticExpireCollectionTests
 {
-    internal class FakeAutomaticExpireItem: IAutomaticExpireItem
+    internal class FakeAutomaticExpireItem : IAutomaticExpireItem
     {
         private readonly DateTimeOffset _createdDateTime = DateTimeOffset.UtcNow;
 
@@ -44,7 +43,7 @@ public class AutomaticExpireCollectionTests
 
         // Assert
         actual = _sut.All();
-        actual.Should().BeEmpty();
+        actual.Should().HaveCount(0);
     }
 
     [Fact]

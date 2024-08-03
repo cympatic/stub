@@ -26,7 +26,7 @@ public class Program
 
 
         app.MapWeatherForecast();
-        //app.UseStub();
+        app.UseStub();
 
         //var summaries = new[]
         //{

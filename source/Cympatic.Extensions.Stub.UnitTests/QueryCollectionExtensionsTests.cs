@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Primitives;
 
-namespace Cympatic.Extensions.Stub.Tests;
+namespace Cympatic.Extensions.Stub.UnitTests;
 
 public class QueryCollectionExtensionsTests
 {

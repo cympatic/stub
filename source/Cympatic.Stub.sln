@@ -7,7 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebApplication1", "exp\WebA
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cympatic.Extensions.Stub", "Cympatic.Extensions.Stub\Cympatic.Extensions.Stub.csproj", "{A5768F25-812A-4326-A3EF-308ADBF6DB8C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cympatic.Extensions.Stub.Tests", "Cympatic.Extensions.Stub.Tests\Cympatic.Extensions.Stub.Tests.csproj", "{EEF75BA8-364F-44E6-8546-E8235440BBC3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cympatic.Extensions.Stub.UnitTests", "Cympatic.Extensions.Stub.UnitTests\Cympatic.Extensions.Stub.UnitTests.csproj", "{63A1C0E6-4495-4AFD-A574-94253DDF031E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -23,10 +23,10 @@ Global
 		{A5768F25-812A-4326-A3EF-308ADBF6DB8C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A5768F25-812A-4326-A3EF-308ADBF6DB8C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A5768F25-812A-4326-A3EF-308ADBF6DB8C}.Release|Any CPU.Build.0 = Release|Any CPU
-		{EEF75BA8-364F-44E6-8546-E8235440BBC3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{EEF75BA8-364F-44E6-8546-E8235440BBC3}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{EEF75BA8-364F-44E6-8546-E8235440BBC3}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{EEF75BA8-364F-44E6-8546-E8235440BBC3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{63A1C0E6-4495-4AFD-A574-94253DDF031E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{63A1C0E6-4495-4AFD-A574-94253DDF031E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{63A1C0E6-4495-4AFD-A574-94253DDF031E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{63A1C0E6-4495-4AFD-A574-94253DDF031E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

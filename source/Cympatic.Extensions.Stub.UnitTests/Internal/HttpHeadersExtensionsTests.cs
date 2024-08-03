@@ -1,7 +1,7 @@
 ﻿using Cympatic.Extensions.Stub.Internal;
 using FluentAssertions;
 
-namespace Cympatic.Extensions.Stub.Tests.Internal;
+namespace Cympatic.Extensions.Stub.UnitTests.Internal;
 
 public class HttpHeadersExtensionsTests
 {

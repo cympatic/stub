@@ -1,11 +1,12 @@
-﻿using Cympatic.Extensions.Stub.Internal.Collections;
+﻿using Cympatic.Extensions.Stub;
+using Cympatic.Extensions.Stub.Internal.Collections;
 using Cympatic.Extensions.Stub.Models;
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Primitives;
 using System.Net;
 
-namespace Cympatic.Extensions.Stub.Tests.Internal.Collections;
+namespace Cympatic.Extensions.Stub.UnitTests.Internal.Collections;
 
 public class ResponseSetupCollectionTests
 {
@@ -147,7 +148,7 @@ public class ResponseSetupCollectionTests
             { Guid.NewGuid().ToString("N"), [ Guid.NewGuid().ToString("N") ] },
             { Guid.NewGuid().ToString("N"), [ Guid.NewGuid().ToString("N") ] }
         };
-        string[] httpMethodNames = 
+        string[] httpMethodNames =
         [
             "Connect",
             "Delete",
@@ -178,7 +179,7 @@ public class ResponseSetupCollectionTests
         };
     }
 
-    private static ResponseSetup CloneResponseSetup(ResponseSetup responseSetup) 
+    private static ResponseSetup CloneResponseSetup(ResponseSetup responseSetup)
         => new()
         {
             HttpMethods = responseSetup.HttpMethods,

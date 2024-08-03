@@ -1,7 +1,7 @@
 ﻿using Cympatic.Extensions.Stub.Services;
 using FluentAssertions;
 
-namespace Cympatic.Extensions.Stub.Tests;
+namespace Cympatic.Extensions.Stub.UnitTests;
 
 public class StubServerTests
 {
@@ -14,7 +14,7 @@ public class StubServerTests
 
     [Fact]
     public async Task TestMethod1()
-    { 
+    {
         var apiService = stubServer.CreateApiService<SetupResponseApiService>();
 
         var list = await apiService.GetAllAsync();
