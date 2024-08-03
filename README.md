@@ -11,6 +11,11 @@ A C# .NET based, lightweight stub server to mimics functionality of an externall
 - Can be used as (local) service or in CI/CD scenarios
 - Supporting libraries for implementing in SpecFlow
 
+# UNDER CONSTRUCTION !!!
+Currently the stub is undergoing a complete redesign and rebuild.
+
+NOTE: Check the branch [refactor/server](refactor/server) for progress
+
 ## Usage
 
 The configuration of the microservice that's be tested in an isolated environment needs to update 
