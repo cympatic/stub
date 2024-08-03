@@ -14,7 +14,7 @@ A C# .NET based, lightweight stub server to mimics functionality of an externall
 # UNDER CONSTRUCTION !!!
 Currently the stub is undergoing a complete redesign and rebuild.
 
-NOTE: Check the branch [refactor/server](refactor/server) for progress
+NOTE: Check the branch [refactor/server](../../tree/refactor/server) for progress
 
 ---
 
