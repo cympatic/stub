@@ -16,6 +16,8 @@ Currently the stub is undergoing a complete redesign and rebuild.
 
 NOTE: Check the branch [refactor/server](refactor/server) for progress
 
+---
+
 ## Usage
 
 The configuration of the microservice that's be tested in an isolated environment needs to update 
