@@ -47,14 +47,11 @@ public class SetupResponseApiService(HttpClient httpClient) : ApiService(httpCli
         apiResult.EnsureSuccessStatusCode();
     }
 
-    public async Task RemoveAsync(ResponseSetup responseSetup, CancellationToken cancellationToken = default)
+    public Task RemoveAsync(ResponseSetup responseSetup, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(responseSetup);
 
-        var uri = new Uri("setup", UriKind.Relative).Append("remove");
-
-        var apiResult = await PostAsync<ApiServiceResult>(uri, responseSetup.Id, cancellationToken);
-        apiResult.EnsureSuccessStatusCode();
+        return RemoveAsync(responseSetup.Id, cancellationToken);
     }
 
     public async Task RemoveAsync(Guid id, CancellationToken cancellationToken = default)
@@ -65,7 +62,7 @@ public class SetupResponseApiService(HttpClient httpClient) : ApiService(httpCli
         apiResult.EnsureSuccessStatusCode();
     }
 
-    public async Task RemoveAlAsync(CancellationToken cancellationToken = default)
+    public async Task RemoveAllAsync(CancellationToken cancellationToken = default)
     {
         var uri = new Uri("setup", UriKind.Relative).Append("clear");
 

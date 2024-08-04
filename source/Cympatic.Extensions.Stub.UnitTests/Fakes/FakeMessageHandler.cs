@@ -13,6 +13,10 @@ public class FakeMessageHandler : HttpMessageHandler
 
     public object? Response { get; set; }
 
+    public IEnumerable<HttpRequestMessage> Calls(string uri) => _calls.Where(request => request.RequestUri?.AbsoluteUri.Contains(uri, StringComparison.OrdinalIgnoreCase) ?? false);
+
+    public int CallCount(string uri) => _calls.Count(request => request.RequestUri?.AbsoluteUri.Contains(uri, StringComparison.OrdinalIgnoreCase) ?? false);
+
     protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
     {
         _calls.Add(request);
@@ -30,8 +34,6 @@ public class FakeMessageHandler : HttpMessageHandler
 
         return Task.FromResult(new HttpResponseMessage(HttpStatusCode.InternalServerError));
     }
-
-    public int CallCount(string uri) => _calls.Count(request => request.RequestUri?.AbsoluteUri.Contains(uri, StringComparison.OrdinalIgnoreCase) ?? false);
 
     private StringContent? GetResponse()
     {

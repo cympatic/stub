@@ -4,7 +4,7 @@ using FluentAssertions;
 
 namespace Cympatic.Extensions.Stub.UnitTests.Internal.Collections;
 
-public class AutomaticExpireCollectionTests
+public class AutomaticExpireCollectionTests : IDisposable
 {
     internal class FakeAutomaticExpireItem : IAutomaticExpireItem
     {
@@ -25,6 +25,12 @@ public class AutomaticExpireCollectionTests
 
     private readonly FakeModelContainer _sut = new();
 
+    public void Dispose()
+    {
+        _sut?.Dispose();
+        GC.SuppressFinalize(this);
+    }
+
     [Fact]
     public void When_the_Ttl_expires_Then_all_items_are_removed_that_meet_the_expiration_criteria()
     {
@@ -39,7 +45,7 @@ public class AutomaticExpireCollectionTests
 
         // Act
         _sut.SetTimeToLive(new TimeSpan(1));
-        Thread.Sleep(50);
+        Thread.Sleep(100);
 
         // Assert
         actual = _sut.All();

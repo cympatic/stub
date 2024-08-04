@@ -3,17 +3,18 @@ using Cympatic.Extensions.Stub.Internal.Collections;
 using Cympatic.Extensions.Stub.Internal.Interfaces;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Hosting.Server.Features;
+using Microsoft.AspNetCore.Hosting.Server;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System.Net;
+using System.Net.Http.Headers;
 using System.Security.Cryptography.X509Certificates;
 
 namespace Cympatic.Extensions.Stub;
 
 public static class HostBuilderExtensions
 {
-    private const string LocalHost = "localhost";
-
     public static IHostBuilder AddStubServer(this IHostBuilder builder)
     {
         builder.ConfigureWebHost(webHostBuilder =>
@@ -30,7 +31,7 @@ public static class HostBuilderExtensions
         return builder;
     }
 
-    public static IHostBuilder UseStubServer(this IHostBuilder builder)
+    public static IHostBuilder UseLocalhost(this IHostBuilder builder)
     {
         builder.ConfigureWebHost(webHostBuilder =>
         {
@@ -42,15 +43,23 @@ public static class HostBuilderExtensions
                     endpoint.UseHttps(certificate);
                 });
             });
+        });
 
+        return builder;
+    }
+
+    public static IHostBuilder UseStubServer(this IHostBuilder builder)
+    {
+        builder.ConfigureWebHost(webHostBuilder =>
+        {
             webHostBuilder.Configure(app =>
             {
                 app.UseRouting();
 
-                app.UseEndpoints(endpoints =>
+                app.UseEndpoints(endpointBuilder =>
                 {
-                    endpoints.MapSetupResponse();
-                    endpoints.MapReceivedRequest();
+                    endpointBuilder.MapSetupResponse();
+                    endpointBuilder.MapReceivedRequest();
                 });
 
                 app.UseStub();
@@ -60,12 +69,42 @@ public static class HostBuilderExtensions
         return builder;
     }
 
+    public static IHostBuilder AddApiService<TApiService>(this IHostBuilder builder)
+        where TApiService : class
+    {
+        builder.ConfigureServices(services =>
+        {
+            services.AddHttpClient<TApiService>((serviceProvider, config) =>
+            {
+                var baseAddress = serviceProvider.GetRequiredService<IServer>().Features.Get<IServerAddressesFeature>()!.Addresses.First();
+
+                config.BaseAddress = new Uri(baseAddress);
+                config.DefaultRequestHeaders
+                    .Accept
+                    .Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            })
+            .ConfigurePrimaryHttpMessageHandler(() =>
+            {
+                return new HttpClientHandler
+                {
+                    UseProxy = false,
+                    UseDefaultCredentials = true,
+                    ServerCertificateCustomValidationCallback = (_, _, _, _) => true
+                };
+            });
+        });
+
+        return builder;
+    }
+
     private static X509Certificate2 GetCertificate()
     {
+        const string localHost = "localhost";
+
         using var store = new X509Store(StoreLocation.LocalMachine);
         store.Open(OpenFlags.ReadOnly);
         var certificate = store.Certificates
-            .Find(X509FindType.FindByIssuerName, LocalHost, false)
+            .Find(X509FindType.FindByIssuerName, localHost, false)
             .Where(cert => cert.NotBefore <= DateTime.Now.Date && cert.NotAfter >= DateTime.Now.Date)
             .OrderByDescending(cert => cert.NotAfter)
             .FirstOrDefault();

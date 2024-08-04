@@ -16,7 +16,7 @@ public class ReceivedRequestApiService(HttpClient httpClient) : ApiService(httpC
         return apiResult.Value ?? [];
     }
 
-    public async Task<IEnumerable<ReceivedRequest>> GetByIdAsync(ReceivedRequestSearchParams searchParams, CancellationToken cancellationToken = default)
+    public async Task<IEnumerable<ReceivedRequest>> FindAsync(ReceivedRequestSearchParams searchParams, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(searchParams);
 
@@ -50,7 +50,7 @@ public class ReceivedRequestApiService(HttpClient httpClient) : ApiService(httpC
         return apiResult.Value ?? [];
     }
 
-    public async Task RemoveAlAsync(CancellationToken cancellationToken = default)
+    public async Task RemoveAllAsync(CancellationToken cancellationToken = default)
     {
         var uri = new Uri("received", UriKind.Relative).Append("clear");
 

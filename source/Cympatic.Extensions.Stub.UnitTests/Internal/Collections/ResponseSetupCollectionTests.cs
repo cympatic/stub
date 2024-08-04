@@ -8,11 +8,17 @@ using System.Net;
 
 namespace Cympatic.Extensions.Stub.UnitTests.Internal.Collections;
 
-public class ResponseSetupCollectionTests
+public class ResponseSetupCollectionTests : IDisposable
 {
     private const int NumberOfItems = 10;
 
     private readonly ResponseSetupCollection _sut = new();
+
+    public void Dispose()
+    {
+        _sut?.Dispose();
+        GC.SuppressFinalize(this);
+    }
 
     [Fact]
     public void When_Add_is_called_with_a_null_Item_Then_an_ArgumentNullException_is_thrown()

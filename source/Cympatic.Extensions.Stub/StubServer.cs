@@ -1,5 +1,4 @@
-﻿using Cympatic.Extensions.Stub.Internal;
-using Cympatic.Extensions.Stub.Services;
+﻿using Cympatic.Extensions.Stub.Services;
 using Microsoft.AspNetCore.Hosting.Server;
 using Microsoft.AspNetCore.Hosting.Server.Features;
 using Microsoft.Extensions.DependencyInjection;
@@ -19,13 +18,15 @@ public sealed class StubServer : IDisposable
         }
     }
 
-    public Uri BaseAddres
+    public Uri BaseAddress
     {
         get 
         { 
             return new Uri(Host.Services.GetRequiredService<IServer>().Features.Get<IServerAddressesFeature>()!.Addresses.First());
         }
     }
+
+    public Uri BaseAddressStub => BaseAddress.Append("stub");
 
     public void Dispose()
     {
@@ -60,6 +61,7 @@ public sealed class StubServer : IDisposable
     {
         var app = Microsoft.Extensions.Hosting.Host.CreateDefaultBuilder()
             .AddStubServer()
+            .UseLocalhost()
             .UseStubServer()
             .AddApiService<SetupResponseApiService>()
             .AddApiService<ReceivedRequestApiService>();

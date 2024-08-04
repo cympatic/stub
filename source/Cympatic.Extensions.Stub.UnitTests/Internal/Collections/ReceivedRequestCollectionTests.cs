@@ -5,11 +5,17 @@ using FluentAssertions;
 
 namespace Cympatic.Extensions.Stub.UnitTests.Internal.Collections;
 
-public class ReceivedRequestCollectionTests
+public class ReceivedRequestCollectionTests : IDisposable
 {
     private const int NumberOfItems = 10;
 
     private readonly ReceivedRequestCollection _sut = new();
+
+    public void Dispose()
+    {
+        _sut?.Dispose();
+        GC.SuppressFinalize(this);
+    }
 
     [Fact]
     public void When_Find_is_called_with_strict_SearchParams_Then_the_matching_Items_where_FoundMatchingResponse_is_True_are_return()
