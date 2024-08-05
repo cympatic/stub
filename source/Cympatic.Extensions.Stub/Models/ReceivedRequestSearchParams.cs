@@ -4,6 +4,12 @@ namespace Cympatic.Extensions.Stub.Models;
 
 public class ReceivedRequestSearchParams(string? path, IDictionary<string, string> query, IList<string> httpMethods)
 {
+    public ReceivedRequestSearchParams(string path) : this(path, new Dictionary<string, string>(), [])
+    { }
+
+    public ReceivedRequestSearchParams(string path, IList<string> httpMethods) : this(path, new Dictionary<string, string>(), httpMethods)
+    { }
+
     public string? Path { get; set; } = path;
 
     public IDictionary<string, string> Query { get; set; } = query;

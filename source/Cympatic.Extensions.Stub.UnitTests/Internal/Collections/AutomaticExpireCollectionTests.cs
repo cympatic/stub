@@ -8,11 +8,9 @@ public class AutomaticExpireCollectionTests : IDisposable
 {
     internal class FakeAutomaticExpireItem : IAutomaticExpireItem
     {
-        private readonly DateTimeOffset _createdDateTime = DateTimeOffset.UtcNow;
-
         public Guid Id { get; set; } = Guid.NewGuid();
 
-        public DateTimeOffset CreatedDateTime => _createdDateTime;
+        public DateTimeOffset CreatedDateTime { get; set; } = DateTimeOffset.UtcNow;
     }
 
     internal class FakeModelContainer : AutomaticExpireCollection<FakeAutomaticExpireItem>

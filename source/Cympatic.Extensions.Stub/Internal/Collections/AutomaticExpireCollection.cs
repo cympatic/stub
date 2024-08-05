@@ -63,6 +63,9 @@ internal class AutomaticExpireCollection<TItem> : IAsyncDisposable, IDisposable
     {
         ArgumentNullException.ThrowIfNull(item);
 
+        item.Id = Guid.NewGuid();
+        item.CreatedDateTime = DateTimeOffset.UtcNow;
+
         lock (_lock)
         {
             _internalList.Add(item);
@@ -105,16 +108,19 @@ internal class AutomaticExpireCollection<TItem> : IAsyncDisposable, IDisposable
         _timer = null;
     }
 
-    protected void AddOrUpdate(IEnumerable<TItem> items, Action<HashSet<TItem>, TItem> addOrUpdateAction)
+    protected void AddOrUpdate(IEnumerable<TItem> items, Action<IEnumerable<TItem>, TItem> addOrUpdateAction)
     {
         ArgumentNullException.ThrowIfNull(items);
 
+        List<TItem> list;
         lock (_lock)
         {
-            items
-                .ToList()
-                .ForEach(item => addOrUpdateAction(_internalList, item));
+            list = [.. _internalList];
         }
+
+        items
+            .ToList()
+            .ForEach(item => addOrUpdateAction(list, item));
     }
 
     protected IEnumerable<TItem> Find(Func<TItem, bool> predicate)

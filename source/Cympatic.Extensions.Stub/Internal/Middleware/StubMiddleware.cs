@@ -53,29 +53,39 @@ internal class StubMiddleware(RequestDelegate next)
                 context.Response.StatusCode = (int)responseSetup.ReturnStatusCode;
                 if (responseSetup.Response is string responseBodyString)
                 {
+                    context.Response.ContentType = "text/plain";
                     await context.Response.WriteAsync(responseBodyString);
                 }
-                else
+                else if (responseSetup.Response is not null)
                 {
+                    context.Response.ContentType = "application/json";
                     await context.Response.WriteAsJsonAsync(responseSetup.Response);
                 }
+
+                return;
             }
+
+            context.Response.StatusCode = StatusCodes.Status400BadRequest;
+            context.Response.ContentType = "text/plain; charset=UTF-8";
+            await context.Response.WriteAsync($"No ResponseSetup is found for path: {path}");
+
+            return;
         }
 
         await next(context);
     }
 
-    private static string GetCreatedLocation(ResponseSetup model, string scheme, HostString host)
+    private static string GetCreatedLocation(ResponseSetup responseSetup, string scheme, HostString host)
     {
-        if (host.HasValue && model.Location != null && !model.Location.IsAbsoluteUri)
+        if (host.HasValue && responseSetup.Location != null && !responseSetup.Location.IsAbsoluteUri)
         {
             var uriBuilder = host.Port.HasValue
                 ? new UriBuilder(scheme, host.Host, host.Port.Value)
                 : new UriBuilder(scheme, host.Host);
 
-            return uriBuilder.Uri.Append(model.Location.ToString()).ToString();
+            return uriBuilder.Uri.Append(responseSetup.Location.ToString()).ToString();
         }
 
-        return model.Location?.ToString() ?? string.Empty;
+        return responseSetup.Location?.ToString() ?? string.Empty;
     }
 }

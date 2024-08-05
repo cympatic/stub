@@ -26,6 +26,13 @@ public class ApiServiceResult<TModel> : ApiServiceResult
             return;
         }
 
-        Value = JsonSerializer.Deserialize<TModel>(Content, _options);
+        try
+        {
+            Value = JsonSerializer.Deserialize<TModel>(Content, _options);
+        }
+        catch 
+        {
+            // Content was an invalid Json and should therefore be ingored
+        }
     }
 }

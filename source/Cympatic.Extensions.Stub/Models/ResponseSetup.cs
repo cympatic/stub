@@ -5,10 +5,6 @@ namespace Cympatic.Extensions.Stub.Models;
 
 public record ResponseSetup : IAutomaticExpireItem
 {
-    private readonly DateTimeOffset _createdDateTime = DateTimeOffset.UtcNow;
-
-    public readonly Guid Id = Guid.NewGuid();
-
     public IList<string> HttpMethods { get; set; } = [];
 
     public HttpStatusCode ReturnStatusCode { get; set; }
@@ -25,5 +21,7 @@ public record ResponseSetup : IAutomaticExpireItem
 
     public IDictionary<string, IEnumerable<string?>> Headers { get; set; } = new Dictionary<string, IEnumerable<string?>>();
 
-    public DateTimeOffset CreatedDateTime => _createdDateTime;
+    public Guid Id { get; set; }
+
+    public DateTimeOffset CreatedDateTime { get; set; }
 }

@@ -4,8 +4,6 @@ namespace Cympatic.Extensions.Stub.Models;
 
 public record ReceivedRequest : IAutomaticExpireItem
 {
-    private readonly DateTimeOffset _createdDateTime = DateTimeOffset.UtcNow;
-
     public ReceivedRequest(string path, string httpMethod, IDictionary<string, string> query, IDictionary<string, IEnumerable<string?>> headers, string? body, bool foundMatchingResponse)
     {
         Path = path;
@@ -16,12 +14,10 @@ public record ReceivedRequest : IAutomaticExpireItem
         FoundMatchingResponse = foundMatchingResponse;
     }
 
-    public readonly Guid Id = Guid.NewGuid();
-
     public string Path { get; set; }
 
     public string HttpMethod { get; set; }
-    
+
     public IDictionary<string, string> Query { get; set; }
 
     public IDictionary<string, IEnumerable<string?>> Headers { get; set; }
@@ -30,5 +26,7 @@ public record ReceivedRequest : IAutomaticExpireItem
 
     public bool FoundMatchingResponse { get; set; }
 
-    public DateTimeOffset CreatedDateTime => _createdDateTime;
+    public Guid Id { get; set; }
+
+    public DateTimeOffset CreatedDateTime { get; set; }
 }

@@ -4,7 +4,7 @@ using Cympatic.Extensions.Stub.Services.Results;
 
 namespace Cympatic.Extensions.Stub.IntegrationTests.Servers.Services;
 
-internal class WeatherForecastApiService(HttpClient httpClient) : ApiService(httpClient)
+internal class TestServerApiService(HttpClient httpClient) : ApiService(httpClient)
 {
     public async Task<IEnumerable<WeatherForecast>> GetAllAsync(CancellationToken cancellationToken = default)
     {

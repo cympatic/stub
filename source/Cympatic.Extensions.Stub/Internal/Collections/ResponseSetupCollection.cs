@@ -20,12 +20,12 @@ internal sealed class ResponseSetupCollection : AutomaticExpireCollection<Respon
         return Find(item => IsMatching(item, httpMethod, path, query.ToDictionary()));
     }
 
-    private static void AddOrUpdateItem(HashSet<ResponseSetup> items, ResponseSetup newItem)
+    private void AddOrUpdateItem(IEnumerable<ResponseSetup> items, ResponseSetup newItem)
     {
         var foundItems = items.Where(item => AreRequestParamsEqual(item, newItem.HttpMethods, newItem.Path, newItem.Query));
-        foundItems.ToList().ForEach(item => items.Remove(item));
+        foundItems.ToList().ForEach(item => Remove(item));
 
-        items.Add(newItem);
+        Add(newItem);
     }
 
     private static bool AreRequestParamsEqual(ResponseSetup item, IList<string> httpMethods, string path, IDictionary<string, string> query)

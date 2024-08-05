@@ -23,10 +23,10 @@ internal static class SetupResponseEndpointRouteBuilderExtensions
         {
             collection.AddOrUpdate([ responseSetup ]);
 
-            return Results.Created(new Uri("/setup").Append(responseSetup.Id.ToString("N")), responseSetup);
+            return Results.Created(new Uri("/setup", UriKind.Relative).Append(responseSetup.Id.ToString("N")), responseSetup);
         });
 
-        builder.MapPost("/setup/responses", (IEnumerable<ResponseSetup> responseSetups, [FromServices] IResponseSetupCollection collection) =>
+        builder.MapPost("/setup/responses", (IList<ResponseSetup> responseSetups, [FromServices] IResponseSetupCollection collection) =>
         {
             collection.AddOrUpdate(responseSetups);
 

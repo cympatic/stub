@@ -2,5 +2,7 @@
 
 internal interface IAutomaticExpireItem
 {
-    DateTimeOffset CreatedDateTime { get; }
+    Guid Id { get; set; }
+
+    DateTimeOffset CreatedDateTime { get; set;  }
 }

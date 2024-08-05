@@ -50,9 +50,9 @@ internal sealed class TestServer : IDisposable
         ResetHost();
     }
 
-    public WeatherForecastApiService CreateWeatherForecastApiService()
+    public TestServerApiService CreateTestServerApiService()
     {
-        return Host.Services.GetRequiredService<WeatherForecastApiService>();
+        return Host.Services.GetRequiredService<TestServerApiService>();
     }
 
     private IHost CreateHost()
@@ -98,7 +98,7 @@ internal sealed class TestServer : IDisposable
                 });
             })
             .UseLocalhost()
-            .AddApiService<WeatherForecastApiService>();
+            .AddApiService<TestServerApiService>();
 
         return app.Start();
     }

@@ -1,7 +1,6 @@
 ﻿using Cympatic.Extensions.Stub.Interfaces;
 using System.Net;
 using System.Net.Http.Headers;
-using System.Text;
 
 namespace Cympatic.Extensions.Stub.Services.Results;
 
