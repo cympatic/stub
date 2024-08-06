@@ -211,13 +211,8 @@ public class ReceivedRequestTests : IDisposable
             .Excluding(_ => _.CreatedDateTime));
     }
 
-    private static WeatherForecast GenerateWeatherForecast(int index = 0) => new()
-    {
-        Id = Guid.NewGuid(),
-        Date = DateTime.Now.Date.AddDays(index),
-        TemperatureC = Random.Shared.Next(-20, 55),
-        Summary = summaries[Random.Shared.Next(summaries.Length)]
-    }; 
+    private static WeatherForecast GenerateWeatherForecast(int index = 0)
+        => new(Guid.NewGuid(), DateTime.Now.Date.AddDays(index), Random.Shared.Next(-20, 55), summaries[Random.Shared.Next(summaries.Length)]);
 
     private static readonly string[] summaries =
     [
@@ -232,5 +227,4 @@ public class ReceivedRequestTests : IDisposable
         "Sweltering",
         "Scorching"
     ];
-
 }

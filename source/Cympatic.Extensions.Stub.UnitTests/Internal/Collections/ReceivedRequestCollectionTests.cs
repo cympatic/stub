@@ -54,8 +54,7 @@ public class ReceivedRequestCollectionTests : IDisposable
         var list = new List<ReceivedRequest>();
         for (var i = 0; i < NumberOfItems; i++)
         {
-            var item = GenerateReceivedRequest();
-            item.Query = query;
+            var item = GenerateReceivedRequest(query);
 
             list.Add(item);
         }
@@ -73,10 +72,10 @@ public class ReceivedRequestCollectionTests : IDisposable
         actual.Should().BeEquivalentTo(expected);
     }
 
-    private static ReceivedRequest GenerateReceivedRequest()
+    private static ReceivedRequest GenerateReceivedRequest(Dictionary<string, string>? query = null)
     {
         var random = new Random();
-        var query = new Dictionary<string, string>
+        query ??= new Dictionary<string, string>
         {
             { Guid.NewGuid().ToString("N"), Guid.NewGuid().ToString("N") },
             { Guid.NewGuid().ToString("N"), Guid.NewGuid().ToString("N") }
