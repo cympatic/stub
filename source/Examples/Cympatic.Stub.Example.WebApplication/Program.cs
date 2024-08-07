@@ -5,20 +5,30 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddHttpClient<ExternalApiService>((serviceProvider, config) =>
-{
-    var configuration = serviceProvider.GetRequiredService<IConfiguration>();
-    var baseAddressExternalApi = configuration.GetValue<string>("ExternalApi");
-
-    if (string.IsNullOrWhiteSpace(baseAddressExternalApi))
     {
-        throw new ArgumentException($"{nameof(baseAddressExternalApi)} must be provided");
-    }
+        var configuration = serviceProvider.GetRequiredService<IConfiguration>();
+        var baseAddressExternalApi = configuration.GetValue<string>("ExternalApi");
 
-    config.BaseAddress = new Uri(baseAddressExternalApi);
-    config.DefaultRequestHeaders
-        .Accept
-        .Add(new MediaTypeWithQualityHeaderValue("application/json"));
-});
+        if (string.IsNullOrWhiteSpace(baseAddressExternalApi))
+        {
+            throw new ArgumentException($"{nameof(baseAddressExternalApi)} must be provided");
+        }
+
+        config.BaseAddress = new Uri(baseAddressExternalApi);
+        config.DefaultRequestHeaders
+            .Accept
+            .Add(new MediaTypeWithQualityHeaderValue("application/json"));
+    })
+    .ConfigurePrimaryHttpMessageHandler(() =>
+    {
+        return new HttpClientHandler
+        {
+            UseProxy = false,
+            UseDefaultCredentials = true,
+            ServerCertificateCustomValidationCallback = (_, _, _, _) => true
+        };
+    });
+
 
 var app = builder.Build();
 
@@ -41,4 +51,4 @@ app.MapDelete("/weatherforecast/{id}", async (Guid id, ExternalApiService apiSer
 
 app.Run();
 
-public partial class Progam { }
+public partial class Program { }

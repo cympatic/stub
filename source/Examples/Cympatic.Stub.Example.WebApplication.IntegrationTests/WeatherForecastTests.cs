@@ -3,7 +3,6 @@ using Cympatic.Stub.Example.WebApplication.IntegrationTests.Factories;
 using Cympatic.Stub.Example.WebApplication.Services;
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;
-using Microsoft.VisualStudio.TestPlatform.TestHost;
 using System.Net;
 using System.Net.Http.Json;
 
@@ -20,6 +19,9 @@ public class WeatherForecastTests : IClassFixture<ExampleWebApplicationFactory<P
     {
         _factory = factory;
         _httpClient = _factory.CreateClient();
+
+        _factory.ClearResponsesSetupAsync();
+        _factory.ClearReceivedRequestsAsync();
     }
 
     [Fact]
@@ -53,7 +55,7 @@ public class WeatherForecastTests : IClassFixture<ExampleWebApplicationFactory<P
         var response = await _httpClient.GetAsync("/weatherforecast");
 
         // Assert
-        var actual = await response.Content.ReadFromJsonAsync<WeatherForecast>();
+        var actual = await response.Content.ReadFromJsonAsync<IEnumerable<WeatherForecast>>();
 
         var actualReceivedRequests = await _factory.FindReceivedRequestsAsync(new ReceivedRequestSearchParams("/external/api/weatherforecast", [HttpMethod.Get.ToString()]));
         actualReceivedRequests.Should().BeEquivalentTo(expectedReceivedRequests, options => options
