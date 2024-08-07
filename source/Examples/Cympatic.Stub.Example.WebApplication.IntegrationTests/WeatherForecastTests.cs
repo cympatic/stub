@@ -56,6 +56,7 @@ public class WeatherForecastTests : IClassFixture<ExampleWebApplicationFactory<P
 
         // Assert
         var actual = await response.Content.ReadFromJsonAsync<IEnumerable<WeatherForecast>>();
+        actual.Should().BeEquivalentTo(expected);
 
         var actualReceivedRequests = await _factory.FindReceivedRequestsAsync(new ReceivedRequestSearchParams("/external/api/weatherforecast", [HttpMethod.Get.ToString()]));
         actualReceivedRequests.Should().BeEquivalentTo(expectedReceivedRequests, options => options
