@@ -24,9 +24,7 @@ internal class StubMiddleware(RequestDelegate next)
             }
             context.Request.Body.Position = 0;
 
-            var segments = context.Request.Path.Value?.Split("/", StringSplitOptions.RemoveEmptyEntries) ?? [];
-            var uri = new Uri("/", UriKind.Relative).Append(segments[1..]);
-            var path = uri.ToString();
+            var path = GetPath(context.Request.Path);
 
             var responseSetup = responseSetups.Find(context.Request.Method, path, context.Request.Query).FirstOrDefault();
 
@@ -34,16 +32,7 @@ internal class StubMiddleware(RequestDelegate next)
 
             if (responseSetup is not null)
             {
-                context.Response.Headers.AddRange(responseSetup.Headers);
-                if (responseSetup.ReturnStatusCode == HttpStatusCode.Created)
-                {
-                    if (context.Response.Headers.ContainsKey("Location"))
-                    {
-                        context.Response.Headers.Remove("Location");
-                    }
-
-                    context.Response.Headers.Append("Location", GetCreatedLocation(responseSetup, context.Request.Scheme, context.Request.Host));
-                }
+                SetResponseHeaders(context.Response.Headers, responseSetup, () => GetCreatedLocation(responseSetup, context.Request.Scheme, context.Request.Host));
 
                 if (responseSetup.DelayInMilliseconds > 0)
                 {
@@ -73,6 +62,27 @@ internal class StubMiddleware(RequestDelegate next)
         }
 
         await next(context);
+    }
+
+    private static string GetPath(PathString path)
+    {
+        var segments = path.Value?.Split("/", StringSplitOptions.RemoveEmptyEntries) ?? [];
+        var uri = new Uri("/", UriKind.Relative).Append(segments[1..]);
+        return uri.ToString();
+    }
+
+    private static void SetResponseHeaders(IHeaderDictionary headers, ResponseSetup responseSetup, Func<string> createdLocation)
+    {
+        headers.AddRange(responseSetup.Headers);
+        if (responseSetup.ReturnStatusCode == HttpStatusCode.Created)
+        {
+            if (headers.ContainsKey("Location"))
+            {
+                headers.Remove("Location");
+            }
+
+            headers.Append("Location", createdLocation?.Invoke() ?? string.Empty);
+        }
     }
 
     private static string GetCreatedLocation(ResponseSetup responseSetup, string scheme, HostString host)

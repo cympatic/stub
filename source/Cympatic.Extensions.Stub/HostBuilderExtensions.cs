@@ -10,6 +10,7 @@ using Microsoft.Extensions.Hosting;
 using System.Net;
 using System.Net.Http.Headers;
 using System.Security.Cryptography.X509Certificates;
+using Cympatic.Extensions.Stub.Internal.Middleware;
 
 namespace Cympatic.Extensions.Stub;
 
@@ -31,7 +32,7 @@ public static class HostBuilderExtensions
         return builder;
     }
 
-    public static IHostBuilder UseLocalhost(this IHostBuilder builder, bool useSsl)
+    public static IHostBuilder UseLocalhost(this IHostBuilder builder, bool useSsl = true)
     {
         builder.ConfigureWebHost(webHostBuilder =>
         {
@@ -65,7 +66,7 @@ public static class HostBuilderExtensions
                     endpointBuilder.MapReceivedRequest();
                 });
 
-                app.UseStub();
+                app.UseMiddleware<StubMiddleware>();
             });
         });
 

@@ -1,6 +1,6 @@
 ﻿namespace Cympatic.Extensions.Stub.Internal.Utilities;
 
-internal class SearchableStubbedHttpItemUtility
+internal class SearchableStubItemUtility
 {
     public static bool IsMatching(IList<string> httpMethods, string httpMethod, string path, string modelPath, IDictionary<string, string> query, IDictionary<string, string> modelQuery)
     {

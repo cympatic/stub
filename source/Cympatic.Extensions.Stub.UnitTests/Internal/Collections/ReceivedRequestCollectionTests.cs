@@ -1,5 +1,4 @@
-﻿using Cympatic.Extensions.Stub;
-using Cympatic.Extensions.Stub.Internal.Collections;
+﻿using Cympatic.Extensions.Stub.Internal.Collections;
 using Cympatic.Extensions.Stub.Models;
 using FluentAssertions;
 

@@ -35,12 +35,12 @@ internal sealed class ResponseSetupCollection : AutomaticExpireCollection<Respon
 
         return
             modelHttpMethods.All(value => httpMethods.Contains(value, StringComparer.OrdinalIgnoreCase)) &&
-            SearchableStubbedHttpItemUtility.ComparePath(item.Path, path) &&
-            SearchableStubbedHttpItemUtility.CompareQuery(item.Query, query);
+            SearchableStubItemUtility.ComparePath(item.Path, path) &&
+            SearchableStubItemUtility.CompareQuery(item.Query, query);
     }
 
     private static bool IsMatching(ResponseSetup item, string httpMethod, string path, IDictionary<string, string> query)
     {
-        return SearchableStubbedHttpItemUtility.IsMatching(item.HttpMethods, httpMethod, path, item.Path, query, item.Query);
+        return SearchableStubItemUtility.IsMatching(item.HttpMethods, httpMethod, path, item.Path, query, item.Query);
     }
 }

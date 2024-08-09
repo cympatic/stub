@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Http;
 
-namespace Cympatic.Extensions.Stub;
+namespace Cympatic.Extensions.Stub.Internal;
 
-public static class QueryCollectionExtensions
+internal static class QueryCollectionExtensions
 {
     public static IDictionary<string, string> ToDictionary(this IQueryCollection query)
     {

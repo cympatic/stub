@@ -1,8 +1,9 @@
-﻿using FluentAssertions;
+﻿using Cympatic.Extensions.Stub.Internal;
+using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Primitives;
 
-namespace Cympatic.Extensions.Stub.UnitTests;
+namespace Cympatic.Extensions.Stub.UnitTests.Internal;
 
 public class QueryCollectionExtensionsTests
 {

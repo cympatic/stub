@@ -13,6 +13,6 @@ internal sealed class ReceivedRequestCollection : AutomaticExpireCollection<Rece
 
     private static bool IsMatching(ReceivedRequest item, IList<string> httpMethods, string path, IDictionary<string, string> query)
     {
-        return SearchableStubbedHttpItemUtility.IsMatching(httpMethods, item.HttpMethod, item.Path, path, item.Query, query);
+        return SearchableStubItemUtility.IsMatching(httpMethods, item.HttpMethod, item.Path, path, item.Query, query);
     }
 }

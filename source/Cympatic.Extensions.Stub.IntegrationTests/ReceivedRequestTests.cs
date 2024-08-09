@@ -17,8 +17,8 @@ public class ReceivedRequestTests : IDisposable
 
     public ReceivedRequestTests()
     {
-        _sut = new StubServer(false);
-        _testServer = new TestServer();
+        _sut = new(false);
+        _testServer = new();
 
         _testServer.SetBaseAddressExternalApi(_sut.BaseAddressStub);
     }

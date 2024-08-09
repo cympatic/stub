@@ -3,14 +3,14 @@ using FluentAssertions;
 
 namespace Cympatic.Extensions.Stub.UnitTests.Internal.Utilities;
 
-public class SearchableStubbedHttpItemUtilityTests
+public class SearchableStubItemUtilityTests
 {
     [Theory]
     [MemberData(nameof(IsMatchingTestData))]
     public void IsMatching(string _, IList<string> httpMethods, string httpMethod, bool result)
     {
         // Arrange & Act
-        var actual = SearchableStubbedHttpItemUtility.IsMatching(httpMethods!, httpMethod!, string.Empty, string.Empty, new Dictionary<string, string>(), new Dictionary<string, string>());
+        var actual = SearchableStubItemUtility.IsMatching(httpMethods!, httpMethod!, string.Empty, string.Empty, new Dictionary<string, string>(), new Dictionary<string, string>());
 
         // Assert
         actual.Should().Be(result);
@@ -51,7 +51,7 @@ public class SearchableStubbedHttpItemUtilityTests
     public void ComparePath(string _, string current, string other, bool result)
     {
         // Arrange & Act
-        var actual = SearchableStubbedHttpItemUtility.ComparePath(current!, other!);
+        var actual = SearchableStubItemUtility.ComparePath(current!, other!);
 
         // Assert
         actual.Should().Be(result);
@@ -120,7 +120,7 @@ public class SearchableStubbedHttpItemUtilityTests
     public void CompareQuery(string _, Dictionary<string, string> current, Dictionary<string, string> other, bool result)
     {
         // Arrange & Act
-        var actual = SearchableStubbedHttpItemUtility.CompareQuery(current!, other!);
+        var actual = SearchableStubItemUtility.CompareQuery(current!, other!);
 
         // Assert
         actual.Should().Be(result);

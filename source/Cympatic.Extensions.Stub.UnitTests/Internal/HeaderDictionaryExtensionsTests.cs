@@ -1,5 +1,4 @@
-﻿using Cympatic.Extensions.Stub;
-using Cympatic.Extensions.Stub.Internal;
+﻿using Cympatic.Extensions.Stub.Internal;
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 

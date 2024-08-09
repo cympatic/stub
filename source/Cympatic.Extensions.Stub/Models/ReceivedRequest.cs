@@ -2,7 +2,8 @@
 
 namespace Cympatic.Extensions.Stub.Models;
 
-public record ReceivedRequest(string Path, string HttpMethod, IDictionary<string, string> Query, IDictionary<string, IEnumerable<string?>> Headers, string? Body, bool FoundMatchingResponse) : IAutomaticExpireItem
+public record ReceivedRequest(string Path, string HttpMethod, IDictionary<string, string> Query, IDictionary<string, IEnumerable<string?>> Headers, string? Body, bool FoundMatchingResponse) 
+    : IAutomaticExpireItem
 {
     public Guid Id { get; set; }
 

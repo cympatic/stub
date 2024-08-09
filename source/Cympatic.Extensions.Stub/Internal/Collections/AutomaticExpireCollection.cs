@@ -2,7 +2,7 @@
 
 namespace Cympatic.Extensions.Stub.Internal.Collections;
 
-internal class AutomaticExpireCollection<TItem> : IAsyncDisposable, IDisposable
+internal abstract class AutomaticExpireCollection<TItem> : IAsyncDisposable, IDisposable
     where TItem : IAutomaticExpireItem
 {
     private readonly object _lock = new();

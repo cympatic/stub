@@ -6,7 +6,7 @@ internal static class HttpHeadersExtensions
 {
     public static void AddRange(this HttpHeaders headers, IEnumerable<KeyValuePair<string, IEnumerable<string>>>? range)
     {
-        if (range != null)
+        if (range is not null)
         {
             foreach (var (key, value) in range)
             {
@@ -15,7 +15,7 @@ internal static class HttpHeadersExtensions
                     headers.Remove(key);
                 }
 
-                headers.Add(key, values == null
+                headers.Add(key, values is null
                     ? value
                     : value.Union(values).ToArray());
             }
