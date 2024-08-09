@@ -18,15 +18,6 @@ builder.Services.AddHttpClient<ExternalApiService>((serviceProvider, config) =>
         config.DefaultRequestHeaders
             .Accept
             .Add(new MediaTypeWithQualityHeaderValue("application/json"));
-    })
-    .ConfigurePrimaryHttpMessageHandler(() =>
-    {
-        return new HttpClientHandler
-        {
-            UseProxy = false,
-            UseDefaultCredentials = true,
-            ServerCertificateCustomValidationCallback = (_, _, _, _) => true
-        };
     });
 
 

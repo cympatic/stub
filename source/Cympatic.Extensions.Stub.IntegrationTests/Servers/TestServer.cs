@@ -97,8 +97,8 @@ internal sealed class TestServer : IDisposable
                     });
                 });
             })
-            .UseLocalhost()
-            .AddApiService<TestServerApiService>();
+            .UseLocalhost(true)
+            .AddApiService<TestServerApiService>(true);
 
         return app.Start();
     }

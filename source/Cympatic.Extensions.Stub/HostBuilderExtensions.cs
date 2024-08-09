@@ -31,7 +31,7 @@ public static class HostBuilderExtensions
         return builder;
     }
 
-    public static IHostBuilder UseLocalhost(this IHostBuilder builder)
+    public static IHostBuilder UseLocalhost(this IHostBuilder builder, bool useSsl)
     {
         builder.ConfigureWebHost(webHostBuilder =>
         {
@@ -39,8 +39,11 @@ public static class HostBuilderExtensions
             {
                 options.Listen(IPAddress.Loopback, 0, endpoint =>
                 {
-                    var certificate = GetCertificate();
-                    endpoint.UseHttps(certificate);
+                    if (useSsl)
+                    {
+                        var certificate = GetCertificate();
+                        endpoint.UseHttps(certificate);
+                    }
                 });
             });
         });
@@ -69,7 +72,28 @@ public static class HostBuilderExtensions
         return builder;
     }
 
-    public static IHostBuilder AddApiService<TApiService>(this IHostBuilder builder)
+    public static IHostBuilder AddApiService<TApiService>(this IHostBuilder builder, bool useSsl = true)
+        where TApiService : class
+    {
+        HttpClientHandler configureHandler()
+        {
+            return useSsl
+                ? new HttpClientHandler
+                {
+                    UseProxy = false,
+                    UseDefaultCredentials = true,
+                    ServerCertificateCustomValidationCallback = (_, _, _, _) => true
+                }
+                : new HttpClientHandler();
+        }
+
+        builder.AddApiService<TApiService>(configureHandler);
+
+        return builder;
+    }
+
+
+    public static IHostBuilder AddApiService<TApiService>(this IHostBuilder builder, Func<HttpClientHandler>? configureHandler)
         where TApiService : class
     {
         builder.ConfigureServices(services =>
@@ -83,15 +107,7 @@ public static class HostBuilderExtensions
                     .Accept
                     .Add(new MediaTypeWithQualityHeaderValue("application/json"));
             })
-            .ConfigurePrimaryHttpMessageHandler(() =>
-            {
-                return new HttpClientHandler
-                {
-                    UseProxy = false,
-                    UseDefaultCredentials = true,
-                    ServerCertificateCustomValidationCallback = (_, _, _, _) => true
-                };
-            });
+            .ConfigurePrimaryHttpMessageHandler(() => configureHandler?.Invoke() ?? new HttpClientHandler());
         });
 
         return builder;

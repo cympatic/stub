@@ -6,7 +6,7 @@ using Microsoft.Extensions.Hosting;
 
 namespace Cympatic.Extensions.Stub;
 
-public sealed class StubServer : IDisposable
+public sealed class StubServer(bool UseSsl = true) : IDisposable
 {
     private IHost? _host;
 
@@ -57,14 +57,14 @@ public sealed class StubServer : IDisposable
         _host = null;
     }
 
-    private static IHost CreateHost()
+    private IHost CreateHost()
     {
         var app = Microsoft.Extensions.Hosting.Host.CreateDefaultBuilder()
             .AddStubServer()
-            .UseLocalhost()
+            .UseLocalhost(UseSsl)
             .UseStubServer()
-            .AddApiService<SetupResponseApiService>()
-            .AddApiService<ReceivedRequestApiService>();
+            .AddApiService<SetupResponseApiService>(UseSsl)
+            .AddApiService<ReceivedRequestApiService>(UseSsl);
 
         return app.Start();
     }
