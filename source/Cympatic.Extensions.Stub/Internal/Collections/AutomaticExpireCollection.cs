@@ -2,24 +2,28 @@
 
 namespace Cympatic.Extensions.Stub.Internal.Collections;
 
-internal abstract class AutomaticExpireCollection<TItem> : IAsyncDisposable, IDisposable
+internal abstract class AutomaticExpireCollection<TItem> : IDisposable
     where TItem : IAutomaticExpireItem
 {
     private readonly ReaderWriterLockSlim _lock = new();
     private readonly HashSet<TItem> _internalList = [];
 
+    private readonly Timer _timer;
     private readonly TimeSpan _timerInterval;
-
-    private Timer? _timer;
     private TimeSpan _ttl;
 
     public int Count
     {
         get
         {
-            lock (_lock)
+            _lock.EnterWriteLock();
+            try
             {
                 return _internalList.Count;
+            }
+            finally
+            {
+                _lock.ExitWriteLock();
             }
         }
     }
@@ -41,14 +45,6 @@ internal abstract class AutomaticExpireCollection<TItem> : IAsyncDisposable, IDi
     public void Dispose()
     {
         Dispose(true);
-        GC.SuppressFinalize(this);
-    }
-
-    public async ValueTask DisposeAsync()
-    {
-        await DisposeAsyncCore();
-
-        Dispose(false);
         GC.SuppressFinalize(this);
     }
 
@@ -111,21 +107,15 @@ internal abstract class AutomaticExpireCollection<TItem> : IAsyncDisposable, IDi
 
     protected virtual void Dispose(bool disposing)
     {
-        if (disposing)
-        {
-            _timer?.Dispose();
-            _lock.Dispose();
-        }
-        _timer = null;
-    }
+        _timer.Change(Timeout.InfiniteTimeSpan, Timeout.InfiniteTimeSpan);
 
-    protected virtual async ValueTask DisposeAsyncCore()
-    {
-        if (_timer is not null)
+        using (var manualEvent = new ManualResetEventSlim())
         {
-            await _timer.DisposeAsync();
+            _timer.Dispose(manualEvent.WaitHandle);
+            manualEvent.WaitHandle.WaitOne();
         }
-        _timer = null;
+
+        _lock.Dispose();
     }
 
     protected void AddOrUpdate(IEnumerable<TItem> items, Action<IEnumerable<TItem>, TItem> addOrUpdateAction)
