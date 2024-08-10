@@ -35,12 +35,16 @@ public class SetupResponseApiServiceTests : IDisposable
     [Fact]
     public async Task When_GetAllASync_is_succesfullyly_called_Then_all_items_are_returned_and_made_1_GET_call_to_the_service()
     {
-        // Arrange
-        var expected = new List<ResponseSetup>();
-        for (var i = 0; i < NumberOfItems; i++)
+        static IEnumerable<ResponseSetup> GetItems()
         {
-            expected.Add(GenerateResponseSetup());
+            for (var i = 0; i < NumberOfItems; i++)
+            {
+                yield return GenerateResponseSetup();
+            }
         }
+
+        // Arrange
+        var expected = GetItems().ToList();
         _fakeMessageHandler.ExpectedUrlPartial = "/setup";
         _fakeMessageHandler.Response = expected;
 
@@ -146,12 +150,16 @@ public class SetupResponseApiServiceTests : IDisposable
     [Fact]
     public async Task When_AddAsync_with_multiple_items_is_succesfully_called_Then_1_POST_call_is_made_to_the_service()
     {
-        // Arrange
-        var expected = new List<ResponseSetup>();
-        for (var i = 0; i < NumberOfItems; i++)
+        static IEnumerable<ResponseSetup> GetItems()
         {
-            expected.Add(GenerateResponseSetup());
+            for (var i = 0; i < NumberOfItems; i++)
+            {
+                yield return GenerateResponseSetup();
+            }
         }
+
+        // Arrange
+        var expected = GetItems().ToList();
         _fakeMessageHandler.ExpectedUrlPartial = "/setup/responses";
         _fakeMessageHandler.ResponseStatusCode = HttpStatusCode.Created;
         _fakeMessageHandler.Response = expected;
@@ -276,7 +284,6 @@ public class SetupResponseApiServiceTests : IDisposable
 
     private static ResponseSetup GenerateResponseSetup()
     {
-        var random = new Random();
         var httpStatusCodes = Enum.GetValues(typeof(HttpStatusCode));
         var query = new Dictionary<string, string>
         {
@@ -303,15 +310,15 @@ public class SetupResponseApiServiceTests : IDisposable
         var httpMethods = new List<string>();
         for (var i = 0; i < 3; i++)
         {
-            httpMethods.Add(httpMethodNames[random.Next(httpMethodNames.Length)]);
+            httpMethods.Add(httpMethodNames[Random.Shared.Next(httpMethodNames.Length)]);
         }
 
         return new()
         {
             HttpMethods = httpMethods,
-            ReturnStatusCode = (HttpStatusCode)httpStatusCodes.GetValue(random.Next(httpStatusCodes.Length))!,
+            ReturnStatusCode = (HttpStatusCode)httpStatusCodes.GetValue(Random.Shared.Next(httpStatusCodes.Length))!,
             Location = new Uri(Guid.NewGuid().ToString("N"), UriKind.Relative),
-            DelayInMilliseconds = random.Next(1000),
+            DelayInMilliseconds = Random.Shared.Next(1000),
             Path = Guid.NewGuid().ToString("N"),
             Query = query,
             Headers = headers

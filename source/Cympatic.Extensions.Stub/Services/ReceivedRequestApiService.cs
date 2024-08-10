@@ -27,22 +27,22 @@ public class ReceivedRequestApiService(HttpClient httpClient) : ApiService(httpC
             uri = uri.WithParameter("path", searchParams.Path);
         }
 
-        var i = 0;
-        foreach (var (key, value) in searchParams.Query)
-        {
-            uri = uri.WithParameters(new NameValueCollection{
-                { $"query[{i}].key", key },
-                { $"query[{i}].value", value }
+        var parameters = new NameValueCollection();
+        searchParams.Query
+            .Select((kvp, index) => new { kvp.Key, kvp.Value, Index = index })
+            .ToList()
+            .ForEach(item =>
+            {
+                parameters.Add($"query[{item.Index}].key", item.Key);
+                parameters.Add($"query[{item.Index}].value", item.Value);
             });
-            i++;
-        }
 
-        i = 0;
-        foreach (var method in searchParams.HttpMethods)
-        {
-            uri = uri.WithParameter($"httpmethods[{i}]", method);
-            i++;
-        }
+        searchParams.HttpMethods
+            .Select((method, index) => new { Method = method, Index = index })
+            .ToList()
+            .ForEach(item => parameters.Add($"httpmethods[{item.Index}]", item.Method));
+
+        uri = uri.WithParameters(parameters);
 
         var apiResult = await GetAsync<ApiServiceResult<IEnumerable<ReceivedRequest>>>(uri, cancellationToken);
         apiResult.EnsureSuccessStatusCode();

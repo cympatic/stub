@@ -18,13 +18,7 @@ public sealed class StubServer(bool UseSsl = true) : IDisposable
         }
     }
 
-    public Uri BaseAddress
-    {
-        get 
-        { 
-            return new Uri(Host.Services.GetRequiredService<IServer>().Features.Get<IServerAddressesFeature>()!.Addresses.First());
-        }
-    }
+    public Uri BaseAddress => new(Host.Services.GetRequiredService<IServer>().Features.Get<IServerAddressesFeature>()!.Addresses.First());
 
     public Uri BaseAddressStub => BaseAddress.Append("stub");
 

@@ -20,7 +20,6 @@ public class ReceivedRequestCollectionTests : IDisposable
     public void When_Find_is_called_with_strict_SearchParams_Then_the_matching_Items_where_FoundMatchingResponse_is_True_are_return()
     {
         // Arrange
-        var random = new Random();
         var list = new List<ReceivedRequest>();
         for (var i = 0; i < NumberOfItems; i++)
         {
@@ -30,7 +29,7 @@ public class ReceivedRequestCollectionTests : IDisposable
 
         var expected = list
             .Where(_ => _.FoundMatchingResponse)
-            .ToList()[random.Next(list.Where(_ => _.FoundMatchingResponse).Count())];
+            .ToList()[Random.Shared.Next(list.Where(_ => _.FoundMatchingResponse).Count())];
         var searchParams = new ReceivedRequestSearchParams(expected.Path, expected.Query!, [expected.HttpMethod!]);
 
         // Act
@@ -44,7 +43,6 @@ public class ReceivedRequestCollectionTests : IDisposable
     public void When_Find_is_called_with_valid_SearchParams_Then_the_matching_Items_where_FoundMatchingResponse_is_True_are_return()
     {
         // Arrange
-        var random = new Random();
         var query = new Dictionary<string, string>
         {
             { Guid.NewGuid().ToString("N"), Guid.NewGuid().ToString("N") },
@@ -73,7 +71,6 @@ public class ReceivedRequestCollectionTests : IDisposable
 
     private static ReceivedRequest GenerateReceivedRequest(Dictionary<string, string>? query = null)
     {
-        var random = new Random();
         query ??= new Dictionary<string, string>
         {
             { Guid.NewGuid().ToString("N"), Guid.NewGuid().ToString("N") },
@@ -92,7 +89,7 @@ public class ReceivedRequestCollectionTests : IDisposable
             query,
             headers,
             Guid.NewGuid().ToString("N"),
-            random.Next(2) == 0
+            Random.Shared.Next(2) == 0
         );
     }
 }

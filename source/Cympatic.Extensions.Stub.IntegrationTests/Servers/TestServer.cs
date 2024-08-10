@@ -23,13 +23,7 @@ internal sealed class TestServer : IDisposable
         }
     }
 
-    public Uri BaseAddress
-    {
-        get
-        {
-            return new Uri(Host.Services.GetRequiredService<IServer>().Features.Get<IServerAddressesFeature>()!.Addresses.First());
-        }
-    }
+    public Uri BaseAddress => new(Host.Services.GetRequiredService<IServer>().Features.Get<IServerAddressesFeature>()!.Addresses.First());
 
     public void Dispose()
     {

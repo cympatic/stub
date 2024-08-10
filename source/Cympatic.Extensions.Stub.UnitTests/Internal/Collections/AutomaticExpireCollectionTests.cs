@@ -6,14 +6,14 @@ namespace Cympatic.Extensions.Stub.UnitTests.Internal.Collections;
 
 public class AutomaticExpireCollectionTests : IDisposable
 {
-    internal class FakeAutomaticExpireItem : IAutomaticExpireItem
+    private class FakeAutomaticExpireItem : IAutomaticExpireItem
     {
         public Guid Id { get; set; } = Guid.NewGuid();
 
         public DateTimeOffset CreatedDateTime { get; set; } = DateTimeOffset.UtcNow;
     }
 
-    internal class FakeModelContainer : AutomaticExpireCollection<FakeAutomaticExpireItem>
+    private class FakeModelContainer : AutomaticExpireCollection<FakeAutomaticExpireItem>
     {
         public FakeModelContainer() : base(new TimeSpan(1))
         { }

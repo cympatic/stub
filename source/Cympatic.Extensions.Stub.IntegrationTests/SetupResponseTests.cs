@@ -72,11 +72,10 @@ public class SetupResponseTests : IDisposable
         }
 
         // Arrange
-        var random = new Random();
         var setupReponseApiService = _sut.CreateApiService<SetupResponseApiService>();
         await setupReponseApiService.AddAsync(GetItems());
         var list = await setupReponseApiService.GetAllAsync();
-        var unexpected = list.ElementAt(random.Next(list.Count()));
+        var unexpected = list.ElementAt(Random.Shared.Next(list.Count()));
 
         // Act
         await setupReponseApiService.RemoveAsync(unexpected);
@@ -125,7 +124,6 @@ public class SetupResponseTests : IDisposable
 
     private static ResponseSetup GenerateResponseSetup()
     {
-        var random = new Random();
         var httpStatusCodes = Enum.GetValues(typeof(HttpStatusCode));
         var query = new Dictionary<string, string>
         {
@@ -152,15 +150,15 @@ public class SetupResponseTests : IDisposable
         var httpMethods = new List<string>();
         for (var i = 0; i < 3; i++)
         {
-            httpMethods.Add(httpMethodNames[random.Next(httpMethodNames.Length)]);
+            httpMethods.Add(httpMethodNames[Random.Shared.Next(httpMethodNames.Length)]);
         }
 
         return new()
         {
             HttpMethods = httpMethods,
-            ReturnStatusCode = (HttpStatusCode)httpStatusCodes.GetValue(random.Next(httpStatusCodes.Length))!,
+            ReturnStatusCode = (HttpStatusCode)httpStatusCodes.GetValue(Random.Shared.Next(httpStatusCodes.Length))!,
             Location = new Uri(Guid.NewGuid().ToString("N"), UriKind.Relative),
-            DelayInMilliseconds = random.Next(1000),
+            DelayInMilliseconds = Random.Shared.Next(1000),
             Path = Guid.NewGuid().ToString("N"),
             Query = query,
             Headers = headers

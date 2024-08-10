@@ -34,11 +34,7 @@ public class ResponseSetupCollectionTests : IDisposable
     public void When_AddOrUpdate_is_called_with_nonexisting_items_Then_all_items_are_added()
     {
         // Arrange
-        var expected = new List<ResponseSetup>();
-        for (var i = 0; i < NumberOfItems; i++)
-        {
-            expected.Add(GenerateResponseSetup());
-        }
+        var expected = GetResponseSetups().ToList();
 
         // Act
         _sut.AddOrUpdate(expected);
@@ -52,15 +48,10 @@ public class ResponseSetupCollectionTests : IDisposable
     public void When_AddOrUpdate_is_called_with_an_items_with_existing_values_in_the_list_Then_the_already_existing_item_is_replaced_with_the_new_Item()
     {
         // Arrange
-        var random = new Random();
-        var list = new List<ResponseSetup>();
-        for (var i = 0; i < NumberOfItems; i++)
-        {
-            list.Add(GenerateResponseSetup());
-        }
-        list.ForEach(_sut.Add);
+        var items = GetResponseSetups().ToList();
+        items.ForEach(_sut.Add);
 
-        var expected = CloneResponseSetup(list[random.Next(NumberOfItems)]);
+        var expected = CloneResponseSetup(items[Random.Shared.Next(NumberOfItems)]);
 
         // Act
         _sut.AddOrUpdate([expected]);
@@ -74,15 +65,10 @@ public class ResponseSetupCollectionTests : IDisposable
     public void When_GetById_is_called_with_a_valid_id_Then_the_existing_item_is_returned()
     {
         // Arrange
-        var random = new Random();
-        var list = new List<ResponseSetup>();
-        for (var i = 0; i < NumberOfItems; i++)
-        {
-            list.Add(GenerateResponseSetup());
-        }
-        list.ForEach(_sut.Add);
+        var items = GetResponseSetups().ToList();
+        items.ForEach(_sut.Add);
 
-        var expected = list[random.Next(NumberOfItems)];
+        var expected = items[Random.Shared.Next(NumberOfItems)];
 
         // Act
         var actual = _sut.GetById(expected.Id);
@@ -95,13 +81,8 @@ public class ResponseSetupCollectionTests : IDisposable
     public void When_GetById_is_called_with_an_invalid_id_Then_no_item_is_returned()
     {
         // Arrange
-        var random = new Random();
-        var list = new List<ResponseSetup>();
-        for (var i = 0; i < NumberOfItems; i++)
-        {
-            list.Add(GenerateResponseSetup());
-        }
-        list.ForEach(_sut.Add);
+        var items = GetResponseSetups().ToList();
+        items.ForEach(_sut.Add);
 
         // Act
         var actual = _sut.GetById(Guid.NewGuid());
@@ -114,23 +95,15 @@ public class ResponseSetupCollectionTests : IDisposable
     public void When_Find_is_called_Then_matching_items_are_returned()
     {
         // Arrange
-        var random = new Random();
         var query = new Dictionary<string, string>
         {
             { Guid.NewGuid().ToString("N"), Guid.NewGuid().ToString("N") },
             { Guid.NewGuid().ToString("N"), Guid.NewGuid().ToString("N") }
         };
-        var list = new List<ResponseSetup>();
-        for (var i = 0; i < NumberOfItems; i++)
-        {
-            var item = GenerateResponseSetup();
-            item.Query = query;
+        var items = GetResponseSetups(query).ToList();
+        items.ForEach(_sut.Add);
 
-            list.Add(item);
-        }
-        list.ForEach(_sut.Add);
-
-        var expected = list.Where(_ => _.HttpMethods.Contains(HttpMethod.Post.ToString()));
+        var expected = items.Where(_ => _.HttpMethods.Contains(HttpMethod.Post.ToString()));
 
         // Act
         var actual = _sut.Find(HttpMethod.Post.ToString(), "{*}", new QueryCollection(query.Select(key => key).ToDictionary(item => item.Key, _ => new StringValues("{*}"))));
@@ -139,11 +112,11 @@ public class ResponseSetupCollectionTests : IDisposable
         actual.Should().BeEquivalentTo(expected);
     }
 
-    private static ResponseSetup GenerateResponseSetup()
+    private static ResponseSetup GenerateResponseSetup(Dictionary<string, string>? query = null)
     {
-        var random = new Random();
         var httpStatusCodes = Enum.GetValues(typeof(HttpStatusCode));
-        var query = new Dictionary<string, string>
+
+        query ??= new Dictionary<string, string>
         {
             { Guid.NewGuid().ToString("N"), Guid.NewGuid().ToString("N") },
             { Guid.NewGuid().ToString("N"), Guid.NewGuid().ToString("N") }
@@ -168,20 +141,28 @@ public class ResponseSetupCollectionTests : IDisposable
         var httpMethods = new List<string>();
         for (var i = 0; i < 3; i++)
         {
-            httpMethods.Add(httpMethodNames[random.Next(httpMethodNames.Length)]);
+            httpMethods.Add(httpMethodNames[Random.Shared.Next(httpMethodNames.Length)]);
         }
 
         return new()
         {
             HttpMethods = httpMethods,
-            ReturnStatusCode = (HttpStatusCode)httpStatusCodes.GetValue(random.Next(httpStatusCodes.Length))!,
+            ReturnStatusCode = (HttpStatusCode)httpStatusCodes.GetValue(Random.Shared.Next(httpStatusCodes.Length))!,
             Location = new Uri(Guid.NewGuid().ToString("N"), UriKind.Relative),
             Response = Guid.NewGuid(),
-            DelayInMilliseconds = random.Next(1000),
+            DelayInMilliseconds = Random.Shared.Next(1000),
             Path = Guid.NewGuid().ToString("N"),
             Query = query,
             Headers = headers
         };
+    }
+
+    private static IEnumerable<ResponseSetup> GetResponseSetups(Dictionary<string, string>? query = null)
+    {
+        for (var i = 0; i < NumberOfItems; i++)
+        {
+            yield return GenerateResponseSetup(query);
+        }
     }
 
     private static ResponseSetup CloneResponseSetup(ResponseSetup responseSetup)

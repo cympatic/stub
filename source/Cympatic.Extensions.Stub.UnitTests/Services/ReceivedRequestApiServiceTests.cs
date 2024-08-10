@@ -153,7 +153,6 @@ public class ReceivedRequestApiServiceTests : IDisposable
 
     private static ReceivedRequest GenerateReceivedRequest()
     {
-        var random = new Random();
         var query = new Dictionary<string, string>
         {
             { Guid.NewGuid().ToString("N"), Guid.NewGuid().ToString("N") },
@@ -172,7 +171,7 @@ public class ReceivedRequestApiServiceTests : IDisposable
             query,
             headers,
             Guid.NewGuid().ToString("N"),
-            random.Next(2) == 0
+            Random.Shared.Next(2) == 0
         );
     }
 }
