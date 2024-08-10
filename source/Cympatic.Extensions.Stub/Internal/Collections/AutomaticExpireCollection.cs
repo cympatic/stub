@@ -44,7 +44,16 @@ internal abstract class AutomaticExpireCollection<TItem> : IDisposable
 
     public void Dispose()
     {
-        Dispose(true);
+        _timer.Change(Timeout.InfiniteTimeSpan, Timeout.InfiniteTimeSpan);
+
+        using (var manualEvent = new ManualResetEventSlim())
+        {
+            _timer.Dispose(manualEvent.WaitHandle);
+            manualEvent.WaitHandle.WaitOne();
+        }
+
+        _lock.Dispose();
+
         GC.SuppressFinalize(this);
     }
 
@@ -103,19 +112,6 @@ internal abstract class AutomaticExpireCollection<TItem> : IDisposable
         {
             _lock.ExitWriteLock();
         }
-    }
-
-    protected virtual void Dispose(bool disposing)
-    {
-        _timer.Change(Timeout.InfiniteTimeSpan, Timeout.InfiniteTimeSpan);
-
-        using (var manualEvent = new ManualResetEventSlim())
-        {
-            _timer.Dispose(manualEvent.WaitHandle);
-            manualEvent.WaitHandle.WaitOne();
-        }
-
-        _lock.Dispose();
     }
 
     protected void AddOrUpdate(IEnumerable<TItem> items, Action<IEnumerable<TItem>, TItem> addOrUpdateAction)
