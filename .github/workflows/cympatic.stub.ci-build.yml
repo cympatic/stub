@@ -22,9 +22,9 @@ jobs:
       uses: actions/setup-dotnet@v4
       with:
         dotnet-version: |
-            net6.0.x
-            net7.0.x
-            net8.0.x
+            6.0.x
+            7.0.x
+            8.0.x
 
     - name: Restore dependencies
       run: dotnet restore source/Server/Cympatic.Stub.sln
