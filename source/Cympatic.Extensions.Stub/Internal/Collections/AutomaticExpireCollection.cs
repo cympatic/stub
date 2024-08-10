@@ -5,7 +5,7 @@ namespace Cympatic.Extensions.Stub.Internal.Collections;
 internal abstract class AutomaticExpireCollection<TItem> : IAsyncDisposable, IDisposable
     where TItem : IAutomaticExpireItem
 {
-    private readonly object _lock = new();
+    private readonly ReaderWriterLockSlim _lock = new();
     private readonly HashSet<TItem> _internalList = [];
 
     private readonly TimeSpan _timerInterval;
@@ -55,7 +55,7 @@ internal abstract class AutomaticExpireCollection<TItem> : IAsyncDisposable, IDi
     public virtual void SetTimeToLive(TimeSpan timeToLive)
     {
         _ttl = timeToLive;
-        _timer?.Change(_timerInterval, _timerInterval);
+        _timer?.Change(TimeSpan.Zero, _timerInterval);
     }
 
     public virtual IEnumerable<TItem> All()
@@ -70,9 +70,14 @@ internal abstract class AutomaticExpireCollection<TItem> : IAsyncDisposable, IDi
         item.Id = Guid.NewGuid();
         item.CreatedDateTime = DateTimeOffset.UtcNow;
 
-        lock (_lock)
+        _lock.EnterWriteLock();
+        try
         {
             _internalList.Add(item);
+        }
+        finally
+        {
+            _lock.ExitWriteLock();
         }
     }
 
@@ -80,17 +85,27 @@ internal abstract class AutomaticExpireCollection<TItem> : IAsyncDisposable, IDi
     {
         ArgumentNullException.ThrowIfNull(item);
 
-        lock (_lock)
+        _lock.EnterWriteLock();
+        try
         {
             return _internalList.Remove(item);
+        }
+        finally
+        {
+            _lock.ExitWriteLock();
         }
     }
 
     public virtual void Clear()
     {
-        lock (_lock)
+        _lock.EnterWriteLock();
+        try
         {
             _internalList.Clear();
+        }
+        finally
+        {
+            _lock.ExitWriteLock();
         }
     }
 
@@ -99,6 +114,7 @@ internal abstract class AutomaticExpireCollection<TItem> : IAsyncDisposable, IDi
         if (disposing)
         {
             _timer?.Dispose();
+            _lock.Dispose();
         }
         _timer = null;
     }
@@ -116,30 +132,40 @@ internal abstract class AutomaticExpireCollection<TItem> : IAsyncDisposable, IDi
     {
         ArgumentNullException.ThrowIfNull(items);
 
-        List<TItem> list;
-        lock (_lock)
+        _lock.EnterUpgradeableReadLock();
+        try
         {
-            list = [.. _internalList];
+            items.ToList().ForEach(item => addOrUpdateAction([.. _internalList], item));
         }
-
-        items
-            .ToList()
-            .ForEach(item => addOrUpdateAction(list, item));
+        finally
+        {
+            _lock.ExitUpgradeableReadLock();
+        }
     }
 
     protected IEnumerable<TItem> Find(Func<TItem, bool> predicate)
     {
-        lock (_lock)
+        _lock.EnterReadLock();
+        try
         {
             return _internalList.Where(predicate);
+        }
+        finally
+        {
+            _lock.ExitReadLock();
         }
     }
 
     private void CleanUpTimer(object? state)
     {
-        lock (_lock)
+        _lock.EnterWriteLock();
+        try
         {
             _internalList.RemoveWhere(model => model.CreatedDateTime.Add(_ttl) < DateTimeOffset.UtcNow);
+        }
+        finally
+        {
+            _lock.ExitWriteLock();
         }
     }
 }
