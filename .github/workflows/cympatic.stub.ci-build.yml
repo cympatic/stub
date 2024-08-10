@@ -26,9 +26,6 @@ jobs:
             7.0.x
             8.0.x
 
-    - name: Add Dev. Certificate
-      run: dotnet dev-certs https
-
     - name: Restore dependencies
       run: dotnet restore source/Cympatic.Stub.sln
     

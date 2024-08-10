@@ -40,7 +40,7 @@ public static class HostBuilderExtensions
             {
                 options.Listen(IPAddress.Loopback, 0, endpoint =>
                 {
-                    if (useSsl)
+                    if (OperatingSystem.IsWindows() && useSsl)
                     {
                         var certificate = GetCertificate();
                         endpoint.UseHttps(certificate);
@@ -78,7 +78,7 @@ public static class HostBuilderExtensions
     {
         HttpClientHandler configureHandler()
         {
-            return useSsl
+            return OperatingSystem.IsWindows() && useSsl
                 ? new HttpClientHandler
                 {
                     UseProxy = false,
