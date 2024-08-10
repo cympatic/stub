@@ -118,7 +118,7 @@ public static class HostBuilderExtensions
     {
         const string localHost = "localhost";
 
-        using var store = new X509Store(StoreName.My, StoreLocation.LocalMachine);
+        using var store = new X509Store(StoreName.My, StoreLocation.LocalMachine, OpenFlags.ReadOnly);
         store.Open(OpenFlags.ReadOnly);
         var certificate = store.Certificates
             .Find(X509FindType.FindByIssuerName, localHost, false)
