@@ -27,10 +27,10 @@ jobs:
             8.0.x
 
     - name: Restore dependencies
-      run: dotnet restore source/Server/Cympatic.Stub.sln
+      run: dotnet restore source/Cympatic.Stub.sln
     
     - name: Build
-      run: dotnet build source/Server/Cympatic.Stub.sln --no-restore
+      run: dotnet build source/Cympatic.Stub.sln --no-restore
     
     - name: Test
-      run: dotnet test source/Server/Cympatic.Stub.sln --no-build --verbosity normal 
+      run: dotnet test source/Cympatic.Stub.sln --no-build --verbosity normal 
