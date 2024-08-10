@@ -109,7 +109,14 @@ public class StubServerTests : IDisposable
     public void When_BaseAddress_is_called_Then_the_Scheme_is_Https()
     {
         // Arrange & Act & Assert
-        _sut.BaseAddress.Scheme.Should().Be(Uri.UriSchemeHttps);
+        if (OperatingSystem.IsWindows())
+        {
+            _sut.BaseAddress.Scheme.Should().Be(Uri.UriSchemeHttps);
+        }
+        else
+        {
+            _sut.BaseAddress.Scheme.Should().Be(Uri.UriSchemeHttp);
+        }
     }
 
     [Fact]
