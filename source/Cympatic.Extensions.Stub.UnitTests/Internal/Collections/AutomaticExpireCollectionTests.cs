@@ -43,7 +43,7 @@ public class AutomaticExpireCollectionTests : IDisposable
 
         // Act
         _sut.SetTimeToLive(new TimeSpan(1));
-        Thread.Sleep(100);
+        Thread.Sleep(50);
 
         // Assert
         actual = _sut.All();

@@ -24,14 +24,18 @@ internal abstract class AutomaticExpireCollection<TItem> : IAsyncDisposable, IDi
         }
     }
 
-    protected AutomaticExpireCollection() : this(new TimeSpan(0, 1, 0))
+    protected AutomaticExpireCollection() : this(new TimeSpan(0, 0, 1), new TimeSpan(0, 1, 0))
     { }
 
-    protected AutomaticExpireCollection(TimeSpan timerInterval)
+    protected AutomaticExpireCollection(TimeSpan timerInterval) : this(timerInterval, new TimeSpan(0, 1, 0))
+    { }
+
+    protected AutomaticExpireCollection(TimeSpan timerInterval, TimeSpan timeToLive)
     {
         _timerInterval = timerInterval;
+        _ttl = timeToLive;
 
-        _timer = new Timer(new TimerCallback(CleanUpTimer));
+        _timer = new Timer(new TimerCallback(CleanUpTimer), null, _timerInterval, _timerInterval);
     }
 
     public void Dispose()
