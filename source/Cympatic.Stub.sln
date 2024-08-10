@@ -13,7 +13,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Examples", "Examples", "{FB
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cympatic.Stub.Example.WebApplication", "Examples\Cympatic.Stub.Example.WebApplication\Cympatic.Stub.Example.WebApplication.csproj", "{8CF9C332-1AD0-4E4F-B071-223D77D64AAE}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cympatic.Stub.Example.WebApplication.IntegrationTests", "examples\Cympatic.Stub.Example.WebApplication.IntegrationTests\Cympatic.Stub.Example.WebApplication.IntegrationTests.csproj", "{CD109FFE-F351-4905-A3A2-A28CF8027D49}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cympatic.Stub.Example.WebApplication.IntegrationTests", "Examples\Cympatic.Stub.Example.WebApplication.IntegrationTests\Cympatic.Stub.Example.WebApplication.IntegrationTests.csproj", "{CD109FFE-F351-4905-A3A2-A28CF8027D49}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
