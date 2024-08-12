@@ -28,7 +28,7 @@ jobs:
       run: dotnet restore source/Cympatic.Stub.sln
     
     - name: Build
-      run: dotnet build source/Cympatic.Stub.sln --no-restore
+      run: dotnet build source/Cympatic.Stub.sln --configuration Release --no-restore
     
     - name: Test
-      run: dotnet test source/Cympatic.Stub.sln --no-build --verbosity normal 
+      run: dotnet test source/Cympatic.Stub.sln --configuration Release --no-build --verbosity normal 
