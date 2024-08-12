@@ -23,8 +23,8 @@ jobs:
     - name: Restore dependencies
       run: dotnet restore source/Cympatic.Stub.sln
     
-    - name: Pack
+    - name: Pack Cympatic.Extensions.Stub
       run: dotnet pack source/Cympatic.Extensions.Stub/Cympatic.Extensions.Stub.csproj --configuration Release --no-restore
     
-    - name: Publish
+    - name: Publish Cympatic.Extensions.Stub to NuGet.org
       run: dotnet nuget push source/Cympatic.Extensions.Stub/bin/Release/*.nupkg --api-key ${{secrets.NUGET_API_TOKEN}} --source https://api.nuget.org/v3/index.json --skip-duplicate
