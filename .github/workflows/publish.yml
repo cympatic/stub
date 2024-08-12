@@ -24,7 +24,7 @@ jobs:
       run: dotnet restore source/Cympatic.Stub.sln
     
     - name: Pack
-      run: dotnet pack source/Cympatic.Extensions.Stub.csproj --configuration Release --no-restore
+      run: dotnet pack source/Cympatic.Extensions.Stub/Cympatic.Extensions.Stub.csproj --configuration Release --no-restore
     
     - name: Publish
       run: dotnet nuget push source/Cympatic.Extensions.Stub/bin/Release/*.nupkg --api-key ${{secrets.NUGET_API_TOKEN}} --source https://api.nuget.org/v3/index.json --skip-duplicate
