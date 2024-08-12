@@ -5,6 +5,19 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <LangVersion>latest</LangVersion>
+
+    <PackageId>Cympatic.Extensions.Stub</PackageId>
+    <PackageVersion>1.0.0</PackageVersion>
+    <Authors>Cympatic</Authors>
+    <Company>Cympatic B.V.</Company>
+    <Description>A lightweight stub server that mimics the functionality of an external service, commonly used by microservices.</Description>
+    <RepositoryUrl>https://github.com/cympatic/stub</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageProjectUrl>https://github.com/cympatic/stub</PackageProjectUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageTags>stub;mock;server;contract;testing;test;unittest;integration;bdd;tdd;</PackageTags>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
   </PropertyGroup>
 
   <ItemGroup>

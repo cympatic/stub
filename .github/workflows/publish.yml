@@ -1,0 +1,30 @@
+name: Publish package to NuGet.org
+
+on:
+  push:
+    branches: 
+    - main 
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: |
+          6.0.x
+          7.0.x
+          8.0.x
+
+    - name: Restore dependencies
+      run: dotnet restore source/Cympatic.Stub.sln
+    
+    - name: Pack
+      run: dotnet pack source/Cympatic.Extensions.Stub.csproj --configuration Release --no-restore
+    
+    - name: Publish
+      run: dotnet nuget push source/Cympatic.Extensions.Stub/bin/Release/*.nupkg --api-key ${{secrets.NUGET_API_TOKEN}} --source https://api.nuget.org/v3/index.json --skip-duplicate
