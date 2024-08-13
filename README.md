@@ -55,4 +55,28 @@ Add proxy methodes for removing responses and received requests from the stub se
         => _receivedRequestApiService.RemoveAllAsync(cancellationToken);
 ```
 
+Override the `Dispose` since the stub server is a disposable object
+``` C#
+    protected override void Dispose(bool disposing)
+    {
+        base.Dispose(disposing);
 
+        if (disposing)
+        {
+            _stubServer.Dispose();
+        }
+    }
+```
+
+Override the `CreateHost` for the `WebApplicationFactory` to configure the baseaddress of the used external service
+``` C#
+    protected override IHost CreateHost(IHostBuilder builder)
+    {
+        builder.ConfigureServices((context, services) =>
+        {
+            context.Configuration["ExternalApi"] = _stubServer.BaseAddressStub.ToString();
+        });
+
+        return base.CreateHost(builder);
+    }
+```
