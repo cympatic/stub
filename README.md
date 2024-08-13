@@ -39,3 +39,20 @@ Add proxy methodes for adding responses to the stub server
     public Task AddResponsesSetupAsync(IEnumerable<ResponseSetup> responseSetups, CancellationToken cancellationToken = default)
         => _setupResponseApiService.AddAsync(responseSetups, cancellationToken);
 ```
+
+Add proxy methode for reading requests from the stub server
+``` c#
+    public Task<IEnumerable<ReceivedRequest>> FindReceivedRequestsAsync(ReceivedRequestSearchParams searchParams, CancellationToken cancellationToken = default)
+        => _receivedRequestApiService.FindAsync(searchParams, cancellationToken);
+```
+
+Add proxy methodes for removing responses and received requests from the stub server
+``` c#
+    public Task ClearResponsesSetupAsync(CancellationToken cancellationToken = default)
+        => _setupResponseApiService.RemoveAllAsync(cancellationToken);
+
+    public Task ClearReceivedRequestsAsync(CancellationToken cancellationToken = default)
+        => _receivedRequestApiService.RemoveAllAsync(cancellationToken);
+```
+
+
