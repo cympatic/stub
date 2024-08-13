@@ -24,3 +24,18 @@ An example of a custom [`WebApplicationFactory`](source/Examples/Cympatic.Stub.E
 
 # Usage
 
+Add the initialization of the stub server in the constructor of your custom `WebApplicationFactory` and create the apiservices for setting up responses and reading received requests
+``` C#
+        _stubServer = new StubServer();
+        _setupResponseApiService = _stubServer.CreateApiService<SetupResponseApiService>();
+        _receivedRequestApiService = _stubServer.CreateApiService<ReceivedRequestApiService>();
+```
+
+Add proxy methodes for adding responses to the stub server
+``` c#
+    public Task<ResponseSetup> AddResponseSetupAsync(ResponseSetup responseSetup, CancellationToken cancellationToken = default)
+        => _setupResponseApiService.AddAsync(responseSetup, cancellationToken);
+
+    public Task AddResponsesSetupAsync(IEnumerable<ResponseSetup> responseSetups, CancellationToken cancellationToken = default)
+        => _setupResponseApiService.AddAsync(responseSetups, cancellationToken);
+```
