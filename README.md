@@ -17,7 +17,7 @@ Each request is recording and can be validated as part of the integration tests.
 > In discussions of integration tests, the tested project is frequently called the System Under Test, or "SUT" for short. 
 
 The stub server creates a web host for the external service to handle the requests and responses for the external service made by the SUT. 
-Creating the stub server can be done within a custom `WebApplicationFactory` [^1^], as shown custom [`WebApplicationFactory`](source/examples/factories/ExampleWebApplicationFactory.cs) of the example testproject.
+Creating the stub server can be done within a custom `WebApplicationFactory` [^1^], as shown custom [`WebApplicationFactory`](source/Examples/Cympatic.Stub.Example.WebApplication.IntegrationTests/Factories/ExampleWebApplicationFactory.cs) of the example testproject.
 
 [^1^]: [Integration tests in ASP.NET Core](https://learn.microsoft.com/en-us/aspnet/core/test/integration-tests)
 
