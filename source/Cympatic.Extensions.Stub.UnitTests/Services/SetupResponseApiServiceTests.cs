@@ -67,7 +67,7 @@ public class SetupResponseApiServiceTests : IDisposable
         _fakeMessageHandler.ResponseStatusCode = HttpStatusCode.BadRequest;
 
         // Act
-        var act = () => _sut.GetAllAsync();
+        var act = async () => await _sut.GetAllAsync();
 
         // Assert
         await act.Should().ThrowAsync<HttpRequestException>();
@@ -103,7 +103,7 @@ public class SetupResponseApiServiceTests : IDisposable
         _fakeMessageHandler.ResponseStatusCode = HttpStatusCode.BadRequest;
 
         // Act
-        var act = () => _sut.GetByIdAsync(id);
+        var act = async () => await _sut.GetByIdAsync(id);
 
         // Assert
         await act.Should().ThrowAsync<HttpRequestException>();
@@ -139,7 +139,7 @@ public class SetupResponseApiServiceTests : IDisposable
         _fakeMessageHandler.ResponseStatusCode = HttpStatusCode.BadRequest;
 
         // Act
-        var act = () => _sut.AddAsync(GenerateResponseSetup());
+        var act = async () => await _sut.AddAsync(GenerateResponseSetup());
 
         // Assert
         await act.Should().ThrowAsync<HttpRequestException>();
@@ -180,7 +180,7 @@ public class SetupResponseApiServiceTests : IDisposable
         _fakeMessageHandler.ResponseStatusCode = HttpStatusCode.BadRequest;
 
         // Act
-        var act = () => _sut.AddAsync([]);
+        var act = async () => await _sut.AddAsync([]);
 
         // Assert
         await act.Should().ThrowAsync<HttpRequestException>();
@@ -212,7 +212,7 @@ public class SetupResponseApiServiceTests : IDisposable
         _fakeMessageHandler.ResponseStatusCode = HttpStatusCode.BadRequest;
 
         // Act
-        var act = () => _sut.RemoveAsync(expected.Id);
+        var act = async () => await _sut.RemoveAsync(expected.Id);
 
         // Assert
         await act.Should().ThrowAsync<HttpRequestException>();
@@ -244,7 +244,7 @@ public class SetupResponseApiServiceTests : IDisposable
         _fakeMessageHandler.ResponseStatusCode = HttpStatusCode.BadRequest;
 
         // Act
-        var act = () => _sut.RemoveAsync(expected);
+        var act = async () => await _sut.RemoveAsync(expected);
 
         // Assert
         await act.Should().ThrowAsync<HttpRequestException>();
@@ -274,7 +274,7 @@ public class SetupResponseApiServiceTests : IDisposable
         _fakeMessageHandler.ResponseStatusCode = HttpStatusCode.BadRequest;
 
         // Act
-        var act = () => _sut.RemoveAllAsync();
+        var act = async () => await _sut.RemoveAllAsync();
 
         // Assert
         await act.Should().ThrowAsync<HttpRequestException>();

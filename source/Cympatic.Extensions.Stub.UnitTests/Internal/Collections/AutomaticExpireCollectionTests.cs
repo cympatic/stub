@@ -30,7 +30,7 @@ public class AutomaticExpireCollectionTests : IDisposable
     }
 
     [Fact]
-    public void When_the_Ttl_expires_Then_all_items_are_removed_that_meet_the_expiration_criteria()
+    public async Task When_the_Ttl_expires_Then_all_items_are_removed_that_meet_the_expiration_criteria()
     {
         // Arrange
         for (int i = 0; i < NumberOfItems; i++)
@@ -43,7 +43,7 @@ public class AutomaticExpireCollectionTests : IDisposable
 
         // Act
         _sut.SetTimeToLive(new TimeSpan(1));
-        Thread.Sleep(250);
+        await Task.Delay(250);
 
         // Assert
         actual = _sut.All();

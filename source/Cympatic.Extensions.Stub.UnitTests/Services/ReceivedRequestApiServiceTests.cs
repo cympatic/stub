@@ -63,7 +63,7 @@ public class ReceivedRequestApiServiceTests : IDisposable
         _fakeMessageHandler.ResponseStatusCode = HttpStatusCode.BadRequest;
 
         // Act
-        var act = () => _sut.GetAllAsync();
+        var act = async () => await _sut.GetAllAsync();
 
         // Assert
         await act.Should().ThrowAsync<HttpRequestException>();
@@ -113,7 +113,7 @@ public class ReceivedRequestApiServiceTests : IDisposable
         _fakeMessageHandler.ResponseStatusCode = HttpStatusCode.BadRequest;
 
         // Act
-        var act = () => _sut.FindAsync(new ReceivedRequestSearchParams(string.Empty, new Dictionary<string, string>(), []));
+        var act = async () => await _sut.FindAsync(new ReceivedRequestSearchParams(string.Empty, new Dictionary<string, string>(), []));
 
         // Assert
         await act.Should().ThrowAsync<HttpRequestException>();
@@ -143,7 +143,7 @@ public class ReceivedRequestApiServiceTests : IDisposable
         _fakeMessageHandler.ResponseStatusCode = HttpStatusCode.BadRequest;
 
         // Act
-        var act = () => _sut.RemoveAllAsync();
+        var act = async () => await _sut.RemoveAllAsync();
 
         // Assert
         await act.Should().ThrowAsync<HttpRequestException>();
