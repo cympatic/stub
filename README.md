@@ -7,7 +7,7 @@ A C# .NET based, lightweight stub server that mimics the functionality of an ext
 ## Key Features
 
 - Test locally system and integration tests of system components
-- Reduce the reliance on complex and/or expansive test environments
+- Reduce the dependency on complex and/or expensive test environments
 - Per-request conditional responses
 - Recording requests
 - Easy to use
@@ -16,7 +16,7 @@ By using contract testing[^1^] in integration tests for projects with dependenci
 [^1^]: [Consumer-driven Contract Testing (CDC)](https://microsoft.github.io/code-with-engineering-playbook/automated-testing/cdc-testing/)
 
 > [!NOTE]
-> In discussions of integration tests, the tested project is frequently called the System Under Test, or "SUT" for short. 
+> In discussions of integration tests, the tested project is frequently called "SUT", the System Under Test in short. 
 
 The stub server creates a web host for the external service to handle the requests and responses for the external service made by the SUT. Creating the stub server can be done within a custom `WebApplicationFactory` [^2^] that might be available in the testproject for integration testing the SUT. An example of a custom [`WebApplicationFactory`](source/Examples/Cympatic.Stub.Example.WebApplication.IntegrationTests/Factories/ExampleWebApplicationFactory.cs) can be found in the [example testproject](source/Examples/Cympatic.Stub.Example.WebApplication.IntegrationTests).
 
@@ -69,7 +69,7 @@ protected override void Dispose(bool disposing)
 }
 ```
 
-Override the `CreateHost` of the [WebApplicationFactory](https://learn.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.mvc.testing.webapplicationfactory-1) to configure the baseaddress of the used external service.
+Override the `CreateHost` of the [WebApplicationFactory](https://learn.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.mvc.testing.webapplicationfactory-1) to configure the base address of the used external service.
 ``` C#
 protected override IHost CreateHost(IHostBuilder builder)
 {
@@ -151,11 +151,12 @@ public async Task GetAllWeatherForecasts()
 - Add the `ResponseSetup` to the `StubServer` with the method `AddResponseSetupAsync`
 
 > [!TIP]
-> With the method `AddResponsesSetupAsync` one can add multiple `ResponseSetup` in 1 call!
+> Multiple `ResponseSetup` can be added in 1 call with the method `AddResponsesSetupAsync`!
 
 - Process the request to the SUT using the `HttpClient`
 - Verify the response from the SUT
 - Verify the request made to the external service
-    - Use the method `FindReceivedRequestsAsync` to locate the request made to the external service. A find of a `ReceivedRequest` is on a combination of `Path`, `HttpMethod`, and `Query`.
+    - Use the method `FindReceivedRequestsAsync` to locate the request made to the external service. The request can be found on a combination of `Path`, `HttpMethod`, and `Query`.
+
 > [!IMPORTANT]
 > `ReceivedRequest` can only be found when there is a matching `ResponseSetup` 
