@@ -10,20 +10,18 @@ A C# .NET based, lightweight stub server that mimics the functionality of an ext
 - Per-request conditional responses
 - Recording requests
 
-In integration tests of projects that have dependencies to external services, the stub server can provide configurable responses for the requests made to an external service. 
-Each request is recording and can be validated as part of the integration tests.
+In integration tests of projects that have dependencies to external services, the stub server can provide configurable responses for the requests made to an external service. Each request is recording and can be validated as part of the integration tests.
 
 > [!NOTE]
 > In discussions of integration tests, the tested project is frequently called the System Under Test, or "SUT" for short. 
 
-The stub server creates a web host for the external service to handle the requests and responses for the external service made by the SUT. 
-Creating the stub server can be done within a custom `WebApplicationFactory` [^1^] that might be available in the testproject for integration testing the SUT. 
-An example of a custom [`WebApplicationFactory`](source/Examples/Cympatic.Stub.Example.WebApplication.IntegrationTests/Factories/ExampleWebApplicationFactory.cs) can be found in the [example testproject](source/Examples/Cympatic.Stub.Example.WebApplication.IntegrationTests).
+The stub server creates a web host for the external service to handle the requests and responses for the external service made by the SUT. Creating the stub server can be done within a custom `WebApplicationFactory` [^1^] that might be available in the testproject for integration testing the SUT. An example of a custom [`WebApplicationFactory`](source/Examples/Cympatic.Stub.Example.WebApplication.IntegrationTests/Factories/ExampleWebApplicationFactory.cs) can be found in the [example testproject](source/Examples/Cympatic.Stub.Example.WebApplication.IntegrationTests).
 
 [^1^]: [Integration tests in ASP.NET Core](https://learn.microsoft.com/en-us/aspnet/core/test/integration-tests)
 
 # Usage
 
+## Setup `StubServer` in a [`WebApplicationFactory`](https://learn.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.mvc.testing.webapplicationfactory-1)
 Add the initialization of the stub server in the constructor of your custom `WebApplicationFactory` and create the apiservices for setting up responses and reading received requests
 ``` C#
         _stubServer = new StubServer();
@@ -78,5 +76,24 @@ Override the `CreateHost` for the `WebApplicationFactory` to configure the basea
         });
 
         return base.CreateHost(builder);
+    }
+```
+
+## Use in unit test
+
+Create a test class that implements a [`IClassFixture<>`](https://xunit.net/docs/shared-context#class-fixture) interface referencing the custom `WebApplicationFactory` to share object instances across the tests in the class.
+``` C#
+public class WeatherForecastTests : IClassFixture<ExampleWebApplicationFactory<Program>>
+```
+
+In the constructor of the test class use the factory to create the `HttpClient` and clear the `ResponseSetup` and `ReceivedRequest` of the `StubServer`
+``` C#
+    public WeatherForecastTests(ExampleWebApplicationFactory<Program> factory)
+    {
+        _factory = factory;
+        _httpClient = _factory.CreateClient();
+
+        _factory.ClearResponsesSetupAsync();
+        _factory.ClearReceivedRequestsAsync();
     }
 ```
