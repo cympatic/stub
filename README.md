@@ -24,59 +24,59 @@ The stub server creates a web host for the external service to handle the reques
 ## Setup `StubServer` in a [`WebApplicationFactory`](https://learn.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.mvc.testing.webapplicationfactory-1)
 Add the initialization of the stub server in the constructor of your custom `WebApplicationFactory` and create the apiservices for setting up responses and reading received requests
 ``` C#
-        _stubServer = new StubServer();
-        _setupResponseApiService = _stubServer.CreateApiService<SetupResponseApiService>();
-        _receivedRequestApiService = _stubServer.CreateApiService<ReceivedRequestApiService>();
+_stubServer = new StubServer();
+_setupResponseApiService = _stubServer.CreateApiService<SetupResponseApiService>();
+_receivedRequestApiService = _stubServer.CreateApiService<ReceivedRequestApiService>();
 ```
 
 Add proxy methodes for adding responses to the stub server
 ``` c#
-    public Task<ResponseSetup> AddResponseSetupAsync(ResponseSetup responseSetup, CancellationToken cancellationToken = default)
-        => _setupResponseApiService.AddAsync(responseSetup, cancellationToken);
+public Task<ResponseSetup> AddResponseSetupAsync(ResponseSetup responseSetup, CancellationToken cancellationToken = default)
+=> _setupResponseApiService.AddAsync(responseSetup, cancellationToken);
 
-    public Task AddResponsesSetupAsync(IEnumerable<ResponseSetup> responseSetups, CancellationToken cancellationToken = default)
-        => _setupResponseApiService.AddAsync(responseSetups, cancellationToken);
+public Task AddResponsesSetupAsync(IEnumerable<ResponseSetup> responseSetups, CancellationToken cancellationToken = default)
+=> _setupResponseApiService.AddAsync(responseSetups, cancellationToken);
 ```
 
 Add proxy methode for reading requests from the stub server
 ``` c#
-    public Task<IEnumerable<ReceivedRequest>> FindReceivedRequestsAsync(ReceivedRequestSearchParams searchParams, CancellationToken cancellationToken = default)
-        => _receivedRequestApiService.FindAsync(searchParams, cancellationToken);
+public Task<IEnumerable<ReceivedRequest>> FindReceivedRequestsAsync(ReceivedRequestSearchParams searchParams, CancellationToken cancellationToken = default)
+=> _receivedRequestApiService.FindAsync(searchParams, cancellationToken);
 ```
 
 Add proxy methodes for removing responses and received requests from the stub server
 ``` c#
-    public Task ClearResponsesSetupAsync(CancellationToken cancellationToken = default)
-        => _setupResponseApiService.RemoveAllAsync(cancellationToken);
+public Task ClearResponsesSetupAsync(CancellationToken cancellationToken = default)
+=> _setupResponseApiService.RemoveAllAsync(cancellationToken);
 
-    public Task ClearReceivedRequestsAsync(CancellationToken cancellationToken = default)
-        => _receivedRequestApiService.RemoveAllAsync(cancellationToken);
+public Task ClearReceivedRequestsAsync(CancellationToken cancellationToken = default)
+=> _receivedRequestApiService.RemoveAllAsync(cancellationToken);
 ```
 
 Override the `Dispose` since the stub server is a disposable object
 ``` C#
-    protected override void Dispose(bool disposing)
-    {
-        base.Dispose(disposing);
+protected override void Dispose(bool disposing)
+{
+    base.Dispose(disposing);
 
-        if (disposing)
-        {
-            _stubServer.Dispose();
-        }
+    if (disposing)
+    {
+        _stubServer.Dispose();
     }
+}
 ```
 
 Override the `CreateHost` for the `WebApplicationFactory` to configure the baseaddress of the used external service
 ``` C#
-    protected override IHost CreateHost(IHostBuilder builder)
+protected override IHost CreateHost(IHostBuilder builder)
+{
+    builder.ConfigureServices((context, services) =>
     {
-        builder.ConfigureServices((context, services) =>
-        {
-            context.Configuration["ExternalApi"] = _stubServer.BaseAddressStub.ToString();
-        });
+        context.Configuration["ExternalApi"] = _stubServer.BaseAddressStub.ToString();
+    });
 
-        return base.CreateHost(builder);
-    }
+    return base.CreateHost(builder);
+}
 ```
 
 ## Use in unit test
@@ -88,12 +88,12 @@ public class WeatherForecastTests : IClassFixture<ExampleWebApplicationFactory<P
 
 In the constructor of the test class use the factory to create the `HttpClient` and clear the `ResponseSetup` and `ReceivedRequest` of the `StubServer`
 ``` C#
-    public WeatherForecastTests(ExampleWebApplicationFactory<Program> factory)
-    {
-        _factory = factory;
-        _httpClient = _factory.CreateClient();
+public WeatherForecastTests(ExampleWebApplicationFactory<Program> factory)
+{
+    _factory = factory;
+    _httpClient = _factory.CreateClient();
 
-        _factory.ClearResponsesSetupAsync();
-        _factory.ClearReceivedRequestsAsync();
-    }
+    _factory.ClearResponsesSetupAsync();
+    _factory.ClearReceivedRequestsAsync();
+}
 ```
