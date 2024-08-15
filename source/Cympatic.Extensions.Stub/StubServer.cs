@@ -6,7 +6,7 @@ using Microsoft.Extensions.Hosting;
 
 namespace Cympatic.Extensions.Stub;
 
-public sealed class StubServer(bool UseSsl = false) : IDisposable
+public sealed class StubServer(Func<StubServerOptions>? configureOptions) : IDisposable
 {
     private IHost? _host;
 
@@ -21,6 +21,9 @@ public sealed class StubServer(bool UseSsl = false) : IDisposable
     public Uri BaseAddress => new(Host.Services.GetRequiredService<IServer>().Features.Get<IServerAddressesFeature>()!.Addresses.First());
 
     public Uri BaseAddressStub => BaseAddress.Append("stub");
+
+    public StubServer(bool useSsl = false) : this(() => new StubServerOptions { UseSsl = useSsl })
+    { }
 
     public void Dispose()
     {
@@ -53,13 +56,23 @@ public sealed class StubServer(bool UseSsl = false) : IDisposable
 
     private IHost CreateHost()
     {
-        var app = Microsoft.Extensions.Hosting.Host.CreateDefaultBuilder()
-            .AddStubServer()
-            .UseLocalhost(UseSsl)
-            .UseStubServer()
-            .AddApiService<SetupResponseApiService>(UseSsl)
-            .AddApiService<ReceivedRequestApiService>(UseSsl);
+        var options = configureOptions?.Invoke() ?? new StubServerOptions();
+        var useSsl = options.UseSsl && options.ServerCertificateSelector is null;
 
-        return app.Start();
+        var hostBuilder = Microsoft.Extensions.Hosting.Host.CreateDefaultBuilder()
+            .AddStubServer()
+            .UseStubServer();
+
+        hostBuilder = useSsl
+            ? hostBuilder
+                .UseLocalhost(useSsl)
+                .AddApiService<SetupResponseApiService>(useSsl)
+                .AddApiService<ReceivedRequestApiService>(useSsl)
+            : hostBuilder
+                .UseLocalhost(options.ServerCertificateSelector)
+                .AddApiService<SetupResponseApiService>(options.ConfigureHttpClientHandler)
+                .AddApiService<ReceivedRequestApiService>(options.ConfigureHttpClientHandler);
+
+        return hostBuilder.Start();
     }
 }

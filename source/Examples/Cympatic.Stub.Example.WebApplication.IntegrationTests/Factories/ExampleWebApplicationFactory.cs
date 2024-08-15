@@ -15,7 +15,7 @@ public class ExampleWebApplicationFactory<TProgram> : WebApplicationFactory<TPro
 
     public ExampleWebApplicationFactory()
     {
-        _stubServer = new(false);
+        _stubServer = new();
         _setupResponseApiService = _stubServer.CreateApiService<SetupResponseApiService>();
         _receivedRequestApiService = _stubServer.CreateApiService<ReceivedRequestApiService>();
     }

@@ -1,4 +1,5 @@
 ﻿using Cympatic.Extensions.Stub.Services;
+using Cympatic.Extensions.Stub.UnitTests.Attributes;
 using FluentAssertions;
 using Microsoft.Extensions.Hosting;
 
@@ -105,7 +106,7 @@ public class StubServerTests : IDisposable
         _sut.BaseAddress.Host.Should().Be(LocalHost);
     }
 
-    [Fact]
+    [IgnoreOnLinuxFact]
     public void When_UseSsl_is_True_and_the_BaseAddress_is_called_Then_the_Scheme_is_Https()
     {
         // Arrange
@@ -132,7 +133,7 @@ public class StubServerTests : IDisposable
         _sut.BaseAddressStub.Host.Should().Be(LocalHost);
     }
 
-    [Fact]
+    [IgnoreOnLinuxFact]
     public void When_UseSsl_is_True_and_the_BaseAddressStub_is_called_Then_the_Scheme_is_Https()
     {
         // Arrange

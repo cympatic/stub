@@ -34,15 +34,20 @@ public static class HostBuilderExtensions
 
     public static IHostBuilder UseLocalhost(this IHostBuilder builder, bool useSsl = false)
     {
+        return builder.UseLocalhost(useSsl ? GetCertificate : null);
+    }
+
+    public static IHostBuilder UseLocalhost(this IHostBuilder builder, Func<X509Certificate2>? configureCertificate)
+    {
         builder.ConfigureWebHost(webHostBuilder =>
         {
             webHostBuilder.UseKestrel(options =>
             {
                 options.Listen(IPAddress.Loopback, 0, endpoint =>
                 {
-                    if (useSsl)
+                    var certificate = configureCertificate?.Invoke();
+                    if (certificate is not null)
                     {
-                        var certificate = GetCertificate();
                         endpoint.UseHttps(certificate);
                     }
                 });
@@ -92,7 +97,6 @@ public static class HostBuilderExtensions
 
         return builder;
     }
-
 
     public static IHostBuilder AddApiService<TApiService>(this IHostBuilder builder, Func<HttpClientHandler>? configureHandler)
         where TApiService : class
