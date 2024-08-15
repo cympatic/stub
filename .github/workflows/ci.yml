@@ -24,6 +24,11 @@ jobs:
             7.0.x
             8.0.x
 
+    - name: Update Dev. Certificate
+      run: |
+        dotnet dev-certs https --clean
+        dotnet dev-certs https --trust
+
     - name: Restore dependencies
       run: dotnet restore source/Cympatic.Stub.sln
     
