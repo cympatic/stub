@@ -106,10 +106,23 @@ public class StubServerTests : IDisposable
     }
 
     [Fact]
-    public void When_BaseAddress_is_called_Then_the_Scheme_is_Https()
+    public void When_UseSsl_is_True_and_the_BaseAddress_is_called_Then_the_Scheme_is_Https()
     {
-        // Arrange & Act & Assert
-        _sut.BaseAddress.Scheme.Should().Be(Uri.UriSchemeHttps);
+        // Arrange
+        var sut = new StubServer(true);
+
+        // Act & Assert
+        sut.BaseAddress.Scheme.Should().Be(Uri.UriSchemeHttps);
+    }
+
+    [Fact]
+    public void When_UseSsl_is_False_and_the_BaseAddress_is_called_Then_the_Scheme_is_Http()
+    {
+        // Arrange
+        var sut = new StubServer(false);
+
+        // Act & Assert
+        sut.BaseAddress.Scheme.Should().Be(Uri.UriSchemeHttp);
     }
 
     [Fact]
@@ -120,10 +133,23 @@ public class StubServerTests : IDisposable
     }
 
     [Fact]
-    public void When_BaseAddressStub_is_called_Then_the_Scheme_is_Https()
+    public void When_UseSsl_is_True_and_the_BaseAddressStub_is_called_Then_the_Scheme_is_Https()
     {
-        // Arrange & Act & Assert
-        _sut.BaseAddressStub.Scheme.Should().Be(Uri.UriSchemeHttps);
+        // Arrange
+        var sut = new StubServer(true);
+
+        // Act & Assert
+        sut.BaseAddressStub.Scheme.Should().Be(Uri.UriSchemeHttps);
+    }
+
+    [Fact]
+    public void When_UseSsl_is_False_and_the_BaseAddressStub_is_called_Then_the_Scheme_is_Http()
+    {
+        // Arrange
+        var sut = new StubServer(false);
+
+        // Act & Assert
+        sut.BaseAddressStub.Scheme.Should().Be(Uri.UriSchemeHttp);
     }
 
     [Fact]

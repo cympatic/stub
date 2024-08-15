@@ -32,7 +32,7 @@ public static class HostBuilderExtensions
         return builder;
     }
 
-    public static IHostBuilder UseLocalhost(this IHostBuilder builder, bool useSsl = true)
+    public static IHostBuilder UseLocalhost(this IHostBuilder builder, bool useSsl = false)
     {
         builder.ConfigureWebHost(webHostBuilder =>
         {
@@ -73,7 +73,7 @@ public static class HostBuilderExtensions
         return builder;
     }
 
-    public static IHostBuilder AddApiService<TApiService>(this IHostBuilder builder, bool useSsl = true)
+    public static IHostBuilder AddApiService<TApiService>(this IHostBuilder builder, bool useSsl = false)
         where TApiService : class
     {
         HttpClientHandler configureHandler()

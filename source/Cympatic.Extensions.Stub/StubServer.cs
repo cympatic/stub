@@ -6,7 +6,7 @@ using Microsoft.Extensions.Hosting;
 
 namespace Cympatic.Extensions.Stub;
 
-public sealed class StubServer(bool UseSsl = true) : IDisposable
+public sealed class StubServer(bool UseSsl = false) : IDisposable
 {
     private IHost? _host;
 
