@@ -24,10 +24,11 @@ jobs:
             7.0.x
             8.0.x
 
-    - name: Dev. Certificate
+    - name: Install dev-cert into Current User Store
       run: |
-        dotnet tool update -g linux-dev-certs
-        dotnet linux-dev-certs install
+        dotnet dev-certs https -ep ./certificate.pfx -p ${{secrets.CERTIFICATE_PASSWORD}}
+        dotnet tool install --global dotnet-certificate-tool
+        certificate-tool add --file ./certificate.pfx --password ${{secrets.CERTIFICATE_PASSWORD}}
 
     - name: Restore dependencies
       run: dotnet restore source/Cympatic.Stub.sln
