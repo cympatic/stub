@@ -22,7 +22,7 @@ public sealed class StubServerOptions
         } 
     }
 
-    public Func<X509Certificate2>? ServerCertificateSelector {  get; set; }
+    public Func<X509Certificate2?>? ServerCertificateSelector {  get; set; }
 
-    public Func<HttpClientHandler>? ConfigureHttpClientHandler { get; set; }
+    public Func<HttpMessageHandler?>? ConfigureHttpClientHandler { get; set; }
 }

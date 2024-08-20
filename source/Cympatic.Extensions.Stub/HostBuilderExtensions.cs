@@ -37,7 +37,7 @@ public static class HostBuilderExtensions
         return builder.UseLocalhost(useSsl ? GetCertificate : null);
     }
 
-    public static IHostBuilder UseLocalhost(this IHostBuilder builder, Func<X509Certificate2>? configureCertificate)
+    public static IHostBuilder UseLocalhost(this IHostBuilder builder, Func<X509Certificate2?>? configureCertificate)
     {
         builder.ConfigureWebHost(webHostBuilder =>
         {
@@ -98,7 +98,7 @@ public static class HostBuilderExtensions
         return builder;
     }
 
-    public static IHostBuilder AddApiService<TApiService>(this IHostBuilder builder, Func<HttpClientHandler>? configureHandler)
+    public static IHostBuilder AddApiService<TApiService>(this IHostBuilder builder, Func<HttpMessageHandler?>? configureHandler)
         where TApiService : class
     {
         builder.ConfigureServices(services =>

@@ -1,7 +1,9 @@
 ﻿using Cympatic.Extensions.Stub.Services;
 using Cympatic.Extensions.Stub.UnitTests.Attributes;
+using Cympatic.Extensions.Stub.UnitTests.Fakes;
 using FluentAssertions;
 using Microsoft.Extensions.Hosting;
+using System.Security.Cryptography.X509Certificates;
 
 namespace Cympatic.Extensions.Stub.UnitTests;
 
@@ -158,5 +160,100 @@ public class StubServerTests : IDisposable
     {
         // Arrange & Act & Assert
         _sut.BaseAddressStub.Segments.Last().Should().Be("stub");
+    }
+
+
+    [IgnoreOnLinuxFact]
+    public void When_ServerCertificateSelector_returns_a_certificate_and_the_BaseAddress_is_called_Then_the_Scheme_is_Https()
+    {
+        // Arrange
+        var sut = new StubServer(() => new StubServerOptions
+        {
+            ServerCertificateSelector = () =>
+            {
+                const string localHost = "localhost";
+
+                using var store = new X509Store(StoreName.My, StoreLocation.LocalMachine, OpenFlags.ReadOnly);
+                store.Open(OpenFlags.ReadOnly);
+                var certificate = store.Certificates
+                    .Find(X509FindType.FindByIssuerName, localHost, false)
+                    .Where(cert => cert.NotBefore <= DateTime.Now.Date && cert.NotAfter >= DateTime.Now.Date)
+                    .OrderByDescending(cert => cert.NotAfter)
+                    .FirstOrDefault();
+                store.Close();
+
+                return certificate;
+            }
+        });
+
+        // Act & Assert
+        sut.BaseAddress.Scheme.Should().Be(Uri.UriSchemeHttps);
+    }
+
+    [Fact]
+    public void When_ServerCertificateSelector_returns_null_and_the_BaseAddress_is_called_Then_the_Scheme_is_Http()
+    {
+        // Arrange
+        var sut = new StubServer(() => new StubServerOptions { ServerCertificateSelector = () => default });
+
+        // Act & Assert
+        sut.BaseAddress.Scheme.Should().Be(Uri.UriSchemeHttp);
+    }
+
+    [IgnoreOnLinuxFact]
+    public void When_ServerCertificateSelector_returns_a_certificate_and_the_BaseAddressStub_is_called_Then_the_Scheme_is_Https()
+    {
+        // Arrange
+        var sut = new StubServer(() => new StubServerOptions
+        { 
+            ServerCertificateSelector = () =>
+            {
+                const string localHost = "localhost";
+
+                using var store = new X509Store(StoreName.My, StoreLocation.LocalMachine, OpenFlags.ReadOnly);
+                store.Open(OpenFlags.ReadOnly);
+                var certificate = store.Certificates
+                    .Find(X509FindType.FindByIssuerName, localHost, false)
+                    .Where(cert => cert.NotBefore <= DateTime.Now.Date && cert.NotAfter >= DateTime.Now.Date)
+                    .OrderByDescending(cert => cert.NotAfter)
+                    .FirstOrDefault();
+                store.Close();
+
+                return certificate;
+            }
+        });
+
+        // Act & Assert
+        sut.BaseAddressStub.Scheme.Should().Be(Uri.UriSchemeHttps);
+    }
+
+    [Fact]
+    public void When_ServerCertificateSelector_returns_null_and_the_BaseAddressStub_is_called_Then_the_Scheme_is_Http()
+    {
+        // Arrange
+        var sut = new StubServer(() => new StubServerOptions { ServerCertificateSelector = () => default });
+
+        // Act & Assert
+        sut.BaseAddressStub.Scheme.Should().Be(Uri.UriSchemeHttp);
+    }
+
+    [Fact]
+    public async Task When_ConfigureHttpClientHandler_returns_a_custom_Handler_Then_this_Handler_is_used_for_calls_to_the_StubServer()
+    {
+        // Arrange
+        var fakeMessageHandler = new FakeMessageHandler
+        {
+            ExpectedUrlPartial = "/setup"
+        };
+
+        var sut = new StubServer(() => new StubServerOptions { ConfigureHttpClientHandler = () => fakeMessageHandler });
+        var apiService = sut.CreateApiService<SetupResponseApiService>();
+
+        // Act
+        await apiService.GetAllAsync();
+
+        // Assert
+        fakeMessageHandler.CallCount("/setup").Should().Be(1);
+        fakeMessageHandler.Calls("/setup").Single().Method.Should().Be(HttpMethod.Get);
     }
 }
