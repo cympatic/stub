@@ -1,3 +1,4 @@
+using Cympatic.Extensions.Stub.IntegrationTests.Fixtures;
 using Cympatic.Extensions.Stub.Models;
 using Cympatic.Extensions.Stub.Services;
 using FluentAssertions;
@@ -5,29 +6,29 @@ using System.Net;
 
 namespace Cympatic.Extensions.Stub.IntegrationTests;
 
-public class SetupResponseTests : IDisposable
+public class SetupResponseTests : IClassFixture<StubServerFixture>
 {
     private const int NumberOfItems = 10;
 
-    private readonly StubServer _sut = new();
+    private readonly StubServerFixture _fixture;
+    private readonly SetupResponseApiService _sut;
 
-    public void Dispose()
+    public SetupResponseTests(StubServerFixture fixture)
     {
-        _sut?.Dispose();
-
-        GC.SuppressFinalize(this);
+        _fixture = fixture;
+        _fixture.Clear();
+        _sut = _fixture.SetupResponseApiService;
     }
 
     [Fact]
     public async Task When_added_1_SetupResponse_succesful_Then_that_item_is_returned_and_can_be_fetched_on_its_Identifier()
     {
         // Arrange
-        var setupReponseApiService = _sut.CreateApiService<SetupResponseApiService>();
         var addSetupResponse = GenerateResponseSetup();
 
         // Act
-        var addedSetupResponse = await setupReponseApiService.AddAsync(addSetupResponse);
-        var getSetupResponse = await setupReponseApiService.GetByIdAsync(addedSetupResponse.Id);
+        var addedSetupResponse = await _sut.AddAsync(addSetupResponse);
+        var getSetupResponse = await _sut.GetByIdAsync(addedSetupResponse.Id);
 
         // Assert
         addSetupResponse.Should().BeEquivalentTo(getSetupResponse, options => options
@@ -43,7 +44,6 @@ public class SetupResponseTests : IDisposable
     public async Task When_added_multiple_SetupResponses_succesful_Then_those_items_can_be_fetched_through_the_GetAllAsync()
     {
         // Arrange
-        var setupReponseApiService = _sut.CreateApiService<SetupResponseApiService>();
         var expected = new List<ResponseSetup>();
         for (var i = 0; i < NumberOfItems; i++)
         {
@@ -51,8 +51,8 @@ public class SetupResponseTests : IDisposable
         }
 
         // Act
-        await setupReponseApiService.AddAsync(expected);
-        var actual = await setupReponseApiService.GetAllAsync();
+        await _sut.AddAsync(expected);
+        var actual = await _sut.GetAllAsync();
 
         // Assert
         actual.Should().BeEquivalentTo(expected, options => options
@@ -72,14 +72,13 @@ public class SetupResponseTests : IDisposable
         }
 
         // Arrange
-        var setupReponseApiService = _sut.CreateApiService<SetupResponseApiService>();
-        await setupReponseApiService.AddAsync(GetItems());
-        var list = await setupReponseApiService.GetAllAsync();
+        await _sut.AddAsync(GetItems());
+        var list = await _sut.GetAllAsync();
         var unexpected = list.ElementAt(Random.Shared.Next(list.Count()));
 
         // Act
-        await setupReponseApiService.RemoveAsync(unexpected);
-        var actual = await setupReponseApiService.GetAllAsync();
+        await _sut.RemoveAsync(unexpected);
+        var actual = await _sut.GetAllAsync();
 
         // Assert
         actual.Count().Should().Be(9);
@@ -89,11 +88,8 @@ public class SetupResponseTests : IDisposable
     [Fact]
     public void When_an_invalid_Identifier_is_used_to_Fetch_a_ResponseSetup_Then_a_HttpRequestExpection_is_thrown()
     {
-        // Arrange
-        var setupReponseApiService = _sut.CreateApiService<SetupResponseApiService>();
-
-        // Act
-        var act = async () => await setupReponseApiService.GetByIdAsync(Guid.NewGuid());
+        // Arrange & Act
+        var act = async () => await _sut.GetByIdAsync(Guid.NewGuid());
 
         // Assert
         act.Should().ThrowAsync<HttpRequestException>();
@@ -111,12 +107,11 @@ public class SetupResponseTests : IDisposable
         }
 
         // Arrange
-        var setupReponseApiService = _sut.CreateApiService<SetupResponseApiService>();
-        await setupReponseApiService.AddAsync(GetItems());
+        await _sut.AddAsync(GetItems());
 
         // Act
-        await setupReponseApiService.RemoveAllAsync();
-        var actual = await setupReponseApiService.GetAllAsync();
+        await _sut.RemoveAllAsync();
+        var actual = await _sut.GetAllAsync();
 
         // Assert
         actual.Count().Should().Be(0);

@@ -158,3 +158,16 @@ public async Task GetAllWeatherForecasts()
 
 > [!IMPORTANT]
 > `ReceivedRequest` can only be found when there is a matching `ResponseSetup` 
+
+---
+
+## Release notes
+
+1.0.3
+- Change the default for the usage of the development certificate in the `StubServer` from `true` to `false`
+- Changed constructor of `StubServer` so that users can chose a certificate used by the `StubServer` and how to handle this certificate in the `HttpClient`
+- Add methods for add and remove `ResponseSetup` items to the `StubServer`
+- Add methods for find and remove `ReceivedRequest` to the `StubServer`
+- [Deprecated] methods in `StubServer`:
+  - `CreateApiService<TApiService>`
+  - `CreateApiService(type type>)`

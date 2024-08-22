@@ -1,48 +1,41 @@
-﻿using Cympatic.Extensions.Stub.IntegrationTests.Servers;
+﻿using Cympatic.Extensions.Stub.IntegrationTests.Fixtures;
+using Cympatic.Extensions.Stub.IntegrationTests.Servers;
 using Cympatic.Extensions.Stub.IntegrationTests.Servers.Models;
 using Cympatic.Extensions.Stub.Models;
-using Cympatic.Extensions.Stub.Services;
 using FluentAssertions;
 using System.Net;
 using System.Text.Json;
 
 namespace Cympatic.Extensions.Stub.IntegrationTests;
 
-public class ReceivedRequestTests : IDisposable
+public class StubServerTests : IClassFixture<StubServerFixture>
 {
     private const int NumberOfItems = 10;
 
+    private readonly StubServerFixture _fixture;
     private readonly StubServer _sut;
     private readonly TestServer _testServer;
 
-    public ReceivedRequestTests()
+    public StubServerTests(StubServerFixture fixture)
     {
-        _sut = new(false);
-        _testServer = new();
+        _fixture = fixture;
+        _fixture.Clear();
 
-        _testServer.SetBaseAddressExternalApi(_sut.BaseAddressStub);
-    }
+        _sut = _fixture.StubServer;
+        _testServer = _fixture.TestServer;
 
-    public void Dispose()
-    {
-        _sut?.Dispose();
-        _testServer?.Dispose();
-
-        GC.SuppressFinalize(this);
     }
 
     [Fact]
     public async Task When_TestServer_GetAll_is_called_Then_the_ResponseSetup_return_all_values_in_setup_and_the_request_is_recorded()
     {
-        static IEnumerable<WeatherForecast> GetItems()
+        IEnumerable<WeatherForecast> GetItems()
         {
             for (var i = 0; i < NumberOfItems; i++)
             {
-                yield return GenerateWeatherForecast(i);
+                yield return _fixture.GenerateWeatherForecast(i);
             }
         }
-        var setupResponseApiService = _sut.CreateApiService<SetupResponseApiService>();
-        var receivedRequestApiService = _sut.CreateApiService<ReceivedRequestApiService>();
         var testServerApiService = _testServer.CreateTestServerApiService();
 
         // Arrange
@@ -61,7 +54,7 @@ public class ReceivedRequestTests : IDisposable
             ReturnStatusCode = HttpStatusCode.PartialContent,
             Response = Array.Empty<WeatherForecast>()
         };
-        await setupResponseApiService.AddAsync([dummyResponseSetup, responseSetup]);
+        await _sut.AddResponsesSetupAsync([dummyResponseSetup, responseSetup]);
 
         var expectedReceivedRequests = new List<ReceivedRequest>
         {
@@ -74,7 +67,7 @@ public class ReceivedRequestTests : IDisposable
         // Assert
         actualResponse.Should().BeEquivalentTo(expectedResponse);
 
-        var actualReceivedRequests = await receivedRequestApiService.FindAsync(new ReceivedRequestSearchParams("/external/api/weatherforecast", [HttpMethod.Get.ToString()]));
+        var actualReceivedRequests = await _sut.FindReceivedRequestsAsync(new ReceivedRequestSearchParams("/external/api/weatherforecast", [HttpMethod.Get.ToString()]));
         actualReceivedRequests.Should().BeEquivalentTo(expectedReceivedRequests, options => options
             .Excluding(_ => _.Headers)
             .Excluding(_ => _.Id)
@@ -84,12 +77,10 @@ public class ReceivedRequestTests : IDisposable
     [Fact]
     public async Task When_TestServer_GetById_is_called_Then_the_ResponseSetup_return_all_values_in_setup_and_the_request_is_recorded()
     {
-        var setupResponseApiService = _sut.CreateApiService<SetupResponseApiService>();
-        var receivedRequestApiService = _sut.CreateApiService<ReceivedRequestApiService>();
         var testServerApiService = _testServer.CreateTestServerApiService();
 
         // Arrange
-        var expectedResponse = GenerateWeatherForecast();
+        var expectedResponse = _fixture.GenerateWeatherForecast();
         var responseSetup = new ResponseSetup
         {
             Path = $"/external/api/weatherforecast/{expectedResponse.Id:N}",
@@ -102,9 +93,9 @@ public class ReceivedRequestTests : IDisposable
             Path = $"/external/api/weatherforecast/{expectedResponse.Id:N}",
             HttpMethods = [HttpMethod.Post.ToString()],
             ReturnStatusCode = HttpStatusCode.PartialContent,
-            Response = GenerateWeatherForecast()
+            Response = _fixture.GenerateWeatherForecast()
         };
-        await setupResponseApiService.AddAsync([dummyResponseSetup, responseSetup]);
+        await _sut.AddResponsesSetupAsync([dummyResponseSetup, responseSetup]);
 
         var expectedReceivedRequests = new List<ReceivedRequest>
         {
@@ -117,7 +108,7 @@ public class ReceivedRequestTests : IDisposable
         // Assert
         actualResponse.Should().BeEquivalentTo(expectedResponse);
 
-        var actualReceivedRequests = await receivedRequestApiService.FindAsync(new ReceivedRequestSearchParams($"/external/api/weatherforecast/{expectedResponse.Id:N}", [HttpMethod.Get.ToString()]));
+        var actualReceivedRequests = await _sut.FindReceivedRequestsAsync(new ReceivedRequestSearchParams($"/external/api/weatherforecast/{expectedResponse.Id:N}", [HttpMethod.Get.ToString()]));
         actualReceivedRequests.Should().BeEquivalentTo(expectedReceivedRequests, options => options
             .Excluding(_ => _.Headers)
             .Excluding(_ => _.Id)
@@ -127,12 +118,10 @@ public class ReceivedRequestTests : IDisposable
     [Fact]
     public async Task When_TestServer_Add_is_called_Then_the_ResponseSetup_return_all_values_in_setup_and_the_request_is_recorded()
     {
-        var setupResponseApiService = _sut.CreateApiService<SetupResponseApiService>();
-        var receivedRequestApiService = _sut.CreateApiService<ReceivedRequestApiService>();
         var testServerApiService = _testServer.CreateTestServerApiService();
 
         // Arrange
-        var expectedResponse = GenerateWeatherForecast();
+        var expectedResponse = _fixture.GenerateWeatherForecast();
         var responseSetup = new ResponseSetup
         {
             Path = "/external/api/weatherforecast",
@@ -146,9 +135,9 @@ public class ReceivedRequestTests : IDisposable
             Path = "/external/api/weatherforecast",
             HttpMethods = [HttpMethod.Get.ToString()],
             ReturnStatusCode = HttpStatusCode.PartialContent,
-            Response = GenerateWeatherForecast()
+            Response = _fixture.GenerateWeatherForecast()
         };
-        await setupResponseApiService.AddAsync([dummyResponseSetup, responseSetup]);
+        await _sut.AddResponsesSetupAsync([dummyResponseSetup, responseSetup]);
 
         var expectedReceivedRequests = new List<ReceivedRequest>
         {
@@ -161,7 +150,7 @@ public class ReceivedRequestTests : IDisposable
         // Assert
         actualResponse.Should().BeEquivalentTo(expectedResponse);
 
-        var actualReceivedRequests = await receivedRequestApiService.FindAsync(new ReceivedRequestSearchParams("/external/api/weatherforecast", [HttpMethod.Post.ToString()]));
+        var actualReceivedRequests = await _sut.FindReceivedRequestsAsync(new ReceivedRequestSearchParams("/external/api/weatherforecast", [HttpMethod.Post.ToString()]));
         actualReceivedRequests.Should().BeEquivalentTo(expectedReceivedRequests, options => options
             .Excluding(_ => _.Headers)
             .Excluding(_ => _.Body)
@@ -175,12 +164,10 @@ public class ReceivedRequestTests : IDisposable
     [Fact]
     public async Task When_TestServer_Remove_is_called_Then_the_ResponseSetup_return_all_values_in_setup_and_the_request_is_recorded()
     {
-        var setupResponseApiService = _sut.CreateApiService<SetupResponseApiService>();
-        var receivedRequestApiService = _sut.CreateApiService<ReceivedRequestApiService>();
         var testServerApiService = _testServer.CreateTestServerApiService();
 
         // Arrange
-        var expectedResponse = GenerateWeatherForecast();
+        var expectedResponse = _fixture.GenerateWeatherForecast();
         var responseSetup = new ResponseSetup
         {
             Path = $"/external/api/weatherforecast/{expectedResponse.Id:N}",
@@ -193,7 +180,7 @@ public class ReceivedRequestTests : IDisposable
             HttpMethods = [HttpMethod.Get.ToString()],
             ReturnStatusCode = HttpStatusCode.PartialContent
         };
-        await setupResponseApiService.AddAsync([dummyResponseSetup, responseSetup]);
+        await _sut.AddResponsesSetupAsync([dummyResponseSetup, responseSetup]);
 
         var expectedReceivedRequests = new List<ReceivedRequest>
         {
@@ -204,27 +191,10 @@ public class ReceivedRequestTests : IDisposable
         await testServerApiService.RemoveAsync(expectedResponse);
 
         // Assert
-        var actualReceivedRequests = await receivedRequestApiService.FindAsync(new ReceivedRequestSearchParams($"/external/api/weatherforecast/{expectedResponse.Id:N}", [HttpMethod.Delete.ToString()]));
+        var actualReceivedRequests = await _sut.FindReceivedRequestsAsync(new ReceivedRequestSearchParams($"/external/api/weatherforecast/{expectedResponse.Id:N}", [HttpMethod.Delete.ToString()]));
         actualReceivedRequests.Should().BeEquivalentTo(expectedReceivedRequests, options => options
             .Excluding(_ => _.Headers)
             .Excluding(_ => _.Id)
             .Excluding(_ => _.CreatedDateTime));
     }
-
-    private static WeatherForecast GenerateWeatherForecast(int index = 0)
-        => new(Guid.NewGuid(), DateTime.Now.Date.AddDays(index), Random.Shared.Next(-20, 55), summaries[Random.Shared.Next(summaries.Length)]);
-
-    private static readonly string[] summaries =
-    [
-        "Freezing",
-        "Bracing",
-        "Chilly",
-        "Cool",
-        "Mild",
-        "Warm",
-        "Balmy",
-        "Hot",
-        "Sweltering",
-        "Scorching"
-    ];
 }

@@ -30,6 +30,17 @@ public class ExampleWebApplicationFactory<TProgram> : WebApplicationFactory<TPro
     public Task ClearReceivedRequestsAsync(CancellationToken cancellationToken = default)
         => _stubServer.ClearReceivedRequestsAsync(cancellationToken);
 
+    public void Clear()
+    {
+        Task.Run(() => ClearAsync()).GetAwaiter().GetResult(); 
+    }
+
+    public async Task ClearAsync(CancellationToken cancellationToken = default)
+    {
+        await _stubServer.ClearResponsesSetupAsync(cancellationToken);
+        await _stubServer.ClearReceivedRequestsAsync(cancellationToken);
+    }
+
     protected override void Dispose(bool disposing)
     {
         base.Dispose(disposing);
