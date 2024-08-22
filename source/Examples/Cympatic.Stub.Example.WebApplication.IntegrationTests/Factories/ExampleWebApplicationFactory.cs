@@ -1,8 +1,7 @@
 ﻿using Cympatic.Extensions.Stub;
 using Cympatic.Extensions.Stub.Models;
-using Cympatic.Extensions.Stub.Services;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
-using Microsoft.Extensions.Hosting;
 
 namespace Cympatic.Stub.Example.WebApplication.IntegrationTests.Factories;
 
@@ -10,30 +9,26 @@ public class ExampleWebApplicationFactory<TProgram> : WebApplicationFactory<TPro
     where TProgram : class
 {
     private readonly StubServer _stubServer;
-    private readonly SetupResponseApiService _setupResponseApiService;
-    private readonly ReceivedRequestApiService _receivedRequestApiService;
 
     public ExampleWebApplicationFactory()
     {
         _stubServer = new();
-        _setupResponseApiService = _stubServer.CreateApiService<SetupResponseApiService>();
-        _receivedRequestApiService = _stubServer.CreateApiService<ReceivedRequestApiService>();
     }
 
     public Task<ResponseSetup> AddResponseSetupAsync(ResponseSetup responseSetup, CancellationToken cancellationToken = default)
-        => _setupResponseApiService.AddAsync(responseSetup, cancellationToken);
+        => _stubServer.AddResponseSetupAsync(responseSetup, cancellationToken);
 
     public Task AddResponsesSetupAsync(IEnumerable<ResponseSetup> responseSetups, CancellationToken cancellationToken = default)
-        => _setupResponseApiService.AddAsync(responseSetups, cancellationToken);
+        => _stubServer.AddResponsesSetupAsync(responseSetups, cancellationToken);
 
     public Task ClearResponsesSetupAsync(CancellationToken cancellationToken = default)
-        => _setupResponseApiService.RemoveAllAsync(cancellationToken);
+        => _stubServer.ClearResponsesSetupAsync(cancellationToken);
 
     public Task<IEnumerable<ReceivedRequest>> FindReceivedRequestsAsync(ReceivedRequestSearchParams searchParams, CancellationToken cancellationToken = default)
-        => _receivedRequestApiService.FindAsync(searchParams, cancellationToken);
+        => _stubServer.FindReceivedRequestsAsync(searchParams, cancellationToken);
 
     public Task ClearReceivedRequestsAsync(CancellationToken cancellationToken = default)
-        => _receivedRequestApiService.RemoveAllAsync(cancellationToken);
+        => _stubServer.ClearReceivedRequestsAsync(cancellationToken);
 
     protected override void Dispose(bool disposing)
     {
@@ -45,13 +40,13 @@ public class ExampleWebApplicationFactory<TProgram> : WebApplicationFactory<TPro
         }
     }
 
-    protected override IHost CreateHost(IHostBuilder builder)
+    protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
         builder.ConfigureServices((context, services) =>
         {
             context.Configuration["ExternalApi"] = _stubServer.BaseAddressStub.ToString();
         });
 
-        return base.CreateHost(builder);
+        base.ConfigureWebHost(builder);
     }
 }
