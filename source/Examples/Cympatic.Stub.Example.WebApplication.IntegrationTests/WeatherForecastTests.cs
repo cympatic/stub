@@ -21,6 +21,7 @@ public class WeatherForecastTests : IClassFixture<ExampleWebApplicationFactory<P
     {
         _factory = factory;
         _factory.Clear();
+
         _httpClient = _factory.CreateClient();
     }
 
