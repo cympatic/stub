@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Hosting.Server;
 using Microsoft.AspNetCore.Hosting.Server.Features;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System.Net.Http.Headers;
@@ -12,22 +13,23 @@ namespace Cympatic.Extensions.Stub.IntegrationTests.Servers;
 
 internal sealed class TestServer : IDisposable
 {
-    private IHost? _host;
+    private const string DefaultBaseAddress = "http://localhost";
+
+    private IHost _host;
     private Uri? _baseAddressExternalApi;
 
-    public IHost Host
-    {
-        get
-        {
-            return _host ??= CreateHost();
-        }
-    }
+    public IHost Host => _host;
 
     public Uri BaseAddress => new(Host.Services.GetRequiredService<IServer>().Features.Get<IServerAddressesFeature>()!.Addresses.First());
 
+    public TestServer()
+    {
+        _host = CreateHost();
+    }
+
     public void Dispose()
     {
-        ResetHost();
+        _host?.Dispose();
 
         GC.SuppressFinalize(this);
     }
@@ -35,7 +37,7 @@ internal sealed class TestServer : IDisposable
     public void ResetHost()
     {
         _host?.Dispose();
-        _host = null;
+        _host = CreateHost();
     }
 
     public void SetBaseAddressExternalApi(Uri baseAddress)
@@ -51,21 +53,26 @@ internal sealed class TestServer : IDisposable
 
     private IHost CreateHost()
     {
-        if (_baseAddressExternalApi is null)
-        {
-            throw new InvalidOperationException("BaseAddress to External Api hasn't be set!");
-        }
-
         var app = Microsoft.Extensions.Hosting.Host.CreateDefaultBuilder()
             .ConfigureWebHost(webHostBuilder =>
             {
-                webHostBuilder.ConfigureServices((services) =>
+                webHostBuilder.ConfigureServices((context, services) =>
                 {
+                    context.Configuration["ExternalApi"] = _baseAddressExternalApi?.ToString();
+
                     services.AddRouting();
 
                     services.AddHttpClient<ExternalApiService>((serviceProvider, config) =>
                     {
-                        config.BaseAddress = _baseAddressExternalApi;
+                        var configuration = Host.Services.GetRequiredService<IConfiguration>();
+                        var baseAddressExternalApi = configuration.GetValue<string>("ExternalApi");
+
+                        if (string.IsNullOrWhiteSpace(baseAddressExternalApi))
+                        {
+                            throw new ArgumentException($"{nameof(baseAddressExternalApi)} must be provided");
+                        }
+
+                        config.BaseAddress = new Uri(baseAddressExternalApi);
                         config.DefaultRequestHeaders
                             .Accept
                             .Add(new MediaTypeWithQualityHeaderValue("application/json"));

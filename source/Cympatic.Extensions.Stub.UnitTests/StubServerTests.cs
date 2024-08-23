@@ -1,4 +1,4 @@
-﻿using Cympatic.Extensions.Stub.Services;
+﻿using Cympatic.Extensions.Stub.Models;
 using Cympatic.Extensions.Stub.UnitTests.Attributes;
 using Cympatic.Extensions.Stub.UnitTests.Fakes;
 using FluentAssertions;
@@ -11,7 +11,14 @@ public class StubServerTests : IDisposable
 {
     private const string LocalHost = "127.0.0.1";
 
-    private readonly StubServer _sut = new();
+    private readonly StubServer _sut;
+    private readonly FakeMessageHandler _fakeMessageHandler;
+
+    public StubServerTests()
+    {
+        _fakeMessageHandler = new();
+        _sut = new(() => new StubServerOptions { ConfigureHttpClientHandler = () => _fakeMessageHandler });
+    }
 
     public void Dispose()
     {
@@ -20,58 +27,73 @@ public class StubServerTests : IDisposable
     }
 
     [Fact]
-    public void When_Generic_CreateApiService_is_called_with_class_SetupResponseApiService_Then_an_instance_is_returned()
+    public async Task When_AddResponseSetupAsync_is_called_Then_this_redirected_to_the_method_SetupResponse()
     {
-        // Arrange & Act
-        var actual = _sut.CreateApiService<SetupResponseApiService>();
+        // Arrange
+        _fakeMessageHandler.ExpectedUrlPartial = "/setup/response";
+
+        // Act
+        await _sut.AddResponseSetupAsync(new ResponseSetup());
 
         // Assert
-        actual.Should().NotBeNull();
-        actual.Should().BeAssignableTo<SetupResponseApiService>();
+        _fakeMessageHandler.CallCount("/setup/response").Should().Be(1);
+        _fakeMessageHandler.Calls("/setup/response").Single().Method.Should().Be(HttpMethod.Post);
     }
 
     [Fact]
-    public void When_Generic_CreateApiService_is_called_with_class_ReceivedRequestApiService_Then_an_instance_is_returned()
+    public async Task When_AddResponsesSetupAsync_is_called_Then_this_redirected_to_the_method_SetupResponses()
     {
-        // Arrange & Act
-        var actual = _sut.CreateApiService<ReceivedRequestApiService>();
+        // Arrange
+        _fakeMessageHandler.ExpectedUrlPartial = "/setup/responses";
+
+        // Act
+        await _sut.AddResponsesSetupAsync([new ResponseSetup()]);
 
         // Assert
-        actual.Should().NotBeNull();
-        actual.Should().BeAssignableTo<ReceivedRequestApiService>();
+        _fakeMessageHandler.CallCount("/setup/responses").Should().Be(1);
+        _fakeMessageHandler.Calls("/setup/responses").Single().Method.Should().Be(HttpMethod.Post);
     }
 
     [Fact]
-    public void When_CreateApiService_is_called_with_class_SetupResponseApiService_Then_an_instance_is_returned()
+    public async Task When_ClearResponsesSetupAsync_is_called_Then_this_redirected_to_the_method_SetupClear()
     {
-        // Arrange & Act
-        var actual = _sut.CreateApiService(typeof(SetupResponseApiService));
+        // Arrange
+        _fakeMessageHandler.ExpectedUrlPartial = "/setup/clear";
+
+        // Act
+        await _sut.ClearResponsesSetupAsync();
 
         // Assert
-        actual.Should().NotBeNull();
-        actual.Should().BeAssignableTo<SetupResponseApiService>();
+        _fakeMessageHandler.CallCount("/setup/clear").Should().Be(1);
+        _fakeMessageHandler.Calls("/setup/clear").Single().Method.Should().Be(HttpMethod.Delete);
     }
 
     [Fact]
-    public void When_CreateApiService_is_called_with_class_ReceivedRequestApiService_Then_an_instance_is_returned()
+    public async Task When_FindReceivedRequestsAsync_is_called_Then_this_redirected_to_the_method_ReceivedFind()
     {
-        // Arrange & Act
-        var actual = _sut.CreateApiService(typeof(ReceivedRequestApiService));
+        // Arrange
+        _fakeMessageHandler.ExpectedUrlPartial = "/received/find";
+
+        // Act
+        await _sut.FindReceivedRequestsAsync(new ReceivedRequestSearchParams(Guid.NewGuid().ToString("N")));
 
         // Assert
-        actual.Should().NotBeNull();
-        actual.Should().BeAssignableTo<ReceivedRequestApiService>();
+        _fakeMessageHandler.CallCount("/received/find").Should().Be(1);
+        _fakeMessageHandler.Calls("/received/find").Single().Method.Should().Be(HttpMethod.Get);
     }
 
     [Fact]
-    public void When_CreateApiService_is_called_with_class_not_derived_from_the_class_ApiService_Then_an_InvalidOperationException_is_thrown()
+    public async Task When_ClearReceivedRequestsAsync_is_called_Then_this_redirected_to_the_method_ReceivedClear()
     {
-        // Arrange & Act
-        var act = () => _sut.CreateApiService(typeof(string));
+        // Arrange
+        _fakeMessageHandler.ExpectedUrlPartial = "/received/clear";
+
+        // Act
+        await _sut.ClearReceivedRequestsAsync();
 
         // Assert
-        act.Should().Throw<InvalidOperationException>()
-            .WithMessage($"Type: {typeof(string).Name} doesn't derive from class 'ApiService'");
+        _fakeMessageHandler.CallCount("/received/clear").Should().Be(1);
+        _fakeMessageHandler.Calls("/received/clear").Single().Method.Should().Be(HttpMethod.Delete);
     }
 
     [Fact]
@@ -243,17 +265,16 @@ public class StubServerTests : IDisposable
         // Arrange
         var fakeMessageHandler = new FakeMessageHandler
         {
-            ExpectedUrlPartial = "/setup"
+            ExpectedUrlPartial = "/setup/response"
         };
 
         var sut = new StubServer(() => new StubServerOptions { ConfigureHttpClientHandler = () => fakeMessageHandler });
-        var apiService = sut.CreateApiService<SetupResponseApiService>();
 
         // Act
-        await apiService.GetAllAsync();
+        await sut.AddResponseSetupAsync(new ResponseSetup());
 
         // Assert
-        fakeMessageHandler.CallCount("/setup").Should().Be(1);
-        fakeMessageHandler.Calls("/setup").Single().Method.Should().Be(HttpMethod.Get);
+        fakeMessageHandler.CallCount("/setup/response").Should().Be(1);
+        fakeMessageHandler.Calls("/setup/response").Single().Method.Should().Be(HttpMethod.Post);
     }
 }

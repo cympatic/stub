@@ -25,35 +25,33 @@ The stub server creates a web host for the external service to handle the reques
 # Usage
 
 ## Setup `StubServer` in a custom [WebApplicationFactory](https://learn.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.mvc.testing.webapplicationfactory-1)
-Add the initialization of the stub server in the constructor of your custom `WebApplicationFactory` and create the API services for configuring responses and retrieving received requests.
+Add the initialization of the stub server in the constructor of your custom `WebApplicationFactory`.
 ``` C#
 _stubServer = new StubServer();
-_setupResponseApiService = _stubServer.CreateApiService<SetupResponseApiService>();
-_receivedRequestApiService = _stubServer.CreateApiService<ReceivedRequestApiService>();
 ```
 
 Add proxy methodes for adding responses to the `StubServer`.
 ``` c#
 public Task<ResponseSetup> AddResponseSetupAsync(ResponseSetup responseSetup, CancellationToken cancellationToken = default)
-    => _setupResponseApiService.AddAsync(responseSetup, cancellationToken);
+    => _stubServer.AddResponseSetupAsync(responseSetup, cancellationToken);
 
 public Task AddResponsesSetupAsync(IEnumerable<ResponseSetup> responseSetups, CancellationToken cancellationToken = default)
-    => _setupResponseApiService.AddAsync(responseSetups, cancellationToken);
+    => _stubServer.AddResponsesSetupAsync(responseSetups, cancellationToken);
 ```
 
 Add proxy methode for reading requests from the `StubServer`.
 ``` c#
 public Task<IEnumerable<ReceivedRequest>> FindReceivedRequestsAsync(ReceivedRequestSearchParams searchParams, CancellationToken cancellationToken = default)
-    => _receivedRequestApiService.FindAsync(searchParams, cancellationToken);
+    => _stubServer.FindReceivedRequestsAsync(searchParams, cancellationToken);
 ```
 
 Add proxy methodes for removing responses and received requests from the `StubServer`.
 ``` c#
 public Task ClearResponsesSetupAsync(CancellationToken cancellationToken = default)
-    => _setupResponseApiService.RemoveAllAsync(cancellationToken);
+    => _stubServer.ClearResponsesSetupAsync(cancellationToken);
 
 public Task ClearReceivedRequestsAsync(CancellationToken cancellationToken = default)
-    => _receivedRequestApiService.RemoveAllAsync(cancellationToken);
+    => _stubServer.ClearReceivedRequestsAsync(cancellationToken);
 ```
 
 Override the `Dispose` since the `StubServer` is a disposable object.
@@ -71,14 +69,14 @@ protected override void Dispose(bool disposing)
 
 Override the `CreateHost` of the [WebApplicationFactory](https://learn.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.mvc.testing.webapplicationfactory-1) to configure the base address of the used external service.
 ``` C#
-protected override IHost CreateHost(IHostBuilder builder)
+protected override void ConfigureWebHost(IWebHostBuilder builder)
 {
     builder.ConfigureServices((context, services) =>
     {
         context.Configuration["ExternalApi"] = _stubServer.BaseAddressStub.ToString();
     });
 
-    return base.CreateHost(builder);
+    base.ConfigureWebHost(builder);
 }
 ```
 
@@ -160,3 +158,16 @@ public async Task GetAllWeatherForecasts()
 
 > [!IMPORTANT]
 > `ReceivedRequest` can only be found when there is a matching `ResponseSetup` 
+
+---
+
+## Release notes
+
+1.0.3
+- Change the default for the usage of the development certificate in the `StubServer` from `true` to `false`
+- Changed constructor of `StubServer` so that users can chose a certificate used by the `StubServer` and how to handle this certificate in the `HttpClient`
+- Add methods for add and remove `ResponseSetup` items to the `StubServer`
+- Add methods for find and remove `ReceivedRequest` to the `StubServer`
+- [Deprecated] methods in `StubServer`:
+  - `CreateApiService<TApiService>`
+  - `CreateApiService(type type>)`

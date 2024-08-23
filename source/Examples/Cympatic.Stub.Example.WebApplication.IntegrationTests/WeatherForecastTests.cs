@@ -20,10 +20,9 @@ public class WeatherForecastTests : IClassFixture<ExampleWebApplicationFactory<P
     public WeatherForecastTests(ExampleWebApplicationFactory<Program> factory)
     {
         _factory = factory;
-        _httpClient = _factory.CreateClient();
+        _factory.Clear();
 
-        _factory.ClearResponsesSetupAsync();
-        _factory.ClearReceivedRequestsAsync();
+        _httpClient = _factory.CreateClient();
     }
 
     [Fact]
@@ -74,7 +73,7 @@ public class WeatherForecastTests : IClassFixture<ExampleWebApplicationFactory<P
         var expected = GenerateWeatherForecast();
         var responseSetup = new ResponseSetup
         {
-            Path = @$"/external/api/weatherforecast/{expected.Id:N}",
+            Path = $"/external/api/weatherforecast/{expected.Id:N}",
             HttpMethods = [HttpMethod.Get.ToString()],
             ReturnStatusCode = HttpStatusCode.OK,
             Response = expected
@@ -87,13 +86,13 @@ public class WeatherForecastTests : IClassFixture<ExampleWebApplicationFactory<P
         };
 
         // Act
-        var response = await _httpClient.GetAsync(@$"/weatherforecast/{expected.Id:N}");
+        var response = await _httpClient.GetAsync($"/weatherforecast/{expected.Id:N}");
 
         // Assert
         var actual = await response.Content.ReadFromJsonAsync<WeatherForecast>();
         actual.Should().BeEquivalentTo(expected);
 
-        var actualReceivedRequests = await _factory.FindReceivedRequestsAsync(new ReceivedRequestSearchParams(@$"/external/api/weatherforecast/{expected.Id:N}", [HttpMethod.Get.ToString()]));
+        var actualReceivedRequests = await _factory.FindReceivedRequestsAsync(new ReceivedRequestSearchParams($"/external/api/weatherforecast/{expected.Id:N}", [HttpMethod.Get.ToString()]));
         actualReceivedRequests.Should().BeEquivalentTo(expectedReceivedRequests, options => options
             .Excluding(_ => _.Headers)
             .Excluding(_ => _.Id)
@@ -153,7 +152,7 @@ public class WeatherForecastTests : IClassFixture<ExampleWebApplicationFactory<P
         };
 
         // Act
-        var actualResponse = await _httpClient.DeleteAsync(@$"/weatherforecast/{expected.Id}");
+        var actualResponse = await _httpClient.DeleteAsync($"/weatherforecast/{expected.Id}");
 
         // Assert
         var actualReceivedRequests = await _factory.FindReceivedRequestsAsync(new ReceivedRequestSearchParams($"/external/api/weatherforecast/{expected.Id:N}", [HttpMethod.Delete.ToString()]));

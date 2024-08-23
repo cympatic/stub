@@ -1,230 +1,152 @@
-﻿using Cympatic.Extensions.Stub.IntegrationTests.Servers;
-using Cympatic.Extensions.Stub.IntegrationTests.Servers.Models;
+﻿using Cympatic.Extensions.Stub.IntegrationTests.Fixtures;
+using Cympatic.Extensions.Stub.IntegrationTests.Services;
 using Cympatic.Extensions.Stub.Models;
 using Cympatic.Extensions.Stub.Services;
 using FluentAssertions;
 using System.Net;
-using System.Text.Json;
 
 namespace Cympatic.Extensions.Stub.IntegrationTests;
 
-public class ReceivedRequestTests : IDisposable
+public class ReceivedRequestTests : IClassFixture<StubServerFixture>
 {
     private const int NumberOfItems = 10;
 
-    private readonly StubServer _sut;
-    private readonly TestServer _testServer;
+    private readonly StubServerFixture _fixture;
+    private readonly ReceivedRequestApiService _sut;
+    private readonly StubServer _stubServer;
+    private readonly TestApiService _testApiService;
 
-    public ReceivedRequestTests()
+    public ReceivedRequestTests(StubServerFixture fixture)
     {
-        _sut = new(false);
-        _testServer = new();
+        _fixture = fixture;
+        _fixture.Clear();
 
-        _testServer.SetBaseAddressExternalApi(_sut.BaseAddressStub);
-    }
-
-    public void Dispose()
-    {
-        _sut?.Dispose();
-        _testServer?.Dispose();
-
-        GC.SuppressFinalize(this);
+        _sut = _fixture.ReceivedRequestApiService;
+        _stubServer = _fixture.StubServer;
+        _testApiService = _fixture.TestApiService;
     }
 
     [Fact]
-    public async Task When_TestServer_GetAll_is_called_Then_the_ResponseSetup_return_all_values_in_setup_and_the_request_is_recorded()
+    public async Task When_Multiple_ReceivedRequest_are_recorded_Then_All_return_all_recorded_ReceivedRequest()
     {
-        static IEnumerable<WeatherForecast> GetItems()
+        // Arrange
+        var expected = new List<ReceivedRequest>();
+        var tasks = new List<Task>();
+        for (var i = 0; i < NumberOfItems; i++)
         {
-            for (var i = 0; i < NumberOfItems; i++)
-            {
-                yield return GenerateWeatherForecast(i);
-            }
+            var item = _fixture.GenerateReceivedRequest();
+            expected.Add(item);
+
+            tasks.Add(_testApiService.SendAsync(new Uri(item.Path, UriKind.Relative).WithParameters(item.Query), ConvertHttpMethod(item.HttpMethod), item.Headers));
         }
-        var setupResponseApiService = _sut.CreateApiService<SetupResponseApiService>();
-        var receivedRequestApiService = _sut.CreateApiService<ReceivedRequestApiService>();
-        var testServerApiService = _testServer.CreateTestServerApiService();
-
-        // Arrange
-        var expectedResponse = GetItems().ToList();
-        var responseSetup = new ResponseSetup
-        {
-            Path = "/external/api/weatherforecast",
-            HttpMethods = [HttpMethod.Get.ToString()],
-            ReturnStatusCode = HttpStatusCode.OK,
-            Response = expectedResponse
-        };
-        var dummyResponseSetup = new ResponseSetup
-        {
-            Path = "/external/api/weatherforecast",
-            HttpMethods = [HttpMethod.Post.ToString()],
-            ReturnStatusCode = HttpStatusCode.PartialContent,
-            Response = Array.Empty<WeatherForecast>()
-        };
-        await setupResponseApiService.AddAsync([dummyResponseSetup, responseSetup]);
-
-        var expectedReceivedRequests = new List<ReceivedRequest>
-        {
-            new(responseSetup.Path, responseSetup.HttpMethods[0], responseSetup.Query, responseSetup.Headers, string.Empty, true)
-        };
+        await Task.WhenAll(tasks);
 
         // Act
-        var actualResponse = await testServerApiService.GetAllAsync();
+        var actual = await _sut.GetAllAsync();
 
         // Assert
-        actualResponse.Should().BeEquivalentTo(expectedResponse);
-
-        var actualReceivedRequests = await receivedRequestApiService.FindAsync(new ReceivedRequestSearchParams("/external/api/weatherforecast", [HttpMethod.Get.ToString()]));
-        actualReceivedRequests.Should().BeEquivalentTo(expectedReceivedRequests, options => options
-            .Excluding(_ => _.Headers)
+        actual.ToList().ForEach(_ => PrepareHeadersForValidation(_.Headers));
+        actual.Should().BeEquivalentTo(expected, options => options
             .Excluding(_ => _.Id)
             .Excluding(_ => _.CreatedDateTime));
     }
 
     [Fact]
-    public async Task When_TestServer_GetById_is_called_Then_the_ResponseSetup_return_all_values_in_setup_and_the_request_is_recorded()
+    public async Task When_Matching_ResponseSetup_for_ReceivedRequest_is_recorded_Then_Find_return_the_recorded_ReceivedRequest()
     {
-        var setupResponseApiService = _sut.CreateApiService<SetupResponseApiService>();
-        var receivedRequestApiService = _sut.CreateApiService<ReceivedRequestApiService>();
-        var testServerApiService = _testServer.CreateTestServerApiService();
-
         // Arrange
-        var expectedResponse = GenerateWeatherForecast();
-        var responseSetup = new ResponseSetup
+        var list = new List<ReceivedRequest>();
+        for (var i = 0; i < NumberOfItems; i++)
         {
-            Path = $"/external/api/weatherforecast/{expectedResponse.Id:N}",
-            HttpMethods = [HttpMethod.Get.ToString()],
-            ReturnStatusCode = HttpStatusCode.OK,
-            Response = expectedResponse
-        };
-        var dummyResponseSetup = new ResponseSetup
-        {
-            Path = $"/external/api/weatherforecast/{expectedResponse.Id:N}",
-            HttpMethods = [HttpMethod.Post.ToString()],
-            ReturnStatusCode = HttpStatusCode.PartialContent,
-            Response = GenerateWeatherForecast()
-        };
-        await setupResponseApiService.AddAsync([dummyResponseSetup, responseSetup]);
+            list.Add(_fixture.GenerateReceivedRequest());
+        }
 
-        var expectedReceivedRequests = new List<ReceivedRequest>
+        var expected = list[Random.Shared.Next(list.Count)];
+        await _stubServer.AddResponseSetupAsync(new ResponseSetup
         {
-            new(responseSetup.Path, responseSetup.HttpMethods[0], responseSetup.Query, responseSetup.Headers, string.Empty, true)
-        };
+            Path = expected.Path,
+            HttpMethods = [expected.HttpMethod],
+            Query = expected.Query,
+            Headers = expected.Headers,
+            ReturnStatusCode = HttpStatusCode.OK
+        });
+
+        var tasks = new List<Task>();
+        foreach (var item in list)
+        {
+            tasks.Add(_testApiService.SendAsync(new Uri(item.Path, UriKind.Relative).WithParameters(item.Query), ConvertHttpMethod(item.HttpMethod), item.Headers));
+        }
+        await Task.WhenAll(tasks);
 
         // Act
-        var actualResponse = await testServerApiService.GetByIdAsync(expectedResponse.Id);
+        var actual = await _sut.FindAsync(new ReceivedRequestSearchParams(expected.Path, expected.Query, [expected.HttpMethod]));
 
         // Assert
-        actualResponse.Should().BeEquivalentTo(expectedResponse);
-
-        var actualReceivedRequests = await receivedRequestApiService.FindAsync(new ReceivedRequestSearchParams($"/external/api/weatherforecast/{expectedResponse.Id:N}", [HttpMethod.Get.ToString()]));
-        actualReceivedRequests.Should().BeEquivalentTo(expectedReceivedRequests, options => options
-            .Excluding(_ => _.Headers)
+        actual.ToList().ForEach(_ => PrepareHeadersForValidation(_.Headers));
+        actual.Should().BeEquivalentTo([expected], options => options
+            .Excluding(_ => _.FoundMatchingResponse)
             .Excluding(_ => _.Id)
             .Excluding(_ => _.CreatedDateTime));
     }
 
     [Fact]
-    public async Task When_TestServer_Add_is_called_Then_the_ResponseSetup_return_all_values_in_setup_and_the_request_is_recorded()
+    public async Task When_no_Matching_ResponseSetup_for_ReceivedRequest_is_recorded_Then_Find_return_an_empty_Enumerable()
     {
-        var setupResponseApiService = _sut.CreateApiService<SetupResponseApiService>();
-        var receivedRequestApiService = _sut.CreateApiService<ReceivedRequestApiService>();
-        var testServerApiService = _testServer.CreateTestServerApiService();
-
         // Arrange
-        var expectedResponse = GenerateWeatherForecast();
-        var responseSetup = new ResponseSetup
+        var tasks = new List<Task>();
+        for (var i = 0; i < NumberOfItems; i++)
         {
-            Path = "/external/api/weatherforecast",
-            HttpMethods = [HttpMethod.Post.ToString()],
-            ReturnStatusCode = HttpStatusCode.Created,
-            Response = expectedResponse,
-            Location = new Uri($"/external/api/weatherforecast/{expectedResponse.Id:N}", UriKind.Relative)
-        };
-        var dummyResponseSetup = new ResponseSetup
-        {
-            Path = "/external/api/weatherforecast",
-            HttpMethods = [HttpMethod.Get.ToString()],
-            ReturnStatusCode = HttpStatusCode.PartialContent,
-            Response = GenerateWeatherForecast()
-        };
-        await setupResponseApiService.AddAsync([dummyResponseSetup, responseSetup]);
-
-        var expectedReceivedRequests = new List<ReceivedRequest>
-        {
-            new(responseSetup.Path, responseSetup.HttpMethods[0], responseSetup.Query, responseSetup.Headers, string.Empty, true)
-        };
+            var item = _fixture.GenerateReceivedRequest();
+            tasks.Add(_testApiService.SendAsync(new Uri(item.Path, UriKind.Relative).WithParameters(item.Query), ConvertHttpMethod(item.HttpMethod), item.Headers));
+        }
+        await Task.WhenAll(tasks);
 
         // Act
-        var actualResponse = await testServerApiService.AddAsync(expectedResponse);
+        var dummy = _fixture.GenerateReceivedRequest();
+        var actual = await _sut.FindAsync(new ReceivedRequestSearchParams(dummy.Path, dummy.Query, [dummy.HttpMethod]));
 
         // Assert
-        actualResponse.Should().BeEquivalentTo(expectedResponse);
-
-        var actualReceivedRequests = await receivedRequestApiService.FindAsync(new ReceivedRequestSearchParams("/external/api/weatherforecast", [HttpMethod.Post.ToString()]));
-        actualReceivedRequests.Should().BeEquivalentTo(expectedReceivedRequests, options => options
-            .Excluding(_ => _.Headers)
-            .Excluding(_ => _.Body)
-            .Excluding(_ => _.Id)
-            .Excluding(_ => _.CreatedDateTime));
-
-        var actualRequestBody = JsonSerializer.Deserialize<WeatherForecast>(actualReceivedRequests.First().Body!);
-        actualRequestBody.Should().BeEquivalentTo(expectedResponse);
+        actual.Should().BeEmpty();
     }
 
     [Fact]
-    public async Task When_TestServer_Remove_is_called_Then_the_ResponseSetup_return_all_values_in_setup_and_the_request_is_recorded()
+    public async Task When_recorced_ReceivedRequest_are_removed_Then_All_return_an_empty_Enumerable()
     {
-        var setupResponseApiService = _sut.CreateApiService<SetupResponseApiService>();
-        var receivedRequestApiService = _sut.CreateApiService<ReceivedRequestApiService>();
-        var testServerApiService = _testServer.CreateTestServerApiService();
-
         // Arrange
-        var expectedResponse = GenerateWeatherForecast();
-        var responseSetup = new ResponseSetup
+        var tasks = new List<Task>();
+        for (var i = 0; i < NumberOfItems; i++)
         {
-            Path = $"/external/api/weatherforecast/{expectedResponse.Id:N}",
-            HttpMethods = [HttpMethod.Delete.ToString()],
-            ReturnStatusCode = HttpStatusCode.NoContent
-        };
-        var dummyResponseSetup = new ResponseSetup
-        {
-            Path = $"/external/api/weatherforecast/{expectedResponse.Id:N}",
-            HttpMethods = [HttpMethod.Get.ToString()],
-            ReturnStatusCode = HttpStatusCode.PartialContent
-        };
-        await setupResponseApiService.AddAsync([dummyResponseSetup, responseSetup]);
-
-        var expectedReceivedRequests = new List<ReceivedRequest>
-        {
-            new(responseSetup.Path, responseSetup.HttpMethods[0], responseSetup.Query, responseSetup.Headers, string.Empty, true)
-        };
+            var item = _fixture.GenerateReceivedRequest();
+            tasks.Add(_testApiService.SendAsync(new Uri(item.Path, UriKind.Relative).WithParameters(item.Query), ConvertHttpMethod(item.HttpMethod), item.Headers));
+        }
+        await Task.WhenAll(tasks);
 
         // Act
-        await testServerApiService.RemoveAsync(expectedResponse);
+        await _sut.RemoveAllAsync();
 
         // Assert
-        var actualReceivedRequests = await receivedRequestApiService.FindAsync(new ReceivedRequestSearchParams($"/external/api/weatherforecast/{expectedResponse.Id:N}", [HttpMethod.Delete.ToString()]));
-        actualReceivedRequests.Should().BeEquivalentTo(expectedReceivedRequests, options => options
-            .Excluding(_ => _.Headers)
-            .Excluding(_ => _.Id)
-            .Excluding(_ => _.CreatedDateTime));
+        var actual = await _sut.GetAllAsync();
+        actual.Should().BeEmpty();
     }
 
-    private static WeatherForecast GenerateWeatherForecast(int index = 0)
-        => new(Guid.NewGuid(), DateTime.Now.Date.AddDays(index), Random.Shared.Next(-20, 55), summaries[Random.Shared.Next(summaries.Length)]);
+    private static HttpMethod ConvertHttpMethod(string httpMethod)
+        => httpMethod.ToLowerInvariant() switch
+        {
+            "delete" => HttpMethod.Delete,
+            "get" => HttpMethod.Get,
+            "head" => HttpMethod.Head,
+            "options" => HttpMethod.Options,
+            "patch" => HttpMethod.Patch,
+            "post" => HttpMethod.Post,
+            "put" => HttpMethod.Put,
+            "trace" => HttpMethod.Trace,
+            _ => throw new InvalidCastException($"HttpMethod: '{httpMethod}' is an invalid value!")
+        };
 
-    private static readonly string[] summaries =
-    [
-        "Freezing",
-        "Bracing",
-        "Chilly",
-        "Cool",
-        "Mild",
-        "Warm",
-        "Balmy",
-        "Hot",
-        "Sweltering",
-        "Scorching"
-    ];
+    private static void PrepareHeadersForValidation(IDictionary<string, IEnumerable<string?>> headers)
+    {
+        headers.Remove("Accept");
+        headers.Remove("Host");
+        headers.Remove("Content-Length");
+    }
 }
