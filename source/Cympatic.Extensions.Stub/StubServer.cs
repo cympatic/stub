@@ -44,6 +44,9 @@ public sealed class StubServer : IDisposable
     public Task ClearResponsesSetupAsync(CancellationToken cancellationToken = default)
         => GetSetupResponseApiService().RemoveAllAsync(cancellationToken);
 
+    public Task<IEnumerable<ReceivedRequest>> GetAllReceivedRequestsAsync(CancellationToken cancellationToken = default)
+        => GetReceivedRequestApiService().GetAllAsync(cancellationToken);
+
     public Task<IEnumerable<ReceivedRequest>> FindReceivedRequestsAsync(ReceivedRequestSearchParams searchParams, CancellationToken cancellationToken = default)
         => GetReceivedRequestApiService().FindAsync(searchParams, cancellationToken);
 

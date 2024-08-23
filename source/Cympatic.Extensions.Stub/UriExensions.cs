@@ -24,9 +24,18 @@ public static class UriExensions
         return new Uri(uriBuilder.Path, UriKind.Relative);
     }
 
-    public static Uri WithParameter(this Uri uri, string paramName, string paramValue)
+    public static Uri WithParameter(this Uri uri, string paramName, string paramValue) 
+        => uri.WithParameters(new NameValueCollection { { paramName, paramValue } });
+
+    public static Uri WithParameters(this Uri uri, IDictionary<string, string> queryParams)
     {
-        return uri.WithParameters(new NameValueCollection { { paramName, paramValue } });
+        var parameters = new NameValueCollection();
+        foreach (var (key, value) in queryParams)
+        {
+            parameters.Add(key, value);
+        }
+
+        return uri.WithParameters(parameters);
     }
 
     public static Uri WithParameters(this Uri uri, NameValueCollection queryParams)

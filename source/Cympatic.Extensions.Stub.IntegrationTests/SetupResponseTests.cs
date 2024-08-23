@@ -2,7 +2,6 @@ using Cympatic.Extensions.Stub.IntegrationTests.Fixtures;
 using Cympatic.Extensions.Stub.Models;
 using Cympatic.Extensions.Stub.Services;
 using FluentAssertions;
-using System.Net;
 
 namespace Cympatic.Extensions.Stub.IntegrationTests;
 
@@ -21,10 +20,10 @@ public class SetupResponseTests : IClassFixture<StubServerFixture>
     }
 
     [Fact]
-    public async Task When_added_1_SetupResponse_succesful_Then_that_item_is_returned_and_can_be_fetched_on_its_Identifier()
+    public async Task When_added_1_SetupResponse_succesful_Then_Add_return_the_added_item()
     {
         // Arrange
-        var addSetupResponse = GenerateResponseSetup();
+        var addSetupResponse = _fixture.GenerateResponseSetup();
 
         // Act
         var addedSetupResponse = await _sut.AddAsync(addSetupResponse);
@@ -41,13 +40,13 @@ public class SetupResponseTests : IClassFixture<StubServerFixture>
     }
 
     [Fact]
-    public async Task When_added_multiple_SetupResponses_succesful_Then_those_items_can_be_fetched_through_the_GetAllAsync()
+    public async Task When_added_multiple_SetupResponses_succesful_Then_GetAllAsync_return_the_added_items()
     {
         // Arrange
         var expected = new List<ResponseSetup>();
         for (var i = 0; i < NumberOfItems; i++)
         {
-            expected.Add(GenerateResponseSetup());
+            expected.Add(_fixture.GenerateResponseSetup());
         }
 
         // Act
@@ -61,13 +60,13 @@ public class SetupResponseTests : IClassFixture<StubServerFixture>
     }
 
     [Fact]
-    public async Task When_a_ResponseSetup_is_removed_Then_this_item_is_nolonger_available_through_GetAllAsync()
+    public async Task When_a_ResponseSetup_is_removed_Then_GetAllAsync_is_no_longer_returning_the_item()
     {
-        static IEnumerable<ResponseSetup> GetItems()
+        IEnumerable<ResponseSetup> GetItems()
         {
             for (var i = 0; i < NumberOfItems; i++)
             {
-                yield return GenerateResponseSetup();
+                yield return _fixture.GenerateResponseSetup();
             }
         }
 
@@ -96,13 +95,13 @@ public class SetupResponseTests : IClassFixture<StubServerFixture>
     }
 
     [Fact]
-    public async Task When_all_ResponseSetups_are_cleared_Then_GetAllAsync_return_an_empty_list()
+    public async Task When_all_ResponseSetups_are_cleared_Then_GetAllAsync_return_an_empty_Enumerable()
     {
-        static IEnumerable<ResponseSetup> GetItems()
+        IEnumerable<ResponseSetup> GetItems()
         {
             for (var i = 0; i < NumberOfItems; i++)
             {
-                yield return GenerateResponseSetup();
+                yield return _fixture.GenerateResponseSetup();
             }
         }
 
@@ -115,48 +114,5 @@ public class SetupResponseTests : IClassFixture<StubServerFixture>
 
         // Assert
         actual.Count().Should().Be(0);
-    }
-
-    private static ResponseSetup GenerateResponseSetup()
-    {
-        var httpStatusCodes = Enum.GetValues(typeof(HttpStatusCode));
-        var query = new Dictionary<string, string>
-        {
-            { Guid.NewGuid().ToString("N"), Guid.NewGuid().ToString("N") },
-            { Guid.NewGuid().ToString("N"), Guid.NewGuid().ToString("N") }
-        };
-        var headers = new Dictionary<string, IEnumerable<string?>>
-        {
-            { Guid.NewGuid().ToString("N"), [ Guid.NewGuid().ToString("N") ] },
-            { Guid.NewGuid().ToString("N"), [ Guid.NewGuid().ToString("N") ] }
-        };
-        string[] httpMethodNames =
-        [
-            "Connect",
-            "Delete",
-            "Get",
-            "Head",
-            "Options",
-            "Patch",
-            "Post",
-            "Put",
-            "Trace"
-        ];
-        var httpMethods = new List<string>();
-        for (var i = 0; i < 3; i++)
-        {
-            httpMethods.Add(httpMethodNames[Random.Shared.Next(httpMethodNames.Length)]);
-        }
-
-        return new()
-        {
-            HttpMethods = httpMethods,
-            ReturnStatusCode = (HttpStatusCode)httpStatusCodes.GetValue(Random.Shared.Next(httpStatusCodes.Length))!,
-            Location = new Uri(Guid.NewGuid().ToString("N"), UriKind.Relative),
-            DelayInMilliseconds = Random.Shared.Next(1000),
-            Path = Guid.NewGuid().ToString("N"),
-            Query = query,
-            Headers = headers
-        };
     }
 }

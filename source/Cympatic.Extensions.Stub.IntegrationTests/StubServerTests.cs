@@ -23,7 +23,6 @@ public class StubServerTests : IClassFixture<StubServerFixture>
 
         _sut = _fixture.StubServer;
         _testServer = _fixture.TestServer;
-
     }
 
     [Fact]
