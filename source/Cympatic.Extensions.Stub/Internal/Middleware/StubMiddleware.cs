@@ -1,4 +1,5 @@
-﻿using Cympatic.Extensions.Stub.Internal.Interfaces;
+﻿using Cympatic.Extensions.Stub.Internal;
+using Cympatic.Extensions.Stub.Internal.Interfaces;
 using Cympatic.Extensions.Stub.Models;
 using Microsoft.AspNetCore.Http;
 using System.Net;

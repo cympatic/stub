@@ -1,5 +1,6 @@
 ﻿using Cympatic.Extensions.Stub.IntegrationTests.Fixtures;
 using Cympatic.Extensions.Stub.IntegrationTests.Services;
+using Cympatic.Extensions.Stub.Internal;
 using Cympatic.Extensions.Stub.Models;
 using Cympatic.Extensions.Stub.Services;
 using FluentAssertions;

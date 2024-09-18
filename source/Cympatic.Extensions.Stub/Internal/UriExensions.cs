@@ -1,9 +1,9 @@
 ﻿using System.Collections.Specialized;
 using System.Web;
 
-namespace Cympatic.Extensions.Stub;
+namespace Cympatic.Extensions.Stub.Internal;
 
-public static class UriExensions
+internal static class UriExensions
 {
     private const string DummyAbsoluteUri = "http://localhost";
 
@@ -24,7 +24,7 @@ public static class UriExensions
         return new Uri(uriBuilder.Path, UriKind.Relative);
     }
 
-    public static Uri WithParameter(this Uri uri, string paramName, string paramValue) 
+    public static Uri WithParameter(this Uri uri, string paramName, string paramValue)
         => uri.WithParameters(new NameValueCollection { { paramName, paramValue } });
 
     public static Uri WithParameters(this Uri uri, IDictionary<string, string> queryParams)

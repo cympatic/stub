@@ -1,66 +1,66 @@
-﻿using Cympatic.Extensions.Stub.Interfaces;
-using Cympatic.Extensions.Stub.Internal;
+﻿using Cympatic.Extensions.Stub.Internal;
+using Cympatic.Extensions.Stub.Internal.Services.Results;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
 
 namespace Cympatic.Extensions.Stub.Services;
 
-public abstract class ApiService(HttpClient httpClient)
+internal abstract class ApiService(HttpClient httpClient)
 {
     protected HttpClient HttpClient { get; } = httpClient;
     protected JsonSerializerOptions? SerializerOptions { get; set; } = null;
 
     protected Task<TResult> DeleteAsync<TResult>(Uri uri, CancellationToken cancellationToken = default)
-        where TResult : IApiServiceResult, new()
+        where TResult : ApiServiceResult, new()
         => SendAsync<TResult>(HttpMethod.Delete, uri, null, null, cancellationToken);
 
     protected Task<TResult> DeleteAsync<TResult>(Uri uri, HttpHeaders headers, CancellationToken cancellationToken = default)
-        where TResult : IApiServiceResult, new()
+        where TResult : ApiServiceResult, new()
         => SendAsync<TResult>(HttpMethod.Delete, uri, headers, null, cancellationToken);
 
     protected Task<TResult> DeleteAsync<TResult>(Uri uri, HttpHeaders headers, object payload, CancellationToken cancellationToken = default)
-        where TResult : IApiServiceResult, new()
+        where TResult : ApiServiceResult, new()
         => SendAsync<TResult>(HttpMethod.Delete, uri, headers, payload, cancellationToken);
 
     protected Task<TResult> PutAsync<TResult>(Uri uri, CancellationToken cancellationToken = default)
-        where TResult : IApiServiceResult, new()
+        where TResult : ApiServiceResult, new()
         => SendAsync<TResult>(HttpMethod.Put, uri, null, null, cancellationToken);
 
     protected Task<TResult> PutAsync<TResult>(Uri uri, HttpHeaders headers, CancellationToken cancellationToken = default)
-        where TResult : IApiServiceResult, new()
+        where TResult : ApiServiceResult, new()
         => SendAsync<TResult>(HttpMethod.Put, uri, headers, null, cancellationToken);
 
     protected Task<TResult> PutAsync<TResult>(Uri uri, HttpHeaders? headers, object payload, CancellationToken cancellationToken = default)
-        where TResult : IApiServiceResult, new()
+        where TResult : ApiServiceResult, new()
         => SendAsync<TResult>(HttpMethod.Put, uri, headers, payload, cancellationToken);
 
     protected Task<TResult> PostAsync<TResult>(Uri uri, CancellationToken cancellationToken = default)
-        where TResult : IApiServiceResult, new()
+        where TResult : ApiServiceResult, new()
         => SendAsync<TResult>(HttpMethod.Post, uri, null, null, cancellationToken);
 
     protected Task<TResult> PostAsync<TResult>(Uri uri, HttpHeaders headers, CancellationToken cancellationToken = default)
-        where TResult : IApiServiceResult, new()
+        where TResult : ApiServiceResult, new()
         => SendAsync<TResult>(HttpMethod.Post, uri, headers, null, cancellationToken);
 
     protected Task<TResult> PostAsync<TResult>(Uri uri, object payload, CancellationToken cancellationToken = default)
-        where TResult : IApiServiceResult, new()
+        where TResult : ApiServiceResult, new()
             => SendAsync<TResult>(HttpMethod.Post, uri, null, payload, cancellationToken);
 
     protected Task<TResult> PostAsync<TResult>(Uri uri, HttpHeaders headers, object payload, CancellationToken cancellationToken = default)
-        where TResult : IApiServiceResult, new()
+        where TResult : ApiServiceResult, new()
         => SendAsync<TResult>(HttpMethod.Post, uri, headers, payload, cancellationToken);
 
     protected Task<TResult> GetAsync<TResult>(Uri uri, CancellationToken cancellationToken = default)
-        where TResult : IApiServiceResult, new()
+        where TResult : ApiServiceResult, new()
         => SendAsync<TResult>(HttpMethod.Get, uri, null, null, cancellationToken);
 
     protected Task<TResult> GetAsync<TResult>(Uri uri, HttpHeaders headers, CancellationToken cancellationToken = default)
-        where TResult : IApiServiceResult, new()
+        where TResult : ApiServiceResult, new()
         => SendAsync<TResult>(HttpMethod.Get, uri, headers, null, cancellationToken);
 
     protected Task<TResult> SendAsync<TResult>(HttpMethod httpMethod, Uri uri, HttpHeaders? headers, object? payload, CancellationToken cancellationToken = default)
-        where TResult : IApiServiceResult, new()
+        where TResult : ApiServiceResult, new()
     {
         ArgumentNullException.ThrowIfNull(httpMethod);
         ArgumentNullException.ThrowIfNull(uri);
@@ -81,7 +81,7 @@ public abstract class ApiService(HttpClient httpClient)
     }
 
     private async Task<TResult> GetResultAsync<TResult>(HttpRequestMessage httpRequestMessage, CancellationToken cancellationToken = default)
-        where TResult : IApiServiceResult, new()
+        where TResult : ApiServiceResult, new()
     {
         using var response = await HttpClient.SendAsync(httpRequestMessage, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
 

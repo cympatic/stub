@@ -5,7 +5,7 @@ using FluentAssertions;
 using System.Net;
 using System.Net.Http.Headers;
 
-namespace Cympatic.Extensions.Stub.UnitTests.Services;
+namespace Cympatic.Extensions.Stub.UnitTests.Internal.Services;
 
 public class SetupResponseApiServiceTests : IDisposable
 {

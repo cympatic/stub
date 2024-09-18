@@ -1,10 +1,9 @@
-﻿using Cympatic.Extensions.Stub.Interfaces;
-using System.Net;
+﻿using System.Net;
 using System.Net.Http.Headers;
 
-namespace Cympatic.Extensions.Stub.Services.Results;
+namespace Cympatic.Extensions.Stub.Internal.Services.Results;
 
-public class ApiServiceResult : IApiServiceResult
+internal class ApiServiceResult
 {
     public HttpStatusCode StatusCode { get; private set; }
 

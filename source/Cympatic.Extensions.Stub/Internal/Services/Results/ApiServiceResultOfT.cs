@@ -1,9 +1,9 @@
 ﻿using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace Cympatic.Extensions.Stub.Services.Results;
+namespace Cympatic.Extensions.Stub.Internal.Services.Results;
 
-public class ApiServiceResult<TModel> : ApiServiceResult
+internal class ApiServiceResult<TModel> : ApiServiceResult
     where TModel : class
 {
     private readonly JsonSerializerOptions _options;
@@ -30,7 +30,7 @@ public class ApiServiceResult<TModel> : ApiServiceResult
         {
             Value = JsonSerializer.Deserialize<TModel>(Content, _options);
         }
-        catch 
+        catch
         {
             // Content was an invalid Json and should therefore be ingored
         }

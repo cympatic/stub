@@ -1,10 +1,11 @@
-﻿using Cympatic.Extensions.Stub.Models;
-using Cympatic.Extensions.Stub.Services.Results;
+﻿using Cympatic.Extensions.Stub.Internal;
+using Cympatic.Extensions.Stub.Internal.Services.Results;
+using Cympatic.Extensions.Stub.Models;
 using System.Collections.Specialized;
 
 namespace Cympatic.Extensions.Stub.Services;
 
-public class ReceivedRequestApiService(HttpClient httpClient) : ApiService(httpClient)
+internal class ReceivedRequestApiService(HttpClient httpClient) : ApiService(httpClient)
 {
     public async Task<IEnumerable<ReceivedRequest>> GetAllAsync(CancellationToken cancellationToken = default)
     {

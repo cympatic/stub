@@ -1,4 +1,5 @@
-﻿using Cympatic.Extensions.Stub.Models;
+﻿using Cympatic.Extensions.Stub.Internal;
+using Cympatic.Extensions.Stub.Models;
 using Cympatic.Extensions.Stub.Services;
 using Microsoft.AspNetCore.Hosting.Server;
 using Microsoft.AspNetCore.Hosting.Server.Features;
@@ -52,24 +53,6 @@ public sealed class StubServer : IDisposable
 
     public Task ClearReceivedRequestsAsync(CancellationToken cancellationToken = default)
         => GetReceivedRequestApiService().RemoveAllAsync(cancellationToken);
-
-    [Obsolete("Use methods 'AddResponseSetupAsync', 'AddResponsesSetupAsync', 'ClearResponsesSetupAsync', 'FindReceivedRequestsAsync', or 'ClearReceivedRequestsAsync' instead of CreateApiService and using the ApiService")]
-    public TApiService CreateApiService<TApiService>()
-        where TApiService : ApiService
-    {
-        return (TApiService)CreateApiService(typeof(TApiService));
-    }
-
-    [Obsolete("Use methods 'AddResponseSetupAsync', 'AddResponsesSetupAsync', 'ClearResponsesSetupAsync', 'FindReceivedRequestsAsync', or 'ClearReceivedRequestsAsync' instead of CreateApiService and using the ApiService")]
-    public ApiService CreateApiService(Type type)
-    {
-        if (!type.IsAssignableTo(typeof(ApiService)))
-        {
-            throw new InvalidOperationException($"Type: {type.Name} doesn't derive from class 'ApiService'");
-        }
-
-        return (ApiService)_host.Services.GetRequiredService(type);
-    }
 
     public void ResetHost()
     {
