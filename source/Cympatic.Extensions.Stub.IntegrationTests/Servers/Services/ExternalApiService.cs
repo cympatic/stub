@@ -1,4 +1,5 @@
 ﻿using Cympatic.Extensions.Stub.IntegrationTests.Servers.Models;
+using Cympatic.Extensions.Stub.Internal;
 using Cympatic.Extensions.Stub.Services;
 using Cympatic.Extensions.Stub.Services.Results;
 

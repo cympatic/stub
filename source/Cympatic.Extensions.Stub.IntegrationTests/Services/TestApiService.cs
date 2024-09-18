@@ -2,6 +2,7 @@
 using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
+using Cympatic.Extensions.Stub.Internal;
 
 namespace Cympatic.Extensions.Stub.IntegrationTests.Services;
 

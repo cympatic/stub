@@ -1,9 +1,10 @@
-﻿using Cympatic.Extensions.Stub.Models;
+﻿using Cympatic.Extensions.Stub.Internal;
+using Cympatic.Extensions.Stub.Models;
 using Cympatic.Extensions.Stub.Services.Results;
 
 namespace Cympatic.Extensions.Stub.Services;
 
-public class SetupResponseApiService(HttpClient httpClient) : ApiService(httpClient)
+internal class SetupResponseApiService(HttpClient httpClient) : ApiService(httpClient)
 {
     public async Task<IEnumerable<ResponseSetup>> GetAllAsync(CancellationToken cancellationToken = default)
     {

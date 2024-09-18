@@ -18,6 +18,20 @@ Information about usage can be found [here](https://github.com/cympatic/stub).
 
 ## Release notes
 
+1.1.0
+- Removed obsolete methods in `StubServer`:
+  - `CreateApiService<TApiService>`
+  - `CreateApiService(type type>)`
+- Moved the folder `Services` to the folder `Internal`, including classes
+- Updated access modifier for classes in the folder `Services` from `public` to `internal`. The following classes are impacted:
+  - `Results/ApiServiceResult`
+  - `Results/ApiServiceResult<TModel>`
+  - `ApiService`
+  - `ReceivedRequestApiService`
+  - `SetupResponseApiService`
+- Change access modifier for class `UriExtensions` from `public` to `internal` and moved the class to the folder `Internal`
+- Removed interface `IApiResult`
+
 1.0.3
 - Change the default for the usage of the development certificate in the `StubServer` from `true` to `false`
 - Changed constructor of `StubServer` so that users can chose a certificate used by the `StubServer` and how to handle this certificate in the `HttpClient`

@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 
 namespace Cympatic.Extensions.Stub.Services.Results;
 
-public class ApiServiceResult<TModel> : ApiServiceResult
+internal class ApiServiceResult<TModel> : ApiServiceResult
     where TModel : class
 {
     private readonly JsonSerializerOptions _options;
