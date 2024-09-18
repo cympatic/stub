@@ -1,6 +1,6 @@
 ﻿using Cympatic.Extensions.Stub.Internal;
+using Cympatic.Extensions.Stub.Internal.Services.Results;
 using Cympatic.Extensions.Stub.Models;
-using Cympatic.Extensions.Stub.Services.Results;
 
 namespace Cympatic.Extensions.Stub.Services;
 

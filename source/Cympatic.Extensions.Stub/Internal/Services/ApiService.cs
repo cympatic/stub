@@ -1,5 +1,5 @@
 ﻿using Cympatic.Extensions.Stub.Internal;
-using Cympatic.Extensions.Stub.Services.Results;
+using Cympatic.Extensions.Stub.Internal.Services.Results;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;

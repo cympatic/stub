@@ -2,7 +2,7 @@
 using FluentAssertions;
 using System.Collections.Specialized;
 
-namespace Cympatic.Extensions.Stub.UnitTests;
+namespace Cympatic.Extensions.Stub.UnitTests.Internal;
 
 public class UriExtensionsTests
 {
